@@ -3,11 +3,11 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     private Rigidbody _rgb;
+    private GameObject _camera;
+    private bool[] _lockKey = new bool[3];
     private bool isOnTheGround = true;
     [SerializeField] private float _speed;
     [SerializeField] private float _jumpSpeed;
-    private bool focusTargets;
-    private GameObject _camera;
 
     void Awake()
     {
@@ -22,16 +22,17 @@ public class PlayerController : MonoBehaviour
 
     void CharLock()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (Input.GetKeyDown(KeyCode.Alpha1) && !_lockKey[0])
         {
-            focusTargets = false;
-            if (gameObject.name == "Thomas" && !focusTargets)
+            _lockKey[0] = true;
+            _lockKey[1] = false;
+            _lockKey[2] = false;
+            if (gameObject.name == "Thomas")
             {
-                focusTargets = true;
                 _rgb = GetComponent<Rigidbody>();
                 _camera.transform.parent = _rgb.transform;
                 _camera.transform.position = new Vector3(_rgb.transform.position.x,
-                                                         _camera.transform.position.y,
+                                                         _rgb.transform.position.y + 2f,
                                                          _camera.transform.position.z);
             }
             if (gameObject.name == "John")
@@ -39,37 +40,39 @@ public class PlayerController : MonoBehaviour
             if (gameObject.name == "Claire")
                 _rgb = null;
         }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
+        if (Input.GetKeyDown(KeyCode.Alpha2) && !_lockKey[1])
         {
-            focusTargets = false;
+            _lockKey[0] = false;
+            _lockKey[1] = true;
+            _lockKey[2] = false;
             if (gameObject.name == "Thomas")
                 _rgb = null;
-            if (gameObject.name == "John" && !focusTargets)
+            if (gameObject.name == "John")
             {
-                focusTargets = true;
                 _rgb = GetComponent<Rigidbody>();
                 _camera.transform.parent = _rgb.transform;
                 _camera.transform.position = new Vector3(_rgb.transform.position.x,
-                                                         _camera.transform.position.y,
+                                                         _rgb.transform.position.y + 2f,
                                                          _camera.transform.position.z);
             }
             if (gameObject.name == "Claire")
                 _rgb = null;
         }
-        if (Input.GetKeyDown(KeyCode.Alpha3))
+        if (Input.GetKeyDown(KeyCode.Alpha3) && !_lockKey[2])
         {
-            focusTargets = false;
+            _lockKey[0] = false;
+            _lockKey[1] = false;
+            _lockKey[2] = true;
             if (gameObject.name == "Thomas")
                 _rgb = null;
             if (gameObject.name == "John")
                 _rgb = null;
-            if (gameObject.name == "Claire" && !focusTargets)
+            if (gameObject.name == "Claire")
             {
-                focusTargets = true;
                 _rgb = GetComponent<Rigidbody>();
                 _camera.transform.parent = _rgb.transform;
                 _camera.transform.position = new Vector3(_rgb.transform.position.x,
-                                                         _camera.transform.position.y,
+                                                         _rgb.transform.position.y + 2f,
                                                          _camera.transform.position.z);
             }
         }
@@ -92,10 +95,16 @@ public class PlayerController : MonoBehaviour
 
     void OnCollisionEnter(Collision other)
     {
+        if (other.gameObject.CompareTag("Trap"))
+            Destroy(gameObject);
+    }
+    
+    void OnTriggerEnter(Collider other)
+    {
         if (other.gameObject.CompareTag("Ground") ||
-           other.gameObject.CompareTag("Thomas") ||
-           other.gameObject.CompareTag("Claire") ||
-           other.gameObject.CompareTag("John"))
+                   other.gameObject.CompareTag("Thomas") ||
+                   other.gameObject.CompareTag("Claire") ||
+                   other.gameObject.CompareTag("John"))
             isOnTheGround = true;
     }
 }

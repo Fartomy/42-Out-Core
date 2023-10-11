@@ -8,6 +8,9 @@ TagManager:
   - Thomas
   - John
   - Ground
+  - ButtonThomas
+  - ButtonJohn
+  - Trap
   layers:
   - Default
   - TransparentFX
