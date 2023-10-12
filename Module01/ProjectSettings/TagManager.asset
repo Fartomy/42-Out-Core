@@ -11,6 +11,9 @@ TagManager:
   - ButtonThomas
   - ButtonJohn
   - Trap
+  - exit_red
+  - exit_yellow
+  - exit_blue
   layers:
   - Default
   - TransparentFX

@@ -5,6 +5,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody _rgb;
     private GameObject _camera;
     private bool[] _lockKey = new bool[3];
+    public bool exitLock; 
     private bool isOnTheGround = true;
     [SerializeField] private float _speed;
     [SerializeField] private float _jumpSpeed;
@@ -98,7 +99,7 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.CompareTag("Trap"))
             Destroy(gameObject);
     }
-    
+
     void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Ground") ||
@@ -106,5 +107,43 @@ public class PlayerController : MonoBehaviour
                    other.gameObject.CompareTag("Claire") ||
                    other.gameObject.CompareTag("John"))
             isOnTheGround = true;
+    }
+
+    void OnTriggerStay(Collider other)
+    {
+        if (other.gameObject.CompareTag("exit_red"))
+        {
+            if(gameObject.name == "Thomas")
+                exitLock = true;
+        }
+        if(other.gameObject.CompareTag("exit_yellow"))
+        {
+            if(gameObject.name == "John")
+                exitLock = true;
+        }
+        if(other.gameObject.CompareTag("exit_blue"))
+        {
+            if(gameObject.name == "Claire")
+                exitLock = true;
+        }
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.CompareTag("exit_red"))
+        {
+            if(gameObject.name == "Thomas")
+                exitLock = false;
+        }
+        if(other.gameObject.CompareTag("exit_yellow"))
+        {
+            if(gameObject.name == "John")
+                exitLock = false;
+        }
+        if(other.gameObject.CompareTag("exit_blue"))
+        {
+            if(gameObject.name == "Claire")
+                exitLock = false;
+        }    
     }
 }
