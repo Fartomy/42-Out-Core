@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
     {
         _currentScene = SceneManager.GetActiveScene();
         _once = true;
-        _sceneCnt =  SceneManager.sceneCountInBuildSettings;
+        _sceneCnt = SceneManager.sceneCountInBuildSettings;
     }
 
     void Update()
@@ -24,14 +24,17 @@ public class GameManager : MonoBehaviour
 
     void IsStageFinished()
     {
-        exitLockStat[0] = _chars[0].GetComponent<PlayerController>().exitLock;
-        exitLockStat[1] = _chars[1].GetComponent<PlayerController>().exitLock;
-        exitLockStat[2] = _chars[2].GetComponent<PlayerController>().exitLock;
+        if(_chars[0])
+            exitLockStat[0] = _chars[0].GetComponent<PlayerController>().exitLock;
+        if(_chars[1])
+            exitLockStat[1] = _chars[1].GetComponent<PlayerController>().exitLock;
+        if(_chars[2])
+            exitLockStat[2] = _chars[2].GetComponent<PlayerController>().exitLock;
         if (exitLockStat[0] && exitLockStat[1] && exitLockStat[2] && _once)
         {
             _once = false;
             Debug.Log("Stage is over!");
-            if(_currentScene.buildIndex < _sceneCnt - 1)
+            if (_currentScene.buildIndex < _sceneCnt - 1)
                 SceneManager.LoadScene(_currentScene.buildIndex + 1);
             else
                 SceneManager.LoadScene(0);

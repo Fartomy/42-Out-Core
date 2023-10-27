@@ -107,6 +107,13 @@ public class PlayerController : MonoBehaviour
                    other.gameObject.CompareTag("Claire") ||
                    other.gameObject.CompareTag("John"))
             isOnTheGround = true;
+        if(other.gameObject.CompareTag("hole"))
+        {
+            _camera.transform.SetParent(null);
+            Destroy(gameObject, 3);
+        }
+        if(other.gameObject.CompareTag("bullet"))
+            Destroy(gameObject);
     }
 
     void OnTriggerStay(Collider other)

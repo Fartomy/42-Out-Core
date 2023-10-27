@@ -17,6 +17,11 @@ TagManager:
   - whiteButton
   - colorButton
   - platformColorChangerButton
+  - turret_red
+  - turret_yellow
+  - turret_blue
+  - bullet
+  - hole
   layers:
   - Default
   - TransparentFX
