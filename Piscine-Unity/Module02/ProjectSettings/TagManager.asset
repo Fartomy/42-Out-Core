@@ -6,6 +6,9 @@ TagManager:
   tags:
   - tag_enemy
   - tag_base
+  - tag_turret_01
+  - tag_turret_02
+  - tag_turret_03
   layers:
   - Default
   - TransparentFX
