@@ -1,4 +1,5 @@
-using UnityEditor;
+using System.Threading.Tasks;
+using Mono.Cecil.Cil;
 using UnityEngine;
 
 public class TurretController : MonoBehaviour
@@ -8,34 +9,67 @@ public class TurretController : MonoBehaviour
     [SerializeField] private GameObject _shootPoint;
 
     [Header("Properties")]
+    [SerializeField] private float _detectionZoneRadius;
     [SerializeField] private float _moveSpeed;
     [SerializeField] private float _shotDelaySec;
 
-    private bool _shotLock = false;
+    private Collider2D _closestEnemy;
 
-    void ShotToTarget(ref Collider2D col)
+    void Start()
     {
-        if (_shotLock)
-            return;
-        var blt = Instantiate(_bullet, _shootPoint.transform.position, _bullet.transform.rotation);
-        Vector3 enemyPos = col.transform.position;
-        Vector3 targetDist = (enemyPos - _shootPoint.transform.position).normalized;
-        Debug.Log("Distance: " + (enemyPos - _shootPoint.transform.position));
-        Rigidbody2D bltRgb = blt.GetComponent<Rigidbody2D>();
-        bltRgb.AddForce((targetDist * _moveSpeed) * Time.deltaTime);
-        Destroy(blt, 3);
-        _shotLock = true;
-        Invoke("ShotDelay", _shotDelaySec);
+        InvokeRepeating("ShootToEnemy", 0, _shotDelaySec);
     }
 
-    void ShotDelay()
+    void FixedUpdate()
     {
-        _shotLock = false;
+        FindClosestEnemy();
     }
 
-    void OnTriggerStay2D(Collider2D other)
+    void ShootToEnemy()
     {
-        if (other.CompareTag("tag_enemy"))
-            ShotToTarget(ref other);
+        if (_closestEnemy)
+        {
+            GameObject blt = Instantiate(_bullet, _shootPoint.transform.position, _bullet.transform.rotation);
+            TagToBullet(ref blt);
+            Rigidbody2D bltRgb = blt.GetComponent<Rigidbody2D>();
+            Vector2 targetDist = _closestEnemy.transform.position - transform.position;
+            bltRgb.AddForce(targetDist * _moveSpeed * Time.deltaTime);
+            Destroy(blt, 2);
+        }
+    }
+
+    void TagToBullet(ref GameObject blt)
+    {
+        if(transform.tag == "tag_turret_01")
+            blt.tag = "tag_01_bullet";
+        else if(transform.tag == "tag_turret_02")
+            blt.tag = "tag_02_bullet";
+        else if(transform.tag == "tag_turret_03")
+            blt.tag = "tag_03_bullet";
+    }
+
+    void FindClosestEnemy()
+    {
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, _detectionZoneRadius, LayerMask.GetMask("Enemy"));
+        if (enemies.Length > 0)
+        {
+            float mindist = Mathf.Infinity;
+            foreach (Collider2D enemy in enemies)
+            {
+                float dist = Vector2.Distance(enemy.transform.position, transform.position);
+                if (dist < mindist)
+                {
+                    mindist = dist;
+                    _closestEnemy = enemy;
+                }
+            }
+        }
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        if (gameObject)
+            Gizmos.DrawWireSphere(transform.position, _detectionZoneRadius);
     }
 }

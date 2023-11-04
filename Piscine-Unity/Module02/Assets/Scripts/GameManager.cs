@@ -2,8 +2,10 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    [Header("Objects")]
     [SerializeField] private GameObject _base;
     [SerializeField] private GameObject _spawner;
+
     private BaseController _baseCtrl;
 
     void Awake()

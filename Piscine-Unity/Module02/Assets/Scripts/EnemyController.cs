@@ -7,6 +7,7 @@ public class EnemyController : MonoBehaviour
     private GameObject _spawner;
     private Transform[] _points;
     private int _indexOfPoints = 0;
+    private float _HP = 3f;
 
     void Awake()
     {
@@ -21,6 +22,7 @@ public class EnemyController : MonoBehaviour
     {
         MoveToPoint();
         CheckPathIsThere();
+        CheckHP();
     }
 
     void GetPoints()
@@ -48,5 +50,30 @@ public class EnemyController : MonoBehaviour
     {
         if(!_spawner)
             Destroy(gameObject);
+    }
+
+    void CheckHP()
+    {
+        if(_HP <= 0)
+            Destroy(gameObject);
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if(other.CompareTag("tag_01_bullet"))
+        {
+            _HP -= 0.1f;
+            Destroy(other.gameObject);
+        }
+        if(other.CompareTag("tag_02_bullet"))
+        {
+            _HP -= 0.2f;
+            Destroy(other.gameObject);
+        }
+        if(other.CompareTag("tag_03_bullet"))
+        {
+            _HP -= 0.3f;
+            Destroy(other.gameObject);
+        }
     }
 }

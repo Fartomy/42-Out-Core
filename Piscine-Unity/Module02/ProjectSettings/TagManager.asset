@@ -9,6 +9,9 @@ TagManager:
   - tag_turret_01
   - tag_turret_02
   - tag_turret_03
+  - tag_01_bullet
+  - tag_02_bullet
+  - tag_03_bullet
   layers:
   - Default
   - TransparentFX
@@ -16,7 +19,7 @@ TagManager:
   - Ground
   - Water
   - UI
-  - 
+  - Enemy
   - 
   - 
   - 
