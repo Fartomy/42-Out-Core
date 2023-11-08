@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - tag_turret_01
+  - tag_enemy
+  - tag_turret_03
+  - tag_base
+  - tag_turret_02
+  - tag_01_bullet
+  - tag_02_bullet
+  - tag_03_bullet
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - Ground
+  - Water
+  - UI
+  - Enemy
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Background
+    uniqueID: 3811364343
+    locked: 0
+  - name: Ground
+    uniqueID: 1001993269
+    locked: 0
+  - name: Mount
+    uniqueID: 1750867725
+    locked: 0
+  - name: Road
+    uniqueID: 1825479877
+    locked: 0
+  - name: Tree
+    uniqueID: 2110827337
+    locked: 0
+  - name: Building
+    uniqueID: 3932949837
+    locked: 0
+  - name: Shadow
+    uniqueID: 1363998747
+    locked: 0
+  - name: Cloud
+    uniqueID: 33055761
+    locked: 0
+  - name: Foreground
+    uniqueID: 2974407271
+    locked: 0
