@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-using Mono.Cecil.Cil;
 using UnityEngine;
 
 public class TurretController : MonoBehaviour
@@ -14,6 +12,7 @@ public class TurretController : MonoBehaviour
     [SerializeField] private float _shotDelaySec;
 
     private Collider2D _closestEnemy;
+    private BaseController _baseCtrl;
 
     void Start()
     {

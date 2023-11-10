@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class BaseController : MonoBehaviour
 {
-    public int _baseHP = 1;
+    public int _baseHP;
 
     void Awake()
     {

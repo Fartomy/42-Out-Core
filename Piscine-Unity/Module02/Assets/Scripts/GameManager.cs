@@ -1,16 +1,15 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
-{
-    [Header("Objects")]
-    [SerializeField] private GameObject _base;
-    [SerializeField] private GameObject _spawner;
-
+{   
+    private List<GameObject[]> _foregroundObjs;
     private BaseController _baseCtrl;
 
     void Awake()
     {
-        _baseCtrl = _base.GetComponent<BaseController>();
+        _foregroundObjs = new List<GameObject[]>();
+        _baseCtrl = GameObject.FindGameObjectWithTag("tag_base").GetComponent<BaseController>();
     }
 
     void Update()
@@ -20,11 +19,25 @@ public class GameManager : MonoBehaviour
 
     void BaseHPControl()
     {
-        if (_baseCtrl._baseHP <= 0 && _base)
+        if (_baseCtrl._baseHP <= 0 && _baseCtrl)
         {
-            Destroy(_base);
-            Destroy(_spawner);
+            FindAndDestroyForegroundObjects();
             Debug.Log("Game Over");
+        }
+    }
+
+    void FindAndDestroyForegroundObjects()
+    {
+        _foregroundObjs.Add(GameObject.FindGameObjectsWithTag("tag_base"));
+        _foregroundObjs.Add(GameObject.FindGameObjectsWithTag("tag_spawner"));
+        _foregroundObjs.Add(GameObject.FindGameObjectsWithTag("tag_turret_01"));
+        _foregroundObjs.Add(GameObject.FindGameObjectsWithTag("tag_turret_02"));
+        _foregroundObjs.Add(GameObject.FindGameObjectsWithTag("tag_turret_03"));
+
+        for(int i = 0; i < _foregroundObjs.Count; i++)
+        {
+            for(int j = 0; j < _foregroundObjs[i].Length; j++)
+                Destroy(_foregroundObjs[i][j]);
         }
     }
 }
