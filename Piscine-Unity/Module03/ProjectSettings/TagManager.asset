@@ -12,6 +12,7 @@ TagManager:
   - tag_01_bullet
   - tag_02_bullet
   - tag_03_bullet
+  - tag_spawner
   layers:
   - Default
   - TransparentFX
