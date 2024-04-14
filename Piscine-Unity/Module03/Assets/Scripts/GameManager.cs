@@ -6,10 +6,17 @@ public class GameManager : MonoBehaviour
     private List<GameObject[]> _foregroundObjs;
     private BaseController _baseCtrl;
 
+    public float energyReserve;
+
     void Awake()
     {
         _foregroundObjs = new List<GameObject[]>();
         _baseCtrl = GameObject.FindGameObjectWithTag("tag_base").GetComponent<BaseController>();
+    }
+
+    void Start()
+    {
+        InvokeRepeating("EnergyReserveRegenaration", 0, 1);
     }
 
     void Update()
@@ -24,6 +31,11 @@ public class GameManager : MonoBehaviour
             FindAndDestroyForegroundObjects();
             Debug.Log("Game Over");
         }
+    }
+
+    void EnergyReserveRegenaration()
+    {
+        energyReserve += 0.1f;
     }
 
     void FindAndDestroyForegroundObjects()

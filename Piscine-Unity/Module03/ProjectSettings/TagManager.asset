@@ -13,6 +13,11 @@ TagManager:
   - tag_02_bullet
   - tag_03_bullet
   - tag_spawner
+  - tag_square_around
+  - tag_draggable_touret_01
+  - tag_draggable_touret_02
+  - tag_draggable_touret_03
+  - tag_drag_controller
   layers:
   - Default
   - TransparentFX
@@ -21,7 +26,7 @@ TagManager:
   - Water
   - UI
   - Enemy
-  - 
+  - Dragging
   - 
   - 
   - 
@@ -76,4 +81,13 @@ TagManager:
     locked: 0
   - name: Foreground
     uniqueID: 2974407271
+    locked: 0
+  - name: BarPanel
+    uniqueID: 2320603973
+    locked: 0
+  - name: SquareAround
+    uniqueID: 4004969333
+    locked: 0
+  - name: DraggableObject
+    uniqueID: 1621855479
     locked: 0

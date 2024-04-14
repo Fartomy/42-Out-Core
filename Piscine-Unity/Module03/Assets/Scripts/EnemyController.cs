@@ -8,9 +8,11 @@ public class EnemyController : MonoBehaviour
     private Transform[] _points;
     private int _indexOfPoints = 0;
     private float _HP = 3f;
+    private GameManager _gameManager;
 
     void Awake()
     {
+        _gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
         _spawnerChildCnt = GameObject.Find("Spawner").gameObject.transform.childCount;
         _spawner = GameObject.Find("Spawner");
         _points = new Transform[_spawnerChildCnt];
@@ -55,7 +57,10 @@ public class EnemyController : MonoBehaviour
     void CheckHP()
     {
         if(_HP <= 0)
+        {
+            _gameManager.energyReserve += 5f;
             Destroy(gameObject);
+        }
     }
 
     void OnTriggerEnter2D(Collider2D other)
