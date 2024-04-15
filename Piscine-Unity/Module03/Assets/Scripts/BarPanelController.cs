@@ -58,16 +58,34 @@ public class BarPanelController : MonoBehaviour
     void IsEnoughEnergy()
     {
         if(_gameManager.energyReserve < 10f)
+        {
+            _draggableTouret.transform.GetChild(0).GetComponent<CircleCollider2D>().enabled = false;
             _draggableTouret.transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.red;
+        }
         else
+        {
+            _draggableTouret.transform.GetChild(0).GetComponent<CircleCollider2D>().enabled = true;
             _draggableTouret.transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.white;
+        }
         if(_gameManager.energyReserve < 25f)
+        {
+            _draggableTouret.transform.GetChild(1).GetComponent<CircleCollider2D>().enabled = false;
             _draggableTouret.transform.GetChild(1).GetComponent<SpriteRenderer>().color = Color.red;
+        }
         else
+        {
+            _draggableTouret.transform.GetChild(1).GetComponent<CircleCollider2D>().enabled = true;
             _draggableTouret.transform.GetChild(1).GetComponent<SpriteRenderer>().color = Color.white;
+        }
         if(_gameManager.energyReserve < 40f)
+        {
+            _draggableTouret.transform.GetChild(2).GetComponent<CircleCollider2D>().enabled = false;
             _draggableTouret.transform.GetChild(2).GetComponent<SpriteRenderer>().color = Color.red;
+        }
         else
+        {
+            _draggableTouret.transform.GetChild(2).GetComponent<CircleCollider2D>().enabled = true;
             _draggableTouret.transform.GetChild(2).GetComponent<SpriteRenderer>().color = Color.white;
+        }
     }
 }
