@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System;
 
 public class GameManager : MonoBehaviour
 {   
@@ -8,13 +9,21 @@ public class GameManager : MonoBehaviour
     private GameObject _gamePauseMenuPanel;
     private List<GameObject[]> _foregroundObjs;
     private BaseController _baseCtrl;
+    private SpawnerController _spawnerCtrl;
+    private int _totalEnemiesNumber;
+    
+    private int _isWinningOrLosing = 2;
 
     public float energyReserve;
+    [HideInInspector]
+    public int _deadOfEnemyNbr = 0;
 
     void Awake()
     {
+        _spawnerCtrl = GameObject.FindGameObjectWithTag("tag_spawner").GetComponent<SpawnerController>();
         _foregroundObjs = new List<GameObject[]>();
         _baseCtrl = GameObject.FindGameObjectWithTag("tag_base").GetComponent<BaseController>();
+        _totalEnemiesNumber = _spawnerCtrl._numberOfSpawn;
     }
 
     void Start()
@@ -26,6 +35,7 @@ public class GameManager : MonoBehaviour
     {
         BaseHPControl();
         PauseGame();
+        AreEnemiesDeadAll();
     }
 
     void BaseHPControl()
@@ -33,14 +43,63 @@ public class GameManager : MonoBehaviour
         if (_baseCtrl._baseHP <= 0 && _baseCtrl)
         {
             FindAndDestroyForegroundObjects();
+            _isWinningOrLosing = 0;
+            ScoreCalculator();
+            RankCalculator();
+            PlayerPrefs.SetInt("WinningOrLosing", _isWinningOrLosing);
+            PlayerPrefs.SetInt("SceneNumber", SceneManager.GetActiveScene().buildIndex);
             Debug.Log("Game Over");
+            SceneManager.LoadScene("Score");
         }
     }
 
     void EnergyReserveRegenaration()
     {
-        if(_baseCtrl._baseHP > 0)
+        if(_isWinningOrLosing == 2)
             energyReserve += 0.1f;
+    }
+
+    void AreEnemiesDeadAll()
+    {
+        if(_totalEnemiesNumber == _deadOfEnemyNbr)
+        {
+            _totalEnemiesNumber = 9999;
+            FindAndDestroyForegroundObjects();
+            _isWinningOrLosing = 1;
+            ScoreCalculator();
+            RankCalculator();
+            PlayerPrefs.SetInt("WinningOrLosing", _isWinningOrLosing);
+            PlayerPrefs.SetInt("SceneNumber", SceneManager.GetActiveScene().buildIndex);
+            SceneManager.LoadScene("Score");
+        }
+    }
+
+    void ScoreCalculator()
+    {
+        if(energyReserve > 0)
+            PlayerPrefs.SetFloat("Score" , (energyReserve + _baseCtrl._baseHP) - (Time.time / 10.0f));
+        else
+            PlayerPrefs.SetFloat("Score", _baseCtrl._baseHP - (Time.time / 10.0f));
+    }
+
+    void RankCalculator()
+    {
+        PlayerPrefs.SetInt("Rank", Convert.ToInt32(energyReserve + _baseCtrl._baseHP));
+        if(PlayerPrefs.GetInt("Rank") < 50)
+        {
+            PlayerPrefs.SetString("RankLetter", "F");
+            PlayerPrefs.SetString("RankTitle", "The Woodendome");
+        }
+        else if(PlayerPrefs.GetInt("Rank")  >= 50 && PlayerPrefs.GetInt("Rank") < 100)
+        {
+            PlayerPrefs.SetString("RankLetter", "B");
+            PlayerPrefs.SetString("RankTitle", "The Gatekeeper");
+        }
+        else
+        {
+            PlayerPrefs.SetString("RankLetter", "S");
+            PlayerPrefs.SetString("RankTitle", "The Shield of Welkin");
+        }
     }
 
     void FindAndDestroyForegroundObjects()
@@ -50,6 +109,9 @@ public class GameManager : MonoBehaviour
         _foregroundObjs.Add(GameObject.FindGameObjectsWithTag("tag_turret_01"));
         _foregroundObjs.Add(GameObject.FindGameObjectsWithTag("tag_turret_02"));
         _foregroundObjs.Add(GameObject.FindGameObjectsWithTag("tag_turret_03"));
+        _foregroundObjs.Add(GameObject.FindGameObjectsWithTag("tag_01_bullet"));
+        _foregroundObjs.Add(GameObject.FindGameObjectsWithTag("tag_02_bullet"));
+        _foregroundObjs.Add(GameObject.FindGameObjectsWithTag("tag_03_bullet"));
 
         for(int i = 0; i < _foregroundObjs.Count; i++)
         {
@@ -58,7 +120,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    /*****************************************[ UI SECTION ]***********************************************/
+    /*****************************************[ Pause Menu UI SECTION ]***********************************************/
     void PauseGame()
     {
         if(Input.GetKeyDown(KeyCode.Escape))

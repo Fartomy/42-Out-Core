@@ -12,6 +12,7 @@ public class TurretController : MonoBehaviour
     [SerializeField] private float _shotDelaySec;
 
     private Collider2D _closestEnemy;
+    private int _detectedEnemies;
 
     void Start()
     {
@@ -25,7 +26,7 @@ public class TurretController : MonoBehaviour
 
     void ShootToEnemy()
     {
-        if (_closestEnemy)
+        if (_closestEnemy && _detectedEnemies > 0)
         {
             GameObject blt = Instantiate(_bullet, _shootPoint.transform.position, _bullet.transform.rotation);
             TagToBullet(ref blt);
@@ -49,6 +50,7 @@ public class TurretController : MonoBehaviour
     void FindClosestEnemy()
     {
         Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, _detectionZoneRadius, LayerMask.GetMask("Enemy"));
+        _detectedEnemies = enemies.Length;
         if (enemies.Length > 0)
         {
             float mindist = Mathf.Infinity;

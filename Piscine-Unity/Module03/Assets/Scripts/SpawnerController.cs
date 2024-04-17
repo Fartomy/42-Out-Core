@@ -5,6 +5,7 @@ public class SpawnerController : MonoBehaviour
     [SerializeField] private Transform _spawnPoint;
     [SerializeField] private GameObject _spawnedObj;
     [SerializeField] private float delayTime;
+    public int _numberOfSpawn;
      
     void Start()
     {
@@ -13,7 +14,11 @@ public class SpawnerController : MonoBehaviour
 
     void Spawn()
     {
-        Instantiate(_spawnedObj, _spawnPoint.position, _spawnedObj.transform.rotation);  
+        if(_numberOfSpawn > 0)
+        {
+            Instantiate(_spawnedObj, _spawnPoint.position, _spawnedObj.transform.rotation);
+            _numberOfSpawn -= 1;
+        }
     }
 
     void OnDrawGizmos()

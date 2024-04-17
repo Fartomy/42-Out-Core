@@ -58,7 +58,8 @@ public class EnemyController : MonoBehaviour
     {
         if(_HP <= 0)
         {
-            _gameManager.energyReserve += 5f;
+            _gameManager.energyReserve += 2f;
+            _gameManager._deadOfEnemyNbr += 1;
             Destroy(gameObject);
         }
     }

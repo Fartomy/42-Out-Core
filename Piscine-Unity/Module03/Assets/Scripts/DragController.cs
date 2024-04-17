@@ -81,19 +81,19 @@ public class DragController : MonoBehaviour
         {
             if(_lastDragged.DraggableTouretTagName == "tag_draggable_touret_01" && _gameManager.energyReserve >= 10f)
             {
-                _gameManager.energyReserve -= 10f;
+                _gameManager.energyReserve -= 10.3f;
                 Instantiate(_Tourets[0], _lastDragged.slotPosition, Quaternion.identity);
                 Destroy(_lastDragged._TouretSquareAround);
             }
             else if(_lastDragged.DraggableTouretTagName == "tag_draggable_touret_02" && _gameManager.energyReserve >= 25f)
             {
-                _gameManager.energyReserve -= 25f;
+                _gameManager.energyReserve -= 25.6f;
                 Instantiate(_Tourets[1], _lastDragged.slotPosition, Quaternion.identity);
                 Destroy(_lastDragged._TouretSquareAround);
             }
             else if(_lastDragged.DraggableTouretTagName == "tag_draggable_touret_03" && _gameManager.energyReserve >= 40f)
             {
-                _gameManager.energyReserve -= 40f;
+                _gameManager.energyReserve -= 40.7f;
                 Instantiate(_Tourets[2], _lastDragged.slotPosition, Quaternion.identity);
                 Destroy(_lastDragged._TouretSquareAround);
             }
