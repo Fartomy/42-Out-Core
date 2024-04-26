@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -8,6 +7,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private float _jmpSpeed;
 
+    private int _playerHP = 3;
     private Rigidbody2D _rgbBody;
     private bool _isOnTheGround = true;
     private Animator _animator;
@@ -52,6 +52,16 @@ public class PlayerController : MonoBehaviour
         {
             _isOnTheGround = true;
             _animator.SetBool("isJumping", false);
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if(other.CompareTag("tag_hitbox"))
+        {
+            _animator.SetTrigger("TakeDamage");
+            _playerHP--;
+            Debug.Log("PlayerHP: " + _playerHP);
         }
     }
 }
