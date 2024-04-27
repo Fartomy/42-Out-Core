@@ -2,11 +2,9 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField]
-    private float _moveSpeed;
-    [SerializeField]
-    private float _jmpSpeed;
-
+    [SerializeField] private float _moveSpeed;
+    [SerializeField] private float _jmpSpeed;
+    private CapsuleCollider2D _capsuleColl;
     private int _playerHP = 3;
     private Rigidbody2D _rgbBody;
     private bool _isOnTheGround = true;
@@ -14,6 +12,7 @@ public class PlayerController : MonoBehaviour
 
     void Awake()
     {
+        _capsuleColl = GetComponent<CapsuleCollider2D>();
         _rgbBody = GetComponent<Rigidbody2D>();
         _animator = transform.GetChild(0).GetComponent<Animator>();
     }
@@ -42,6 +41,11 @@ public class PlayerController : MonoBehaviour
                 _rgbBody.velocity = Vector3.up * _jmpSpeed;
                 _isOnTheGround = false;
                 _animator.SetBool("isJumping", true);
+                #region Capsule Collider Properties Change Section
+                _capsuleColl.direction = CapsuleDirection2D.Vertical;
+                _capsuleColl.offset = new Vector2(0, 1.25f);
+                _capsuleColl.size = new Vector2(2, 3);
+                #endregion
             }
         }
     }
@@ -52,16 +56,23 @@ public class PlayerController : MonoBehaviour
         {
             _isOnTheGround = true;
             _animator.SetBool("isJumping", false);
+            #region Capsule Collider Properties Change Section
+            _capsuleColl.direction = CapsuleDirection2D.Horizontal;
+            _capsuleColl.offset = new Vector2(0, 0f);
+            _capsuleColl.size = new Vector2(3.2f, 0.7f);
+            #endregion
         }
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.CompareTag("tag_hitbox"))
+        if (other.CompareTag("tag_hitbox"))
         {
             _animator.SetTrigger("TakeDamage");
             _playerHP--;
             Debug.Log("PlayerHP: " + _playerHP);
+            if(other.name.StartsWith("Jelly"))
+                Destroy(other.gameObject);
         }
     }
 }
