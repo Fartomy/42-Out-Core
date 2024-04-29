@@ -1,9 +1,11 @@
+using System.Linq;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private float _moveSpeed;
     [SerializeField] private float _jmpSpeed;
+    [SerializeField] private AudioClip[] _audioClips;
     private CapsuleCollider2D _capsuleColl;
     private int _playerHP = 3;
     [HideInInspector] public bool _playerIsDead = false;
@@ -12,11 +14,13 @@ public class PlayerController : MonoBehaviour
     private Animator _animator;
     private Vector3 _startOfLevelPos;
     private GameManager _gameManager;
+    private AudioManager _audioManager;
 
     void Awake()
     {
         _startOfLevelPos = transform.position;
         _gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
+        _audioManager = GameObject.FindGameObjectWithTag("AudioManager").GetComponent<AudioManager>();
         _capsuleColl = GetComponent<CapsuleCollider2D>();
         _rgbBody = GetComponent<Rigidbody2D>();
         _animator = transform.GetChild(0).GetComponent<Animator>();
@@ -34,6 +38,7 @@ public class PlayerController : MonoBehaviour
         {
             _playerIsDead = true;
             _animator.SetBool("isDead", true);
+            _audioManager.PlayAudioClip(_audioClips[2], transform, 1);
             _rgbBody.constraints = RigidbodyConstraints2D.FreezeAll;
             _capsuleColl.enabled = false;
             Invoke("Respawn", 1);
@@ -49,6 +54,7 @@ public class PlayerController : MonoBehaviour
         _capsuleColl.enabled = true;
         transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = true;
         _animator.SetTrigger("Respawn");
+        _audioManager.PlayAudioClip(_audioClips[3], transform, 1);
         _playerHP = 3;
         _playerIsDead = false;
         _gameManager._isDefeated = false;
@@ -73,6 +79,7 @@ public class PlayerController : MonoBehaviour
                 _rgbBody.velocity = Vector3.up * _jmpSpeed;
                 _isOnTheGround = false;
                 _animator.SetBool("isJumping", true);
+                _audioManager.PlayAudioClip(_audioClips[0], transform, 1);
                 #region Capsule Collider Properties Change Section
                 _capsuleColl.direction = CapsuleDirection2D.Vertical;
                 _capsuleColl.offset = new Vector2(0, 1.25f);
@@ -100,6 +107,7 @@ public class PlayerController : MonoBehaviour
     {
         if (other.CompareTag("tag_hitbox"))
         {
+            _audioManager.PlayAudioClip(_audioClips[1], transform, 1);
             _animator.SetTrigger("TakeDamage");
             _playerHP--;
             Debug.Log("PlayerHP: " + _playerHP);

@@ -1,4 +1,0 @@
-*---* TODO LIST *---*
-
-1- Camera Y-axis problem --- [OK]
-2- Objects wall jump problem --- [OK]

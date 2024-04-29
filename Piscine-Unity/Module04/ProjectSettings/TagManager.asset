@@ -6,6 +6,7 @@ TagManager:
   tags:
   - tag_ground
   - tag_hitbox
+  - AudioManager
   layers:
   - Default
   - TransparentFX
