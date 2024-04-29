@@ -6,12 +6,17 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _jmpSpeed;
     private CapsuleCollider2D _capsuleColl;
     private int _playerHP = 3;
+    [HideInInspector] public bool _playerIsDead = false;
     private Rigidbody2D _rgbBody;
     private bool _isOnTheGround = true;
     private Animator _animator;
+    private Vector3 _startOfLevelPos;
+    private GameManager _gameManager;
 
     void Awake()
     {
+        _startOfLevelPos = transform.position;
+        _gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
         _capsuleColl = GetComponent<CapsuleCollider2D>();
         _rgbBody = GetComponent<Rigidbody2D>();
         _animator = transform.GetChild(0).GetComponent<Animator>();
@@ -20,11 +25,38 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         Movement();
+        Defeat();
+    }
+
+    void Defeat()
+    {
+        if(_playerHP <= 0 && !_playerIsDead)
+        {
+            _playerIsDead = true;
+            _animator.SetBool("isDead", true);
+            _rgbBody.constraints = RigidbodyConstraints2D.FreezeAll;
+            _capsuleColl.enabled = false;
+            Invoke("Respawn", 1);
+        }
+    }
+
+    void Respawn()
+    {
+        transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = false;
+        _animator.SetBool("isDead", false);
+        transform.position = _startOfLevelPos;
+        _rgbBody.constraints = RigidbodyConstraints2D.None;
+        _capsuleColl.enabled = true;
+        transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = true;
+        _animator.SetTrigger("Respawn");
+        _playerHP = 3;
+        _playerIsDead = false;
+        _gameManager._isDefeated = false;
     }
 
     void Movement()
     {
-        if (_rgbBody != null)
+        if (_rgbBody != null && !_playerIsDead)
         {
             float horizontalVal = Input.GetAxis("Horizontal");
             if (horizontalVal < 0 || horizontalVal > 0)
