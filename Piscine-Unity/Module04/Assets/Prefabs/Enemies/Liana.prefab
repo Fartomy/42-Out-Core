@@ -101,7 +101,7 @@ CircleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -1, y: 0}
   serializedVersion: 2
   m_Radius: 2.56
 --- !u!114 &6997407976226870280
@@ -116,6 +116,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5da51bffa9730de449a1bffdd07120f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _lianaHitClip: {fileID: 8300000, guid: 4e349dc959014a845b9aa317d1c2b7f0, type: 3}
 --- !u!95 &6997407976226870281
 Animator:
   serializedVersion: 5
