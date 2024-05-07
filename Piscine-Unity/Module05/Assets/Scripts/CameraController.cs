@@ -7,9 +7,9 @@ public class CameraController : MonoBehaviour
     private Vector3 _velocity = Vector3.zero;
     private Transform _playerTransorm;
 
-    void Awake()
+    void Start()
     {
-        _playerTransorm = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
+        _playerTransorm = PlayerController._instance.GetComponent<Transform>();
     }
 
     void LateUpdate()

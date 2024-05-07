@@ -4,11 +4,9 @@ public class ThornController : MonoBehaviour
 {
     [SerializeField] private AudioClip _thornSoundClip;
     private Animator _animator;
-    private AudioManager _audioManager;
 
     void Awake()
     {
-        _audioManager = GameObject.FindGameObjectWithTag("AudioManager").GetComponent<AudioManager>();
         _animator = GetComponent<Animator>();
     }
 
@@ -17,7 +15,7 @@ public class ThornController : MonoBehaviour
         if(other.CompareTag("Player"))
         {
             _animator.SetTrigger("Attack");
-            _audioManager.PlayAudioClip(_thornSoundClip, transform, 1);
+            AudioManager._instance.PlayAudioClip(_thornSoundClip, transform, 1);
             Destroy(gameObject, 1.2f);
         }
     }
