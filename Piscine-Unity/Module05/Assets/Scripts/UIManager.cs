@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
@@ -22,7 +23,7 @@ public class UIManager : MonoBehaviour
         if (PlayerController._instance != null)
         {
             _playerHPText.text = PlayerController._instance._playerHP.ToString();
-            _collectedLeafText.text = PlayerController._instance._collectedLeafs.ToString();
+            _collectedLeafText.text = PlayerController._instance.LeafPoints.ToString();
             if (PlayerController._instance._playerIsDead && !_isDefeated)
             {
                 _isDefeated = true;
@@ -30,5 +31,11 @@ public class UIManager : MonoBehaviour
                 _panelAnim.SetTrigger("Respawn");
             }
         }
+    }
+
+    public void BackMainMenu()
+    {
+        GameManager._instance.Save();
+        SceneManager.LoadScene(0);
     }
 }

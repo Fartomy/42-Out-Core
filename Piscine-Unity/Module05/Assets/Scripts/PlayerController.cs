@@ -7,7 +7,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private AudioClip[] _audioClips;
     private CapsuleCollider2D _capsuleColl;
     [HideInInspector] public int _playerHP = 3;
-    [HideInInspector] public int _collectedLeafs = 0;
+    [HideInInspector] public int LeafPoints = 0;
+    [HideInInspector] public int CollectedLeafs = 0;
+    [HideInInspector] public int passedStageNbr = 0;
     [HideInInspector] public bool _playerIsDead = false;
     private Rigidbody2D _rgbBody;
     private bool _isOnTheGround = true;
@@ -23,6 +25,11 @@ public class PlayerController : MonoBehaviour
         _capsuleColl = GetComponent<CapsuleCollider2D>();
         _rgbBody = GetComponent<Rigidbody2D>();
         _animator = transform.GetChild(0).GetComponent<Animator>();
+        if(PlayerPrefs.HasKey("PlayerHP"))
+        {
+            GameManager._instance.Load();
+            CollectedLeafs = 0;
+        }
     }
 
     void Update()
@@ -101,7 +108,7 @@ public class PlayerController : MonoBehaviour
             #endregion
             if (other.gameObject.name == "EndOfStagePoint")
             {
-                if (_collectedLeafs >= 25)
+                if (CollectedLeafs >= 5)
                     GameManager._instance.NextStage();
                 else
                     other.transform.GetChild(0).gameObject.SetActive(true);
@@ -123,14 +130,17 @@ public class PlayerController : MonoBehaviour
             AudioManager._instance.PlayAudioClip(_audioClips[1], transform, 1);
             _animator.SetTrigger("TakeDamage");
             _playerHP--;
+            GameManager._instance.Save();
             if (other.name.StartsWith("Jelly"))
                 Destroy(other.gameObject);
         }
         if (other.gameObject.CompareTag("tag_leaf"))
         {
-            _collectedLeafs += 5;
+            LeafPoints += 5;
+            CollectedLeafs++;
+            GameManager._instance.Save();
             AudioManager._instance.PlayAudioClip(_audioClips[4], transform, 1);
-            Destroy(other.gameObject);
+            other.gameObject.SetActive(false);
         }
     }
 }
