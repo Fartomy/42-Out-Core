@@ -18,7 +18,6 @@ public class ThornController : MonoBehaviour
         {
             _animator.SetTrigger("Attack");
             _audioManager.PlayAudioClip(_thornSoundClip, transform, 1);
-            Destroy(gameObject, 1.2f);
         }
     }
 }

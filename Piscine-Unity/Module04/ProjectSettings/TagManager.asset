@@ -7,6 +7,7 @@ TagManager:
   - tag_ground
   - tag_hitbox
   - AudioManager
+  - UIManager
   layers:
   - Default
   - TransparentFX
@@ -14,9 +15,9 @@ TagManager:
   - Player
   - Water
   - UI
-  - 
-  - 
-  - 
+  - Ground
+  - Enemy
+  - Feet
   - 
   - 
   - 

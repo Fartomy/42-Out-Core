@@ -148,7 +148,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6997407976859056356}
   - component: {fileID: 6997407976859056359}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: AttackPoint
   m_TagString: tag_hitbox
   m_Icon: {fileID: -5442936267250999957, guid: 0000000000000000d000000000000000, type: 0}

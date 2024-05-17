@@ -15,17 +15,12 @@ public class LianaController : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
-            InvokeRepeating("LianaAttack", 0, 1);
+            LianaAttack();
     }
 
     void LianaAttack()
     {
         _animator.SetTrigger("Attack");
         _audioManager.PlayAudioClip(_lianaHitClip, transform, 1);
-    }
-
-    void OnTriggerExit2D(Collider2D other)
-    {
-        CancelInvoke("LianaAttack");
     }
 }

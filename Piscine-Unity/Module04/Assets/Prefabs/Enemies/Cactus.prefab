@@ -169,6 +169,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _attackPoint: {fileID: 8246818408384458089}
+  _bulletSpeed: 220
   _jellyBullet: {fileID: 4380237646208836406, guid: 278a17ff95d94dc499b24303f7e779ac, type: 3}
-  _bulletSpeed: 0.3
   _jellyThrowClip: {fileID: 8300000, guid: 2b21ef916f6943c439b71a7c74568878, type: 3}
