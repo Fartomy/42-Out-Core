@@ -90,7 +90,7 @@ public class PlayerController : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other)
     {
         bool isTouchingGround = _feetColl.IsTouchingLayers(LayerMask.GetMask("Ground"));
-        if (isTouchingGround == other.CompareTag("tag_ground"))
+        if (isTouchingGround)
         {
             _isOnTheGround = true;
             _bodyColl.direction = CapsuleDirection2D.Horizontal;
