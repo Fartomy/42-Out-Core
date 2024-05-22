@@ -2,15 +2,17 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public static PlayerController Instance;
+
     [SerializeField] private float _moveSpeed;
     [SerializeField] private float _jmpSpeed;
-    private int _playerHP = 3;
+    [HideInInspector] public int _playerHP = 3;
     private bool _isOnTheGround = true;
     private bool _isDefeated = false;
     private Rigidbody2D _rgbBody;
 
-    private int _collecttedLeafs = 5;
-    private int _leafPoint = 0;
+    [HideInInspector] public int _collecttedLeafs = 0;
+    [HideInInspector] public int _leafPoint = 0;
 
     [SerializeField] private AudioClip[] _audioClips;
 
@@ -23,6 +25,9 @@ public class PlayerController : MonoBehaviour
 
     void Awake()
     {
+        if(Instance == null)
+            Instance = this;
+
         _rgbBody = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
         _bodyColl = GetComponent<CapsuleCollider2D>();
@@ -31,6 +36,13 @@ public class PlayerController : MonoBehaviour
         _startPoint = GameObject.FindGameObjectWithTag("start_point").transform;
 
         transform.position = _startPoint.position + new Vector3(0, 1, 0);
+
+        if(PlayerPrefs.HasKey("PlayerHP"))
+            GameManager.Instance.Load();
+        Debug.Log("Player HP: " + _playerHP);
+        Debug.Log("Leaf Points: " + _leafPoint);
+        Debug.Log("Collected Points: " + _collecttedLeafs);
+        Debug.Log("Unlock Stage Number: " + GameManager.Instance.PassedStageCnt);
     }
 
     void Update()
@@ -123,7 +135,8 @@ public class PlayerController : MonoBehaviour
             AudioManager.Instance.PlayAudioClip(_audioClips[1], transform, 1);
             _animator.Play("Take_Damage");
             _playerHP--;
-            Debug.Log("PlayerHP: " + _playerHP);
+            Debug.Log("Player Damaged: " + _playerHP);
+            GameManager.Instance.Save();
             if (other.name.StartsWith("Jelly"))
                 Destroy(other.gameObject);
         }
@@ -132,8 +145,9 @@ public class PlayerController : MonoBehaviour
         {
             _collecttedLeafs += 1;
             _leafPoint += 5;
+            GameManager.Instance.Save();
             Debug.Log("Point: " + _leafPoint);
-            Destroy(other.gameObject);
+            AudioManager.Instance.PlayAudioClip(_audioClips[4], transform, 1);
         }
     }
 }

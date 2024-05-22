@@ -7,11 +7,13 @@ public class AudioManager : MonoBehaviour
 
     void Awake()
     {
-        if(Instance == null)
+        if (Instance == null)
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
+        else
+            Destroy(gameObject);
     }
 
     public void PlayAudioClip(AudioClip clip, Transform spawnTform, float vol)

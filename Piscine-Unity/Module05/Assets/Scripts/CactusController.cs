@@ -11,11 +11,9 @@ public class CactusController : MonoBehaviour
     [SerializeField] private AudioClip _jellyThrowClip;
 
     private Animator _animator;
-    private AudioManager _audioManager;
 
     void Awake()
     {
-        _audioManager = GameObject.FindGameObjectWithTag("AudioManager").GetComponent<AudioManager>();
         _animator = GetComponent<Animator>();
     }
 
@@ -33,7 +31,7 @@ public class CactusController : MonoBehaviour
             var _obj = Instantiate(_jellyBullet, _attackPoint.transform.position, _jellyBullet.transform.rotation);
             var blltRgb = _obj.GetComponent<Rigidbody2D>();
             blltRgb.AddForce(_lastPlayerPos * _bulletSpeed * Time.deltaTime);
-            _audioManager.PlayAudioClip(_jellyThrowClip, transform, 1);
+            AudioManager.Instance.PlayAudioClip(_jellyThrowClip, transform, 1);
             Destroy(_obj, 2);
         }
     }
