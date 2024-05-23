@@ -7,12 +7,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _moveSpeed;
     [SerializeField] private float _jmpSpeed;
     [HideInInspector] public int _playerHP = 3;
+    [HideInInspector] public int DeadCounter = 0;
     private bool _isOnTheGround = true;
     private bool _isDefeated = false;
     private Rigidbody2D _rgbBody;
 
     [HideInInspector] public int _collecttedLeafs = 0;
     [HideInInspector] public int _leafPoint = 0;
+    [HideInInspector] public int LeafPointPool = 0;
 
     [SerializeField] private AudioClip[] _audioClips;
 
@@ -39,10 +41,6 @@ public class PlayerController : MonoBehaviour
 
         if(PlayerPrefs.HasKey("PlayerHP"))
             GameManager.Instance.Load();
-        Debug.Log("Player HP: " + _playerHP);
-        Debug.Log("Leaf Points: " + _leafPoint);
-        Debug.Log("Collected Points: " + _collecttedLeafs);
-        Debug.Log("Unlock Stage Number: " + GameManager.Instance.PassedStageCnt);
     }
 
     void Update()
@@ -56,6 +54,7 @@ public class PlayerController : MonoBehaviour
         if (_playerHP <= 0 && !_isDefeated)
         {
             _isDefeated = true;
+            DeadCounter++;
             _rgbBody.velocity = Vector2.zero;
             _animator.SetFloat("Walking", 0);
             _animator.SetTrigger("Defeat");
@@ -73,6 +72,7 @@ public class PlayerController : MonoBehaviour
         AudioManager.Instance.PlayAudioClip(_audioClips[3], transform, 1);
         _playerHP = 3;
         _isDefeated = false;
+        GameManager.Instance.Save();
     }
 
     void Movement()
@@ -135,7 +135,6 @@ public class PlayerController : MonoBehaviour
             AudioManager.Instance.PlayAudioClip(_audioClips[1], transform, 1);
             _animator.Play("Take_Damage");
             _playerHP--;
-            Debug.Log("Player Damaged: " + _playerHP);
             GameManager.Instance.Save();
             if (other.name.StartsWith("Jelly"))
                 Destroy(other.gameObject);
@@ -145,8 +144,8 @@ public class PlayerController : MonoBehaviour
         {
             _collecttedLeafs += 1;
             _leafPoint += 5;
+            LeafPointPool += 5;
             GameManager.Instance.Save();
-            Debug.Log("Point: " + _leafPoint);
             AudioManager.Instance.PlayAudioClip(_audioClips[4], transform, 1);
         }
     }

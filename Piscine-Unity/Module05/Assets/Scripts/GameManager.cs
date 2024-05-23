@@ -21,10 +21,13 @@ public class GameManager : MonoBehaviour
 
     public void Save()
     {
+        UIManager.Instance.isRefreshGameInUI = true;
         PlayerPrefs.SetInt("PlayerHP", PlayerController.Instance._playerHP);
         PlayerPrefs.SetInt("LeafPoint", PlayerController.Instance._leafPoint);
         PlayerPrefs.SetInt("CollectedLeaf", PlayerController.Instance._collecttedLeafs);
         PlayerPrefs.SetInt("PassedStageNumber", PassedStageCnt);
+        PlayerPrefs.SetInt("LeafPointPool", PlayerController.Instance.LeafPointPool);
+        PlayerPrefs.SetInt("DeadCounter", PlayerController.Instance.DeadCounter);
     }
 
     public void Load()
@@ -32,6 +35,8 @@ public class GameManager : MonoBehaviour
         PlayerController.Instance._playerHP = PlayerPrefs.GetInt("PlayerHP");
         PlayerController.Instance._leafPoint = PlayerPrefs.GetInt("LeafPoint");
         PlayerController.Instance._collecttedLeafs = PlayerPrefs.GetInt("CollectedLeaf");
+        PlayerController.Instance.LeafPointPool = PlayerPrefs.GetInt("LeafPointPool");
+        PlayerController.Instance.DeadCounter = PlayerPrefs.GetInt("DeadCounter");
     }
 
     public void SetLeafStatus(int leafID, bool leafStatus)
@@ -41,15 +46,27 @@ public class GameManager : MonoBehaviour
 
     public void NextStage()
     {
-        PassedStageCnt++;
-        ResetLeafs();
-        SceneManager.LoadScene(PassedStageCnt);
+        if (SceneManager.GetActiveScene().buildIndex == SceneManager.sceneCountInBuildSettings - 2)
+        {
+            Save();
+            SceneManager.LoadScene("Diary");
+            UIManager.Instance.Diary();
+        }
+        else
+        {
+            PassedStageCnt++;
+            Save();
+            Reset();
+            SceneManager.LoadScene(PassedStageCnt);
+        }
     }
 
-    public void ResetLeafs()
+    public void Reset()
     {
         _leafStatus.Clear();
         LeafController.nextIDCnt = 0;
+        PlayerPrefs.SetInt("PlayerHP", 3);
+        PlayerPrefs.SetInt("LeafPoint", 0);
         PlayerPrefs.SetInt("CollectedLeaf", 0);
     }
 }
