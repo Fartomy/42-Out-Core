@@ -1,12 +1,16 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
-    [HideInInspector] public int PassedStageCnt = 0;
-    [HideInInspector] public Dictionary<int, bool> _leafStatus = new Dictionary<int, bool>();
+
+    [HideInInspector] public int PlayerHP;
+    [HideInInspector] public int PassedStageCnt;
+    [HideInInspector] public int CollecttedLeafs;
+    [HideInInspector] public int LeafPoint;
+    [HideInInspector] public int LeafPointPool;
+    [HideInInspector] public int DeadCounter;
 
     void Awake()
     {
@@ -21,27 +25,30 @@ public class GameManager : MonoBehaviour
 
     public void Save()
     {
-        UIManager.Instance.isRefreshGameInUI = true;
-        PlayerPrefs.SetInt("PlayerHP", PlayerController.Instance._playerHP);
-        PlayerPrefs.SetInt("LeafPoint", PlayerController.Instance._leafPoint);
-        PlayerPrefs.SetInt("CollectedLeaf", PlayerController.Instance._collecttedLeafs);
-        PlayerPrefs.SetInt("PassedStageNumber", PassedStageCnt);
-        PlayerPrefs.SetInt("LeafPointPool", PlayerController.Instance.LeafPointPool);
-        PlayerPrefs.SetInt("DeadCounter", PlayerController.Instance.DeadCounter);
+        PlayerPrefs.SetInt("PlayerHP", PlayerHP);
+
+        PlayerPrefs.SetInt("LeafPoint", LeafPoint);
+        PlayerPrefs.SetInt("LeafPointPool", LeafPointPool);
+        PlayerPrefs.SetInt("CollectedLeafs", CollecttedLeafs);
+
+        PlayerPrefs.SetInt("DeadCounter", DeadCounter);
+        PlayerPrefs.SetInt("PassedStageCounter", PassedStageCnt);
+
+        UIManager.Instance.RefreshUIinGame = true;
     }
 
     public void Load()
     {
-        PlayerController.Instance._playerHP = PlayerPrefs.GetInt("PlayerHP");
-        PlayerController.Instance._leafPoint = PlayerPrefs.GetInt("LeafPoint");
-        PlayerController.Instance._collecttedLeafs = PlayerPrefs.GetInt("CollectedLeaf");
-        PlayerController.Instance.LeafPointPool = PlayerPrefs.GetInt("LeafPointPool");
-        PlayerController.Instance.DeadCounter = PlayerPrefs.GetInt("DeadCounter");
-    }
+        PlayerHP = PlayerPrefs.GetInt("PlayerHP");
 
-    public void SetLeafStatus(int leafID, bool leafStatus)
-    {
-        _leafStatus.Add(leafID, leafStatus);
+        LeafPoint = PlayerPrefs.GetInt("LeafPoint");
+        LeafPointPool = PlayerPrefs.GetInt("LeafPointPool");
+        CollecttedLeafs = PlayerPrefs.GetInt("CollectedLeafs");
+        
+        DeadCounter = PlayerPrefs.GetInt("DeadCounter");
+        PassedStageCnt = PlayerPrefs.GetInt("PassedStageCounter");
+
+        UIManager.Instance.RefreshUIinGame = true;
     }
 
     public void NextStage()
@@ -54,19 +61,29 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            PassedStageCnt++;
+            PrepareNextStage();
             Save();
-            Reset();
             SceneManager.LoadScene(PassedStageCnt);
+            Load();
         }
     }
 
-    public void Reset()
+    void PrepareNextStage()
     {
-        _leafStatus.Clear();
-        LeafController.nextIDCnt = 0;
-        PlayerPrefs.SetInt("PlayerHP", 3);
-        PlayerPrefs.SetInt("LeafPoint", 0);
-        PlayerPrefs.SetInt("CollectedLeaf", 0);
+        PassedStageCnt++;
+        CollecttedLeafs = 0;
+        LeafPoint = 0;
+        PlayerHP = 3;
+        // Maybe reset leafs
+    }
+
+    public void ResetVars()
+    {
+        PlayerHP = 3;
+        PassedStageCnt = 1;
+        CollecttedLeafs = 0;
+        LeafPoint = 0;
+        LeafPointPool = 0;
+        DeadCounter = 0;
     }
 }

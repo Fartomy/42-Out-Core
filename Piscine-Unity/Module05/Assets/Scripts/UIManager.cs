@@ -7,7 +7,7 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;
     public Animator _panelAnim;
-    [HideInInspector] public bool isRefreshGameInUI = false;
+    [HideInInspector] public bool RefreshUIinGame = false;
     [SerializeField] private GameObject _mainMenu;
     [SerializeField] private GameObject _gameIn;
     [SerializeField] private GameObject _diary;
@@ -26,18 +26,16 @@ public class UIManager : MonoBehaviour
         }
         else
             Destroy(gameObject);
-        _playerHPText.text = "3";
-        _leafPointText.text = "0";
         transform.Find("EventSystem").gameObject.SetActive(true); // solution for "There can be only one active Event System." warning message from unity
     }
 
     void Update()
     {
-        if (isRefreshGameInUI)
+        if (RefreshUIinGame)
         {
+            RefreshUIinGame = false;
             _playerHPText.text = PlayerPrefs.GetInt("PlayerHP").ToString();
             _leafPointText.text = PlayerPrefs.GetInt("LeafPoint").ToString();
-            isRefreshGameInUI = false;
         }
     }
 
@@ -51,7 +49,6 @@ public class UIManager : MonoBehaviour
         else
         {
             GameManager.Instance.Save();
-            LeafController.nextIDCnt = 0;
             SceneManager.LoadScene("MainMenu");
             SetVisibleUI(false, true, false);
         }
@@ -59,9 +56,10 @@ public class UIManager : MonoBehaviour
 
     public void Resume()
     {
-        if (GameManager.Instance.PassedStageCnt > 0)
+        if (PlayerPrefs.HasKey("PassedStageCounter"))
         {
-            SceneManager.LoadScene(GameManager.Instance.PassedStageCnt);
+            GameManager.Instance.Load();
+            SceneManager.LoadScene(PlayerPrefs.GetInt("PassedStageCounter"));
             SetVisibleUI(true, false, false);
         }
     }
@@ -69,33 +67,31 @@ public class UIManager : MonoBehaviour
     public void NewGame()
     {
         PlayerPrefs.DeleteAll();
-        GameManager.Instance.Reset();
-        GameManager.Instance.PassedStageCnt = 1;
-        PlayerPrefs.SetInt("LeafPointPool", 0);
-        PlayerPrefs.SetInt("DeadCounter", 0);
-        isRefreshGameInUI = true;
-        for (int i = _diaryUnlockStages.transform.childCount - 1; i >= 1 ; i--)
-            _diaryUnlockStages.transform.GetChild(i).GetComponent<Image>().color = Color.red;
+        GameManager.Instance.ResetVars();
+        GameManager.Instance.Save();
+        UnlockStagesSetColor(_diaryUnlockStages.transform.childCount, Color.red);
         SceneManager.LoadScene(1);
         SetVisibleUI(true, false, false);
     }
 
     public void Diary()
     {
+        //GameManager.Instance.Load();
         SceneManager.LoadScene("Diary");
         SetVisibleUI(false, false, true);
-        if (GameManager.Instance.PassedStageCnt > 0)
+        if (PlayerPrefs.HasKey("LeafPointPool"))
         {
             _diaryLeafPointPoolText.text = PlayerPrefs.GetInt("LeafPointPool").ToString();
             _diaryDeadCounter.text = PlayerPrefs.GetInt("DeadCounter").ToString();
-            for (int i = 1; i < GameManager.Instance.PassedStageCnt; i++)
-                _diaryUnlockStages.transform.GetChild(i).GetComponent<Image>().color = Color.green;
+            if (PlayerPrefs.GetInt("PassedStageCounter") > 1)
+                UnlockStagesSetColor(PlayerPrefs.GetInt("PassedStageCounter"), Color.green);
         }
-        else
-        {
-            _diaryLeafPointPoolText.text = "0";
-            _diaryDeadCounter.text = "0";
-        }
+    }
+
+    void UnlockStagesSetColor(int nbr, Color clr)
+    {
+        for (int i = 1; i < nbr; i++)
+            _diaryUnlockStages.transform.GetChild(i).GetComponent<Image>().color = clr;
     }
 
     void SetVisibleUI(bool visGameIn, bool visMainMenu, bool visDiary)

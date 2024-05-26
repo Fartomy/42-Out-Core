@@ -32118,15 +32118,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _moveSpeed: 5
   _jmpSpeed: 10
-  _playerHP: 3
-  _collecttedLeafs: 0
-  _leafPoint: 0
   _audioClips:
   - {fileID: 8300000, guid: eaae8fe8d600e1f459f34aa5757fa3b8, type: 3}
   - {fileID: 8300000, guid: 8b23b175a78d6b5458322e3a6c9905d0, type: 3}
   - {fileID: 8300000, guid: a652877b012108e41871f867ada9f176, type: 3}
   - {fileID: 8300000, guid: cfce0cea076109f478783201b2a9f57f, type: 3}
-  - {fileID: 8300000, guid: c5cb2ac29e89dbf43a9b644caaad45e6, type: 3}
 --- !u!70 &1196194317
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

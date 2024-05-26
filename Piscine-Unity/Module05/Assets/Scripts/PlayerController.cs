@@ -6,15 +6,9 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private float _moveSpeed;
     [SerializeField] private float _jmpSpeed;
-    [HideInInspector] public int _playerHP = 3;
-    [HideInInspector] public int DeadCounter = 0;
     private bool _isOnTheGround = true;
     private bool _isDefeated = false;
     private Rigidbody2D _rgbBody;
-
-    [HideInInspector] public int _collecttedLeafs = 0;
-    [HideInInspector] public int _leafPoint = 0;
-    [HideInInspector] public int LeafPointPool = 0;
 
     [SerializeField] private AudioClip[] _audioClips;
 
@@ -36,11 +30,7 @@ public class PlayerController : MonoBehaviour
         _feetColl = transform.GetChild(1).GetComponent<BoxCollider2D>();
 
         _startPoint = GameObject.FindGameObjectWithTag("start_point").transform;
-
         transform.position = _startPoint.position + new Vector3(0, 1, 0);
-
-        if(PlayerPrefs.HasKey("PlayerHP"))
-            GameManager.Instance.Load();
     }
 
     void Update()
@@ -51,10 +41,10 @@ public class PlayerController : MonoBehaviour
 
     void Defeat()
     {
-        if (_playerHP <= 0 && !_isDefeated)
+        if (GameManager.Instance.PlayerHP <= 0 && !_isDefeated)
         {
             _isDefeated = true;
-            DeadCounter++;
+            GameManager.Instance.DeadCounter++;
             _rgbBody.velocity = Vector2.zero;
             _animator.SetFloat("Walking", 0);
             _animator.SetTrigger("Defeat");
@@ -70,14 +60,14 @@ public class PlayerController : MonoBehaviour
         UIManager.Instance._panelAnim.SetTrigger("Respawn");
         _animator.SetTrigger("Respawn");
         AudioManager.Instance.PlayAudioClip(_audioClips[3], transform, 1);
-        _playerHP = 3;
+        GameManager.Instance.PlayerHP = 3;
         _isDefeated = false;
         GameManager.Instance.Save();
     }
 
     void Movement()
     {
-        if (_rgbBody != null && _playerHP > 0)
+        if (_rgbBody != null && GameManager.Instance.PlayerHP > 0)
         {
             float horizontalVal = Input.GetAxis("Horizontal");
             if (horizontalVal < 0 || horizontalVal > 0)
@@ -105,10 +95,8 @@ public class PlayerController : MonoBehaviour
     {
         if (other.gameObject.CompareTag("end_point"))
         {
-            if (_collecttedLeafs >= 5)
-            {
+            if (GameManager.Instance.CollecttedLeafs >= 5)
                 GameManager.Instance.NextStage();
-            }
             else
                 other.transform.GetChild(1).gameObject.SetActive(true);
         }
@@ -134,19 +122,10 @@ public class PlayerController : MonoBehaviour
         {
             AudioManager.Instance.PlayAudioClip(_audioClips[1], transform, 1);
             _animator.Play("Take_Damage");
-            _playerHP--;
+            GameManager.Instance.PlayerHP--;
             GameManager.Instance.Save();
             if (other.name.StartsWith("Jelly"))
                 Destroy(other.gameObject);
-        }
-
-        if (other.CompareTag("leaf"))
-        {
-            _collecttedLeafs += 1;
-            _leafPoint += 5;
-            LeafPointPool += 5;
-            GameManager.Instance.Save();
-            AudioManager.Instance.PlayAudioClip(_audioClips[4], transform, 1);
         }
     }
 }
