@@ -7,7 +7,6 @@ public class GameManager : MonoBehaviour
 
     [HideInInspector] public int PlayerHP;
     [HideInInspector] public int PassedStageCnt;
-    [HideInInspector] public int CollecttedLeafs;
     [HideInInspector] public int LeafPoint;
     [HideInInspector] public int LeafPointPool;
     [HideInInspector] public int DeadCounter;
@@ -16,6 +15,7 @@ public class GameManager : MonoBehaviour
     {
         if (Instance == null)
         {
+            // PlayerPrefs.DeleteAll(); // Erase whole save system
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
@@ -29,7 +29,6 @@ public class GameManager : MonoBehaviour
 
         PlayerPrefs.SetInt("LeafPoint", LeafPoint);
         PlayerPrefs.SetInt("LeafPointPool", LeafPointPool);
-        PlayerPrefs.SetInt("CollectedLeafs", CollecttedLeafs);
 
         PlayerPrefs.SetInt("DeadCounter", DeadCounter);
         PlayerPrefs.SetInt("PassedStageCounter", PassedStageCnt);
@@ -43,8 +42,7 @@ public class GameManager : MonoBehaviour
 
         LeafPoint = PlayerPrefs.GetInt("LeafPoint");
         LeafPointPool = PlayerPrefs.GetInt("LeafPointPool");
-        CollecttedLeafs = PlayerPrefs.GetInt("CollectedLeafs");
-        
+
         DeadCounter = PlayerPrefs.GetInt("DeadCounter");
         PassedStageCnt = PlayerPrefs.GetInt("PassedStageCounter");
 
@@ -71,19 +69,25 @@ public class GameManager : MonoBehaviour
     void PrepareNextStage()
     {
         PassedStageCnt++;
-        CollecttedLeafs = 0;
         LeafPoint = 0;
         PlayerHP = 3;
-        // Maybe reset leafs
+        ResetLeafs();
     }
 
     public void ResetVars()
     {
         PlayerHP = 3;
         PassedStageCnt = 1;
-        CollecttedLeafs = 0;
         LeafPoint = 0;
         LeafPointPool = 0;
         DeadCounter = 0;
+        LeafController.nextID = 0;
+    }
+
+    void ResetLeafs()
+    {
+        LeafController.nextID = 0;
+        for (int i = LeafController.leafsNumber - 1; i >= 0 ; i--)
+            PlayerPrefs.DeleteKey(i + "Leaf");
     }
 }

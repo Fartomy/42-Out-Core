@@ -58,6 +58,7 @@ public class UIManager : MonoBehaviour
     {
         if (PlayerPrefs.HasKey("PassedStageCounter"))
         {
+            LeafController.nextID = 0;
             GameManager.Instance.Load();
             SceneManager.LoadScene(PlayerPrefs.GetInt("PassedStageCounter"));
             SetVisibleUI(true, false, false);

@@ -95,7 +95,7 @@ public class PlayerController : MonoBehaviour
     {
         if (other.gameObject.CompareTag("end_point"))
         {
-            if (GameManager.Instance.CollecttedLeafs >= 5)
+            if (GameManager.Instance.LeafPoint >= 25)
                 GameManager.Instance.NextStage();
             else
                 other.transform.GetChild(1).gameObject.SetActive(true);
