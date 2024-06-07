@@ -1,9 +1,16 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class JohnController : MonoBehaviour
 {
     [SerializeField] private float _moveSpeed;
     [SerializeField] private Animator animator;
+    private GhostController[] _ghosts;
+
+    void Awake()
+    {
+        _ghosts = FindObjectsOfType<GhostController>();
+    }
 
     void Update()
     {
@@ -24,5 +31,21 @@ public class JohnController : MonoBehaviour
         }
         else
             animator.SetBool("isMoving", false);
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if(other.CompareTag("Ghost"))
+        {
+            animator.SetTrigger("Faint");
+            Debug.Log("Restart!");
+            //Time.timeScale = 0;
+            //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+        if(other.CompareTag("Gargoyle"))
+        {
+            for (int i = _ghosts.Length - 1; i >= 0 ; i--)
+                _ghosts[i].PlayerDetected(10f);
+        }
     }
 }
