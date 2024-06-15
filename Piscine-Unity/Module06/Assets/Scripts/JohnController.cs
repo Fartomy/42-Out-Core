@@ -1,26 +1,33 @@
 using System.Collections;
 using Cinemachine;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class JohnController : MonoBehaviour
 {
+    public static JohnController Instance;
+
     [SerializeField] private float _moveSpeed;
     [SerializeField] private Animator animator;
     [SerializeField] private CinemachineFreeLook _tpsCamera;
     [SerializeField] private CinemachineVirtualCamera _fpsCamera;
     [SerializeField] private Camera _camera;
+
+    [HideInInspector] public int keyCounter = 0;
     private GhostController[] _ghosts;
     private bool isFPSMode = false;
+    [HideInInspector] public bool _isFaint = false;
 
     void Awake()
     {
+        if (Instance == null)
+            Instance = this;
         _ghosts = FindObjectsOfType<GhostController>();
     }
 
     void Update()
     {
-        Movement();
+        if (!_isFaint)
+            Movement();
         if (Input.GetKeyUp(KeyCode.C))
             StartCoroutine(SwitchCameraMode());
         if (isFPSMode && Input.GetKeyUp(KeyCode.Z))
@@ -80,15 +87,21 @@ public class JohnController : MonoBehaviour
     {
         if (other.CompareTag("Ghost"))
         {
-            animator.SetTrigger("Faint");
-            Debug.Log("Restart!");
-            //Time.timeScale = 0;
-            //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            UIManager.isCaught = true;
+            _isFaint = true;
         }
         if (other.CompareTag("Gargoyle"))
         {
             for (int i = _ghosts.Length - 1; i >= 0; i--)
                 _ghosts[i].PlayerDetected(10f);
         }
+        if (other.CompareTag("Key"))
+        {
+            keyCounter++;
+            Debug.Log("Keys: " + keyCounter);
+            Destroy(other.gameObject);
+        }
+        if (other.gameObject.CompareTag("Wardrobe"))
+            UIManager.isWon = true;
     }
 }
