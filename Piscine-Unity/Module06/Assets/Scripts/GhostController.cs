@@ -1,15 +1,23 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Rendering.PostProcessing;
 
 public class GhostController : MonoBehaviour
 {
     private NavMeshAgent _navMeshAgent;
-    [SerializeField] private Transform[] _wayPoints;
     private int _wayIndex;
     private Vector3 _target;
     private bool _isDetected = false;
+
     public Transform PlayerPos;
+
+    [SerializeField] private AudioClip _playerDetectedSoundClip;
+    [SerializeField] private Transform[] _wayPoints;
+
+    [SerializeField] private PostProcessVolume postProcessVolume;
+    private LensDistortion _lensDistortion;
+    private ColorGrading _colorGrading;
 
     void Awake()
     {
@@ -38,16 +46,28 @@ public class GhostController : MonoBehaviour
         if (_isDetected)
         {
             float elapsedTime = 0f;
+            if (postProcessVolume.profile.TryGetSettings(out _lensDistortion) &&
+                postProcessVolume.profile.TryGetSettings(out _colorGrading))
+            {
+                _lensDistortion.intensity.value = -75f;
+                _colorGrading.colorFilter.value = Color.red;
+            }
 
             while (elapsedTime < duration)
             {
                 _navMeshAgent.SetDestination(PlayerPos.position);
-                Debug.Log("Coroutine çalişiyor. Geçen süre: " + elapsedTime);
                 elapsedTime += Time.deltaTime;
                 yield return null;
             }
-            Debug.Log("Coroutine tamamlandi.");
+
             _isDetected = false;
+            GetComponent<AudioSource>().enabled = true;
+            if (postProcessVolume.profile.TryGetSettings(out _lensDistortion) &&
+                postProcessVolume.profile.TryGetSettings(out _colorGrading))
+            {
+                _lensDistortion.intensity.value = 35f;
+                _colorGrading.colorFilter.value = Color.white;
+            }
             Patrolling();
         }
     }
@@ -71,7 +91,11 @@ public class GhostController : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
+        {
+            GetComponent<AudioSource>().enabled = false;
+            AudioManager.Instance.PlayAudioClip(_playerDetectedSoundClip, transform, 1);
             PlayerDetected(3f);
+        }
     }
 
     public void PlayerDetected(float duration)

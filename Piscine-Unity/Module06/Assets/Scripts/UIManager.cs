@@ -2,12 +2,20 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
+    public static UIManager Instance;
+
     [SerializeField] private GameObject _wonImage;
     [SerializeField] private GameObject _caughtImage;
     [SerializeField] private GameObject _faintImage;
 
-    [HideInInspector] public static bool isCaught = false;
-    [HideInInspector] public static bool isWon = false;
+    [HideInInspector] public bool isCaught = false;
+    [HideInInspector] public bool isWon = false;
+
+    void Awake()
+    {
+        if (Instance == null)
+            Instance = this;
+    }
 
     void Update()
     {

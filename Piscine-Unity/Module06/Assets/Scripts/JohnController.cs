@@ -1,6 +1,7 @@
 using System.Collections;
 using Cinemachine;
 using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 
 public class JohnController : MonoBehaviour
 {
@@ -8,14 +9,21 @@ public class JohnController : MonoBehaviour
 
     [SerializeField] private float _moveSpeed;
     [SerializeField] private Animator animator;
+    
     [SerializeField] private CinemachineFreeLook _tpsCamera;
     [SerializeField] private CinemachineVirtualCamera _fpsCamera;
     [SerializeField] private Camera _camera;
 
+    [SerializeField] private AudioSource _footsteps;
+
+    [SerializeField] private AudioClip _getkeySoundClip;
+    [SerializeField] private AudioClip _gargoyleDetectSoundClip;
+
     [HideInInspector] public int keyCounter = 0;
+    [HideInInspector] public bool _isFaint = false;
+
     private GhostController[] _ghosts;
     private bool isFPSMode = false;
-    [HideInInspector] public bool _isFaint = false;
 
     void Awake()
     {
@@ -66,6 +74,7 @@ public class JohnController : MonoBehaviour
         if (direction.magnitude >= 0.1f)
         {
             animator.SetBool("isMoving", true);
+            _footsteps.enabled = true;
 
             // Kameraya göre yönü hesaplamak için:
             float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
@@ -80,28 +89,46 @@ public class JohnController : MonoBehaviour
             transform.position += moveDirection * _moveSpeed * Time.deltaTime;
         }
         else
+        {
             animator.SetBool("isMoving", false);
+            _footsteps.enabled = false;
+        }
+    }
+
+    void JohnCaught()
+    {
+        UIManager.Instance.isCaught = true;
+        _isFaint = true;
+        _footsteps.enabled = false;
+        GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+        GetComponent<BoxCollider>().enabled = false;
+        StartCoroutine(GameManager.Instance.RestartStage());
     }
 
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Ghost"))
-        {
-            UIManager.isCaught = true;
-            _isFaint = true;
-        }
+            JohnCaught();
+
         if (other.CompareTag("Gargoyle"))
         {
+            AudioManager.Instance.PlayAudioClip(_gargoyleDetectSoundClip, transform, 1);
             for (int i = _ghosts.Length - 1; i >= 0; i--)
                 _ghosts[i].PlayerDetected(10f);
         }
+
         if (other.CompareTag("Key"))
         {
             keyCounter++;
             Debug.Log("Keys: " + keyCounter);
+            AudioManager.Instance.PlayAudioClip(_getkeySoundClip, transform, 1);
             Destroy(other.gameObject);
         }
+
         if (other.gameObject.CompareTag("Wardrobe"))
-            UIManager.isWon = true;
+        {
+            UIManager.Instance.isWon = true;
+            StartCoroutine(GameManager.Instance.WonStage());
+        }
     }
 }
