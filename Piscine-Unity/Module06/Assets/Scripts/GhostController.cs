@@ -69,6 +69,8 @@ public class GhostController : MonoBehaviour
                 _colorGrading.colorFilter.value = Color.white;
             }
             Patrolling();
+            yield return new WaitForSeconds(duration);
+            GetComponent<BoxCollider>().enabled = true;
         }
     }
 
@@ -101,6 +103,7 @@ public class GhostController : MonoBehaviour
     public void PlayerDetected(float duration)
     {
         _navMeshAgent.ResetPath();
+        GetComponent<BoxCollider>().enabled = false;
         _isDetected = true;
         StartCoroutine(TryCatchToPlayer(duration));
     }

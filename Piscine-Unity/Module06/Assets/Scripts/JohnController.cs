@@ -1,7 +1,6 @@
 using System.Collections;
 using Cinemachine;
 using UnityEngine;
-using UnityEngine.Rendering.PostProcessing;
 
 public class JohnController : MonoBehaviour
 {
@@ -9,7 +8,7 @@ public class JohnController : MonoBehaviour
 
     [SerializeField] private float _moveSpeed;
     [SerializeField] private Animator animator;
-    
+
     [SerializeField] private CinemachineFreeLook _tpsCamera;
     [SerializeField] private CinemachineVirtualCamera _fpsCamera;
     [SerializeField] private Camera _camera;
@@ -24,6 +23,7 @@ public class JohnController : MonoBehaviour
 
     private GhostController[] _ghosts;
     private bool isFPSMode = false;
+    private Vector3 direction;
 
     void Awake()
     {
@@ -38,12 +38,6 @@ public class JohnController : MonoBehaviour
             Movement();
         if (Input.GetKeyUp(KeyCode.C))
             StartCoroutine(SwitchCameraMode());
-        if (isFPSMode && Input.GetKeyUp(KeyCode.Z))
-        {
-            CinemachinePOV pov = _fpsCamera.GetCinemachineComponent<CinemachinePOV>();
-            pov.m_VerticalAxis.Value = 0;
-            pov.m_HorizontalAxis.Value = 0;
-        }
     }
 
     IEnumerator SwitchCameraMode()
@@ -69,30 +63,50 @@ public class JohnController : MonoBehaviour
     {
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
-        Vector3 direction = new Vector3(horizontal, 0, vertical).normalized;
+        direction = new Vector3(horizontal, 0, vertical).normalized;
+        if (!isFPSMode)
+            TPSMove();
+        else
+            FPSMove();
+    }
 
+    void TPSMove()
+    {
         if (direction.magnitude >= 0.1f)
-        {
-            animator.SetBool("isMoving", true);
-            _footsteps.enabled = true;
-
-            // Kameraya göre yönü hesaplamak için:
-            float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
-            targetAngle += Camera.main.transform.eulerAngles.y;
-            Quaternion rotation = Quaternion.Euler(0f, targetAngle, 0f);
-
-            // Karakteri döndürmek:
-            transform.rotation = Quaternion.Lerp(transform.rotation, rotation, Time.deltaTime * 10f);
-
-            // Karakteri yönüne göre hareket ettirmek:
-            Vector3 moveDirection = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
-            transform.position += moveDirection * _moveSpeed * Time.deltaTime;
-        }
+            CalcDirectAndMove();
         else
         {
             animator.SetBool("isMoving", false);
             _footsteps.enabled = false;
         }
+    }
+
+    void FPSMove()
+    {
+        if (Input.GetKey(KeyCode.Z))
+            CalcDirectAndMove();
+        if (Input.GetKeyUp(KeyCode.Z))
+        {
+            animator.SetBool("isMoving", false);
+            _footsteps.enabled = false;
+        }
+    }
+
+    void CalcDirectAndMove()
+    {
+        animator.SetBool("isMoving", true);
+        _footsteps.enabled = true;
+
+        // Kameraya göre yönü hesaplamak:
+        float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
+        targetAngle += Camera.main.transform.eulerAngles.y;
+        Quaternion rotation = Quaternion.Euler(0f, targetAngle, 0f);
+
+        // Karakteri döndürmek:
+        transform.rotation = Quaternion.Lerp(transform.rotation, rotation, Time.deltaTime * 10f);
+
+        Vector3 moveDirection = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
+        transform.position += moveDirection * _moveSpeed * Time.deltaTime;
     }
 
     void JohnCaught()
