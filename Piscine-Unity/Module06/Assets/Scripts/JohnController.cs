@@ -11,15 +11,15 @@ public class JohnController : MonoBehaviour
 
     [SerializeField] private CinemachineFreeLook _tpsCamera;
     [SerializeField] private CinemachineVirtualCamera _fpsCamera;
-    [SerializeField] private Camera _camera;
+    
+    [SerializeField] private SkinnedMeshRenderer _johnMeshRndr; 
 
     [SerializeField] private AudioSource _footsteps;
 
-    [SerializeField] private AudioClip _getkeySoundClip;
     [SerializeField] private AudioClip _gargoyleDetectSoundClip;
 
-    [HideInInspector] public int keyCounter = 0;
     [HideInInspector] public bool _isFaint = false;
+    private bool canSwitchCamera = true;
 
     private GhostController[] _ghosts;
     private bool isFPSMode = false;
@@ -36,27 +36,32 @@ public class JohnController : MonoBehaviour
     {
         if (!_isFaint)
             Movement();
-        if (Input.GetKeyUp(KeyCode.C))
+        if (Input.GetKeyUp(KeyCode.C) && canSwitchCamera)
             StartCoroutine(SwitchCameraMode());
     }
 
     IEnumerator SwitchCameraMode()
     {
         isFPSMode = !isFPSMode;
+        animator.SetBool("isMoving", false);
+        _footsteps.enabled = false;
+        canSwitchCamera = false;
 
         if (isFPSMode)
         {
             _fpsCamera.enabled = true;
             _tpsCamera.enabled = false;
             yield return new WaitForSeconds(2);
-            _camera.cullingMask &= ~(1 << LayerMask.NameToLayer("Player"));
+            _johnMeshRndr.enabled = false;
         }
         else
         {
             _tpsCamera.enabled = true;
             _fpsCamera.enabled = false;
-            _camera.cullingMask |= (1 << LayerMask.NameToLayer("Player"));
+            _johnMeshRndr.enabled = true;
+            yield return new WaitForSeconds(2);
         }
+        canSwitchCamera = true;
     }
 
     void Movement()
@@ -129,14 +134,6 @@ public class JohnController : MonoBehaviour
             AudioManager.Instance.PlayAudioClip(_gargoyleDetectSoundClip, transform, 1);
             for (int i = _ghosts.Length - 1; i >= 0; i--)
                 _ghosts[i].PlayerDetected(10f);
-        }
-
-        if (other.CompareTag("Key"))
-        {
-            keyCounter++;
-            Debug.Log("Keys: " + keyCounter);
-            AudioManager.Instance.PlayAudioClip(_getkeySoundClip, transform, 1);
-            Destroy(other.gameObject);
         }
 
         if (other.gameObject.CompareTag("Wardrobe"))
