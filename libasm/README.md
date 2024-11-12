@@ -1,3 +1,5 @@
+<img src="https://github.com/Fartomy/42-Out-Core/blob/main/libasm/welder.gif" align="right" height="500">
+
 # En Basitinden Assembly
 
 Bilgisayar terimleri ve kavramları pek kompleks ve iç içe geçmiş olduğundan anlam olarak bir kavramın veya teriminin bağlama ve konuya göre değişkenlik gösterip farklı bir anlamla 
