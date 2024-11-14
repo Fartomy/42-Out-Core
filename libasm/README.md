@@ -3551,4 +3551,95 @@ Bu çağrı yöntemi sayesinde, **programın çalışma zamanında** `malloc`'un
 
 ### Assembly'de Debug (Hata Ayıklama) Nasıl Yapılabilir?
 
+**`gdb` (GNU Debugger) Kullanarak**
+
+`gdb` kullanarak assembly'de adım adım register'larda hangi değerlerin olduğu, program akışının takibi vb. işlemler için kullanılabilir. Ancak öncelikle `.s` dosyasının _debugging information_ generate etmemiz gerekli:
+
+>[!IMPORTANT]
+>
+> **Çok Gereksiz Bilgi**
+>
+> GAS, as, veya gcc GNU'nun araçlarını kullanarak daha hızlı ve uyumlu debugging işlemi yapılabilir. Ancak bunun için kodun syntax'ının AT&T olması isteniyor. Aksi halde bu araçlar Intel syntax'ını tanımıyor. Tanıması için belki de bir yöntem vardır. Var.
+
+Obje dosyasını oluştururken `-g` opsiyonunu kullanarak "debugging information" generate ettirilmelidir. Sebebi gdb debug için bunu istiyor;
+
+```bash
+nasm -f -elf64 -g -o test.o test.s
+```
+
+Ardından link'leyip çalıştırılabilir dosya üretilmeli;
+
+```bash
+ld -o test test.o
+```
+
+Daha sonra `gdb` ile debug'a başlanabilir;
+
+```bash
+gdb ./test
+```
+
+Hangi noktadan itibaren ayıklamaya başlayacağımızı bildirmek için bir "breakpoint" atanması gerekli. `_start` etiketinden başlayacağını belirtiyoruz;
+
+```bash
+(gdb) br _start
+```
+
+Programı çalıştırmak için;
+
+```bash
+(gdb) run
+```
+
+Assembly kodunu Intel sözdiziminde gösterir. GDB varsayılan olarak AT&T sözdizimini kullanır, ancak Intel sözdizimi birçok programcıya daha tanıdık ve okunaklı gelir;
+
+```bash
+(gdb) set disassembly-flavor intel
+```
+
+Program akışını takip edebilmek için `lay next` komutu ile Kaynak Kodu, Assembly Kaynak Kodu ve Register Değişkenlerinin Listesinin takibi yapılabilir. Ekran gibi düşünülebilir. Komutu pek çok kez kullanım bu ekranlar arasında geçişi ve bölünmeyi ayarlar. Komutu yazıp çalıştırdıktan sonra <ENTER> tuşuyla ekranlar hızlı bir şekikde ayarlanabilir;
+
+```bash
+(gdb) lay next
+```
+
+Satır satır ilerlemek için kullanılan komut;
+
+```bash
+(gdb) nexti
+```
+
+Diğer Komutlar
+- `li`: Kodu listelemek için
+- `disassemble _start`: _start etiketinden itibaren kodun disassembly çıktısını verir. disassemble _start komutunu çalıştırdığınızda, _start etiketinden başlayarak o kısımdaki makine kodlarının assembly diline çevrilmiş halini (disassembly) görürsünüz. Bu komut, _start etiketinden itibaren belirli bir kod bölgesinin talimatlarını ve adreslerini gösterir.
+- `print/x $eax`: eax register'ının içeriğini onaltılık formatta yazdırır.
+- `x/90xb _start`: _start adresinden itibaren bellekteki 90 baytı bayt bayt onaltılık formatta gösterir.
+- `info reg`: register'ları gösterir
+- `info all-reg`: bütün register'ları listeler
+- `i r <register-name>`: spesifik register'i goruntuler
+- `print $<register-name>`: spesifik register'i goruntuler
+- `info stack`: stack’teki (yığın) çağrı çerçevelerini (call frames) listeler ve programın çağrı geçmişini (call stack) gösterir.
+- `info float`: kayan nokta register'larının (floating-point registers) durumunu ve kayan nokta işlem biriminin (FPU) içeriklerini gösterir.
+- `lay asm`: Assembly kaynak kodu ekranını açar.
+- `lay reg`: Register'ların ekranını açar.
+- `lay src`: Kaynak Kodu ekrannı açar.
+
+2. **SASM Kullanarak**
+
+gdb'de ki TUI (Text-based User Interface) yerine daha sade bir görünüm için GUI kullanan SASM programını kullanarak debugging yapılabilir.
+
+3. **QtCreator Kullanarak**
+
+Yine GUI'lı bir şekilde debugging için `QtCreator` kullanılabilir.
+
+**Diğer Debugger'lar**
+
+1. [Nemiver](https://wiki.gnome.org/Apps/Nemiver)
+2. [DDD (Data Display Debugger)](https://www.gnu.org/software/ddd/)
+3. [VS-Code Assembly Debugger](https://github.com/newtonsart/vscode-assembly)
+
+---
+
+## :six: Kaynaklar
+
 Hazırlanıyor..
