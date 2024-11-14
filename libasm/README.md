@@ -3009,7 +3009,7 @@ PIE dosyalar, programın çalıştığı bellek adreslerinin rastgeleleştirilme
     Eski Kod ve Assembly Uyumluluğu: Düşük seviyeli kodlarda veya assembly dilinde yazarken sabit adreslerle çalışmak gerekebilir. -no-pie seçeneği bu duruma uyum sağlar.
     Performans: Konum bağımlı çalıştırılabilir dosyalar bazı durumlarda daha hızlı çalışabilir, çünkü her işlem için adres çevirisi yapmaya gerek kalmaz.
 
-Neden `-no-pie` Kullanalım?
+**Neden `-no-pie` Kullanalım?**
 
 Düşük seviyeli programlamada, özellikle assembly kodunda veya sabit bellek adresleriyle çalışan sistem programlarında konum bağımsızlık (PIE) gereksiz veya karmaşıklığa yol açabilir. Örneğin:
 
@@ -3022,5 +3022,533 @@ Assembly programlama, gömülü sistemler ve sabit adres gerektiren sistem progr
 ---
 
 ## :five: Diğer Terim ve Kavramlar ve Sorular ve İfadeler
+
+### errno
+
+	Tanım: errno, C dilinde hata kodlarını tutan bir global değişkendir. Bir sistem çağrısı veya kütüphane işlevi başarısız olduğunda, bu değişken hatanın türünü belirtmek için güncellenir.
+	Assembly ile İlişkisi: Sistem çağrıları veya düşük seviyeli işlevler başarısız olduğunda, program genellikle errno'ya yazmak için belirli kayıtları veya hafıza alanlarını kullanır. Bu, Assembly'de bir hata durumunu ele almak veya hata mesajlarını özelleştirmek için kontrol edilmesi gereken bir durumdur.
+
+ ### PIE (Position Independent Executable)
+
+	Tanım: PIE, yürütülebilir bir dosyanın belleğe hangi adreste yükleneceğinin önceden belirlenemediği anlamına gelir. PIE, ASLR (Address Space Layout Randomization) gibi güvenlik özellikleri için gereklidir, çünkü kod ve veri segmentlerinin bellek adresi her çalıştırmada farklı olur.
+	-no-pie Flag'i: GCC derleyicisinde -no-pie bayrağı, yürütülebilir dosyanın sabit adresli olmasını sağlar. Yani, program belirli bir adres aralığında başlatılır ve ASLR gibi güvenlik özellikleri devre dışı kalır.
+	Assembly ile İlişkisi: PIE olmayan kodlarda, hafızadaki belirli sabit adreslere doğrudan erişilebilir. PIE kullanıldığında, tüm bellek erişimleri göreceli olarak yapılır (yani, bir ofset kullanarak hesaplanır). Bu, özellikle fonksiyon çağrılarında **Global Offset Table (GOT)** ve **Procedure Linkage Table (PLT)** gibi yapıların kullanımını zorunlu kılar.
+
+ ### GCC Relocation Hatası
+
+	Tanım: Relocation, derlenmiş bir kod parçasının bellek adreslerinin, programın yürütüleceği sırada güncellenmesini ifade eder. Derleme sırasında, kodun bellek içinde nereye yerleştirileceği bilinmediğinden, referans adresleri genellikle göreceli ya da geçici olarak belirlenir.
+	Assembly ile İlişkisi: Assembly dilinde yazılmış bir programda, bazı adresler yer değişimi yapılacak adresler olarak işaretlenir. GOT ve PLT gibi tablolar relocation işlemlerinde kullanılır ve özellikle PIE etkinse bu çok önemli hale gelir.
+
+ ### GOT (Global Offset Table)
+
+ 	Tanım: GOT, programın global verileri için adresleri depolayan bir tablodur. Özellikle, harici fonksiyonlara veya değişkenlere erişim gerektiğinde kullanılır.
+	Assembly ile İlişkisi: GOT, harici fonksiyonların adreslerine başvururken kullanılır. PIE etkin olduğunda, GOT, PLT ile birlikte çalışarak her çalıştırmada fonksiyon adreslerine dinamik olarak erişilmesini sağlar. Bu, bellek adreslerinin sabit olmadığı durumda dış referansların güvenli ve dinamik olarak yönetilmesini sağlar.
+
+ ### ranlib
+
+	Tanım: ranlib, ar ile oluşturulan statik kütüphanelere (arşivlere) dizin bilgisi eklemek için kullanılan bir araçtır. Bu dizin bilgisi, kütüphanedeki fonksiyon ve sembollerin hızlıca bulunmasını sağlar.
+	Assembly ile İlişkisi: Assembly’de statik kütüphaneler oluştururken, ranlib kütüphane indekslerini güncelleyerek linkleme işleminin hızlı olmasını sağlar. Özellikle çok sayıda modül ve sembol içeren projelerde `ranlib` kullanımı, bağlama süresini azaltır.
+
+
+### GCC (`-L. -lasm` Flags)
+
+	Tanım: GCC’nin -L. ve -lasm bayrakları, kütüphane bağlama yolunu ve kütüphane ismini belirtir. -L. derleyiciye mevcut dizini araması için bir kütüphane yolu olarak eklerken, -lasm "asm" isimli bir kütüphaneyi linklemesini söyler.
+	Assembly ile İlişkisi: Eğer asm adında bir statik veya dinamik kütüphane varsa, -lasm bu kütüphanede tanımlanan işlevleri kullanmayı sağlar. Assembly ile derlenen kütüphaneler için yaygın olarak kullanılır.
+
+ ### `-no-pie` Flag’i ve `WRT ..plt` İlişkisi
+
+	Tanım: -no-pie bayrağı, yürütülebilir dosyanın konum bağımsız olmamasını (non-PIE) sağlar. WRT (With Respect To) .plt, .plt (Procedure Linkage Table) içinde işlem yapma gerekliliğini ifade eder.
+	Assembly ile İlişkisi: -no-pie kullanıldığında, PLT üzerinden yapılan işlemler, sabit adreslere yönelik olur. Ancak PIE etkin olduğunda, PLT kullanılarak yapılan fonksiyon çağrıları her çalıştırmada farklı adreslere göre düzeltilir.
+
+ ### WRT (With Respect To) ..plt
+
+	Tanım: WRT ..plt (Procedure Linkage Table) ile ilişkili bir işlem yapılacağını belirtir. ..plt` özellikle harici fonksiyonların adreslerini yönetir.
+	Assembly ile İlişkisi: Assembly’de yazarken, bir fonksiyon çağrısı yapıldığında PLT’ye göre yönlendirme yapılabilir. PLT, GOT ile birlikte kullanılarak çağrılan fonksiyonun adresine erişim sağlar. Özellikle PIE etkin olduğunda, ..plt bu görevi dinamik olarak üstlenir.
+
+### Terimlerin İlişkileri
+
+- **errno** genellikle sistem çağrıları veya hatalar ile ilişkilidir ve Assembly’de programın doğru çalışıp çalışmadığını kontrol etmek için kullanılır.
+- **PIE** ve **Relocation**, programın bellek adresinin yürütme zamanında nasıl ayarlandığını kontrol eder. **Relocation**, adreslerin yürütme zamanında güncellenmesini sağlarken, PIE sayesinde bu adresler dinamik olarak rastgele yerlere yerleştirilebilir.
+- **GOT ve PLT**, PIE durumunda programın harici fonksiyonlara ve değişkenlere güvenli bir şekilde erişmesini sağlar.
+- **GCC bayrakları**, derleyicinin hangi kütüphaneleri bağlayacağını ve hangi bellek düzeni tercih edilmesi gerektiğini belirtir.
+- **ranlib**, Assembly veya C/C++ projelerinde statik kütüphane yönetimini kolaylaştırır.
+
+### x86-64 Linux'ta 32-bit mutlak adreslere artık izin verilmiyor mu?
+
+x86-64 Linux'ta **32-bit mutlak adreslere doğrudan erişime izin verilmez**. Bunun nedeni, modern x86-64 sistemlerde **64-bit adreslemeye geçiş** yapılmış olması ve güvenlik ile performans açısından bazı tasarım kısıtlamalarının getirilmiş olmasıdır. Bu kısıtlamalar, **PIE (Position Independent Executable)** ve **ASLR (Address Space Layout Randomization)** gibi özelliklerin uygulanmasını kolaylaştırır. Özellikle **PIE** sayesinde programın ve kütüphanelerinin adresleri çalışma zamanında rastgele bir konuma yüklenebilir, böylece saldırı yüzeyi azaltılmış olur.
+
+**`_errno_location` ve 32-Bit Mutlak Adresler**
+
+`_errno_location` gibi fonksiyonlar, tipik olarak global veya statik verilere erişim sağlamak için kullanılır. Bu tür fonksiyonlarda doğrudan 32-bit mutlak adresleme yapılırsa, kod artık taşınabilir olmaz. Dolayısıyla, modern 64-bit derlemelerde **relatif (göreceli) adresleme** kullanmak zorunlu hale gelmiştir.
+
+**x86-64 işlemcilerinde:**
+
+1. **32-Bit Mutlak Adreslemeye İzin Verilmez**: Bu, güvenlik ve bellek yönetimi açısından gereklidir. 64-bit sistemlerde mutlak adresler 64 bitlik bir genişlikte olmalıdır, aksi halde 32-bit mutlak adresleme yalnızca düşük adres alanlarını kapsayabilir ve bellek çakışmaları veya erişim hatalarına neden olur.
+2. **GOT ve PLT Kullanımı**: 64-bit adresleme zorunluluğu nedeniyle, `_errno_location` gibi fonksiyonların eriştiği global veya statik verilere **GOT (Global Offset Table)** üzerinden erişilir. GOT, mutlak adresleri tutar ve her çalışma anında güncellenebilir, böylece 32-bit sınırlamalarından bağımsız hale gelir.
+3. **Relatif Adresleme**: 64-bit derleme, veri ve fonksiyon erişiminde **göreceli adreslemeye** zorlar. Bu yöntem, sabit adreslerden kaçınıp, bellek düzenine göre dinamik ayarlamalar yapılmasını sağlar.
+
+**Bu Kısıtlamanın Assembly ve Derleyici İle İlişkisi**
+
+Bu nedenle, `gcc` gibi derleyiciler artık `x86-64` hedefli derlemelerde **mutlak 32-bit adreslemeye izin vermez** ve 64-bit adreslemeye zorlar. `_errno_location` gibi bir sembole erişim, GOT ve PLT tabloları üzerinden sağlanarak dolaylı hale getirilir.
+
+Bu tür erişimler için:
+
+- **GCC’de `-fPIC` veya `-fPIE`** bayrakları kullanılarak kodun konumdan bağımsız çalışması sağlanır.
+- **Assembly’de** doğrudan 32-bit adresleme yerine `RIP-relative` adresleme yapılır (`RIP` x86-64 işlemcisinde instruction pointer’ı gösterir). Bu da, komutların çalışma sırasında instruction pointer'a göre göreceli bir adresi işaret etmesini sağlar.
+
+Sonuç
+
+Kısacası, **x86-64 Linux'ta 32-bit mutlak adreslemeye doğrudan erişim mümkün değildir**. Bu sınırlama, güvenlik ve sistem uyumluluğunu artırmak için uygulanan bir tasarım tercihidir. `_errno_location` gibi global sembollere erişim gerektiğinde, ya GOT kullanılır ya da göreceli adresleme ile erişim sağlanır.
+
+Şayet errno bölümünde ki örnekleri gcc kullanarak linklemeye kalkışırsak `relocation` hatası alacağız.
+
+ft_write.s
+```asm
+section .text
+global ft_write
+extern __errno_location
+
+ft_write:
+    mov rax, 1
+    syscall
+    cmp rax, -1
+    je err
+    ret
+
+err:
+    neg rax                 
+    mov rdi, rax
+    call __errno_location
+    mov [rax], rdi
+    mov rax, -1
+    ret
+```
+
+main.c
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <string.h>
+#include <errno.h>
+
+extern ssize_t ft_write(int fd, const void *buf, size_t count);
+
+int main(void)
+{
+    char *str = "Hello";
+    ft_write(1, str, 5);
+}
+```
+
+Linkleme
+```bash
+nasm -felf64 -o my_write.o my_write.s
+gcc -o test main.c ft_write.o
+```
+
+```bash
+/usr/bin/ld: ft_write.o: warning: relocation against `__errno_location@@GLIBC_2.2.5' in read-only section `.text'
+/usr/bin/ld: ft_write.o: relocation R_X86_64_PC32 against symbol `__errno_location@@GLIBC_2.2.5' can not be used when making a PIE object; recompile with -fPIE
+/usr/bin/ld: final link failed: bad value
+collect2: error: ld returned 1 exit status
+```
+
+errno yalnızca 32-bit olduğundan içine 64-bit RAX yazmayın. Ve çağrı boyunca errno değerini yığın belleğine kaydedin. (Veya rbx'i kaydedin/geri yükleyin ve ebx'e kopyalayın)
+
+### Register'lar ile ilgili bir bilgi
+
+Bir register'a tam sayı atanabilir ve değeri orada saklar ancak bir string atandiginda o string'in adresinin ilk değerinin adresini (başlangıç adresi) tutar şayet string değerine erişmek istersek `[]` kullanmamız gerekir. Bu da string'in ilk işaret edilen yerin değeri olacaktır. Örneğin "Selam" adında bir string var ve bu rdi register'ına atanmış. Register "Selam" string'nin ilk harifinin adresini tutar. Ve ona yani ilk harfin değerine ulaşmak istersek de `[rdi]` dememiz gerekecek. Bu da register'larin hem tam sayı gibi değerleri haznesinde direkt tutması hem de bir pointer gibi adres saklaması gibi özelliklerin bulunduğunu gösteriyor.
+
+### `cmp`, `jmp` vb. flags Detayları
+
+NASM (Netwide Assembler) Assembly dilinde, `cmp` ve `jmp` talimatları ve bayraklar (flags), programın akışını kontrol etmek ve karşılaştırmalar yapmak için kullanılır. Bu talimatların ve bayrakların nasıl çalıştığını anlamak, Assembly'de doğru programlama yapabilmek için önemlidir.
+
+**`cmp` Talimatı**
+`cmp` talimatı, iki değeri karşılaştırmak için kullanılır. Bu talimat, iki değeri birbirine çıkarmadan önce bir işlem yapmaz, ancak **CPU'nun bayraklarını (flags)** ayarlar. Sonra bu bayraklar, bir sıçrama (jump) talimatı ile kontrol edilebilir.
+
+```asm
+cmp operand1, operand2
+```
+- **operand1** ve **operand2**, karşılaştırılacak iki değeri ifade eder. Bu değerler bir register, bir bellek adresi veya doğrudan bir sayı olabilir.
+
+`cmp` talimatı, aslında şu işlemi yapar:
+```asm
+sub operand1, operand2
+```
+
+Ancak `cmp` talimatı, sonuçları kaydetmez; yalnızca bayrakları günceller. Eğer bu bayraklar daha sonra kontrol edilirse, hangi durumda olduğunuz hakkında bilgi verir.
+
+flags (bayraklar):
+`cmp` talimatı, aşağıdaki bayrakları etkiler:
+
+- **ZF (Zero Flag)**: Eğer operand1 ve operand2 eşitse (yani sonuç sıfırsa), ZF set edilir (1). Aksi takdirde, ZF sıfır olur.
+- **SF (Sign Flag)**: Sonuç negatifse, SF set edilir (1); pozitifse, SF sıfır olur.
+- **PF (Parity Flag)**: Sonuçta oluşan baytların çift sayıda 1 bit içerip içermediğini belirtir.
+- **OF (Overflow Flag)**: İşlemde taşma (overflow) olup olmadığını belirtir. Yalnızca imzalı sayılarla yapılan karşılaştırmalarda anlamlıdır.
+- **CF (Carry Flag)**: Eğer operand1 < operand2 ise, CF set edilir (1). Bu bayrak, özellikle taşma durumlarıyla ilgilidir.
+
+**`jmp` Talimatı**
+`jmp` talimatı, programın akışını değiştiren ve başka bir etikete (label) atlamanızı sağlayan bir sıçrama komutudur. `jmp` talimatı her zaman çalışır, yani koşulsuz bir sıçramadır.
+
+```asm
+jmp label
+```
+
+Bu, programın akışını belirtilen etikete (`label`) yönlendirir. Bu sıçrama, programın akışını herhangi bir koşula bakmaksızın değiştirir.
+
+**Koşullu Sıçrama Talimatları**
+
+Assembly dilinde, `cmp` ve benzeri talimatlarla bayraklar ayarlandıktan sonra, koşullu sıçramalar kullanarak belirli durumlara göre akışı değiştirebilirsiniz. Bu sıçramalar, bayraklara dayanarak programın akışını kontrol eder. İşte bazı yaygın koşullu sıçrama talimatları:
+
+- **`je` (Jump if Equal)**: ZF bayrağı set edilmişse (yani iki değer eşitse), sıçrama yapılır.
+  ```asm
+  je label  ; ZF = 1 ise, belirtilen etikete atla
+  ```
+  
+- **`jne` (Jump if Not Equal)**: ZF bayrağı sıfırsa (yani iki değer eşit değilse), sıçrama yapılır.
+  ```asm
+  jne label  ; ZF = 0 ise, belirtilen etikete atla
+  ```
+  
+- **`jg` (Jump if Greater)**: SF = OF ve ZF = 0 (yani operand1 > operand2) ise sıçrama yapılır.
+  ```asm
+  jg label  ; Operand1, Operand2'den büyükse, belirtilen etikete atla
+  ```
+
+- **`jl` (Jump if Less)**: SF ≠ OF (yani operand1 < operand2) ise sıçrama yapılır.
+  ```asm
+  jl label  ; Operand1, Operand2'den küçükse, belirtilen etikete atla
+  ```
+
+- **`js` (Jump if Sign)**: SF = 1 (yani işlem sonucu negatifse), sıçrama yapılır.
+  ```asm
+  js label  ; Sonuç negatifse, belirtilen etikete atla
+  ```
+
+- **`jc` (Jump if Carry)**: CF = 1 (yani taşma varsa) ise sıçrama yapılır.
+  ```asm
+  jc label  ; Taşma varsa, belirtilen etikete atla
+  ```
+
+- **`jo` (Jump if Overflow)**: OF = 1 (yani taşma varsa) ise sıçrama yapılır.
+  ```asm
+  jo label  ; Taşma varsa, belirtilen etikete atla
+  ```
+
+- **`jz` (Jump if Zero)**: ZF = 1 (yani iki değer eşitse) ise sıçrama yapılır.
+  ```asm
+  jz label  ; ZF = 1 ise, belirtilen etikete atla
+  ```
+
+- **`jnz` (Jump if Not Zero)**: ZF = 0 (yani iki değer eşit değilse) ise sıçrama yapılır.
+  ```asm
+  jnz label  ; ZF = 0 ise, belirtilen etikete atla
+  ```
+
+ vb..
+
+ **Bayrakların Kullanımı ve Koşullu Sıçramalar**
+
+Bayraklar, programın akışını yönlendiren çok önemli bir bileşendir. `cmp` talimatı bayrakları ayarladıktan sonra, bu bayraklar koşullu sıçramalarla kullanılabilir. Örneğin, iki değerin eşit olup olmadığını kontrol etmek için şu şekilde yazılabilir:
+
+```asm
+cmp rax, rbx      ; rax ile rbx'i karşılaştır
+je equal_label    ; Eğer eşitse (ZF = 1), equal_label etiketiyle belirtilen yere atla
+```
+
+Eğer iki sayı eşitse, `ZF` bayrağı set edilir ve `je` talimatı `equal_label` etiketine sıçrar. Eğer eşit değilse, program sıradaki komutları çalıştırmaya devam eder.
+
+**Özet**
+- **`cmp`**: İki değeri karşılaştırır, ancak sadece bayrakları ayarlar. Sonucu görmek için bayraklar kullanılır.
+- **Bayraklar**: Karşılaştırma sonrasında farklı durumları belirler. Örneğin, `ZF`, `CF`, `SF` ve `OF` gibi bayraklar, sıçrama talimatlarıyla birlikte programın akışını yönlendirir.
+- **`jmp`**: Koşulsuz sıçramalar yapar.
+- **Koşullu `jmp` talimatları**: `je`, `jne`, `jg`, `jl`, `js`, `jc`, `jo`, `jz`, `jnz` gibi komutlarla bayraklara bağlı olarak sıçrama yapabiliriz.
+
+Bu talimatlar ve bayraklar, Assembly'deki akış kontrolü ve karşılaştırmalar için temel araçlardır.
+
+
+### `call` ve `jmp`, `jne`, `jz` vb. Program Akışı Kontrol Komutlarının Birbirlerinden Farkları
+
+`call` komutu kullanıldığında `call`'ın çağrıldığı satırın adresi bellekte kaydedilir çünkü `call` ile çağrılan fonksiyon işlevini yerine getirdiğinde ve `ret` komutu kullanıldığında çağrıldığı yere geri dönecek. Ancak `jmp`, `jz`, `jne` vb. komutları direkt olarak belirtilen label'e sıçrarlar ve `ret` vb. bir komut kullanıldığında (şayet bir fonksiyonun içinde değilsek yani ana fonksiyondaysak yani herhangi bir fonksiyonun içinde degil main kısımdaysak (:d)) `rax` register'ı dönülür.
+
+>[!IMPORTANT]
+>
+> **Konuyla çok ilgisi olmayan iki bilgi**
+>
+> 1. `echo $?`
+> 
+> `$?` programın çıkış kodunu verir ve bu aslında `sys_exit` sistem çağrısının parametresi olan `error_code` numarasıdır. Assembly'de exit'i çağırdığımızda rdi'ye verdiğimiz değer aslında `$?` oluyor minishell'de öğrendiğimiz.
+> 
+> ```asm
+> section .text
+> global _start
+>
+> _start:
+>	mov rax, 60
+>	mov rdi, 97 ; "97" = "$?"
+>	syscall
+> ```
+>
+> 2. Linux'da `as` Komutu
+> 
+> GNU Assembler'ın kısaltması olarak bilinen `as` komutu ile assembly dosyaları derlenebilir.
+>
+> ```asm
+> as -o hello.o hello.s
+> ```
+
+### Assembly'de strcmp Gibi Bir Fonksiyon Yazarken Fonksiyon Parametrelerin İşaretçilerini (Parametre Geçişlerini, Çağrı Konvansiyonlarını (Calling Convantions)) Nereden/Nasıl Biliyoruz?
+
+İşletim sisteminin kullandigi ABI'ye gore. Assembly'de yazılan her program dönüşünü rax'a yapar. Manuel olarak da bir işlem gerçekleştirdiğimizde assembly'de geri dönüş değerini yine rax'a yapmalıyız çünkü standartlar ve prosedürler (ABI) bu şekilde işlenmiş. Burada bir nevi derleyici (compiler) biz oluyoruz. Ancak derleyici olabilmek içinde az önce bahsetmiş olduğum standart ve prosedürleri bilmek gerekiyor. Ve bunlar işletim sisteminden işletim sistemine göre değişkenlik gösteriyor.
+
+### `al`, `bl`, `cl` vb. 8-bitlik Register'ların char (orn: 'S' gibi) Tek Bytle'lık Değer Tutma Kabiliyeti
+
+byte byte karsilastirma yapmak icin assembly'de, `al` ve `cl` gibi 8-bitlik register'lar kullanılabilir. Şayet rax, veya rcx gibi register kullansaydık, değer kontrollerinin eşit olup olmama durumları için yanlış bir kontrol şekli yapılmış olurdu. Çünkü bu register'lar o değerlerin adreslerini tuttuğundan aslında adres karşılaştırması yapmış olacaktık. `cmp` komutu kıyas yapmak için kıyas yapılan öğeleri `rcx`, `rdx`, `al`, `bl` vb. birbirlerinden çıkarır ve ona gore EFLAGS'i ayarlar. Bu sayede biz o flag'e `jz` veya `jne` gibi talimatlar kullandığımızda o satira ona göre sıçrar.
+
+Assembly'de `al` ve `bl` gibi 8-bitlik registerlar kullanmamızın nedeni, string karşılaştırırken her karakterin 1 byte olmasıdır. `al`, `bl`, `cl`, ve `dl` gibi 8-bitlik registerlar, daha büyük registerların (örneğin `ax`, `bx`) alt kısımlarıdır ve tek bir byte (8-bit) veri tutmak için idealdir.
+
+1. **Register Yapısı**
+
+    	ax, bx, cx, ve dx gibi 16-bit registerlar ikiye bölünebilir: üst 8-bit (örneğin ah) ve alt 8-bit (örneğin al).
+    	Bu alt registerlar (al, bl, cl, ve dl) tek bir byte veri saklar, bu da ASCII karakterleri gibi 1-byte'lık değerleri işlemek için idealdir.
+
+2. **Veri Boyutu ve Bellek Verimliliği**
+
+    	ASCII karakterler 1 byte (8 bit) boyutundadır, bu yüzden 8-bit register olan AL ve BL doğrudan tek bir karakteri tutmak için uygundur.
+    	Eğer 16-bit registerlar (örneğin ax veya bx) kullansaydık, her karakter karşılaştırmasında 16 bitlik veri yüklenecekti, ancak bu veri 1 byte’tan fazla olduğu için gereksiz yer kaplayacaktı. Bu durum hem bellek açısından hem de işlem performansı açısından verimsiz olurdu.
+
+3. **Kod Okunabilirliği ve Performans**
+
+    	al ve bl kullanarak doğrudan 8-bitlik karşılaştırma yapılabilir, bu da kodu daha okunabilir ve daha hızlı hale getirir. Özellikle mikroişlemci düzeyinde, veri tipine uygun boyutta register kullanmak performansı artırır.
+
+Özet
+Bu yüzden `al` ve `bl` kullanmak, hem gereksiz büyük veri taşınmasını önlemek için hem de işlemciye yük olmaması için uygundur.
+
+### Neden `al`, `bl`, `cl` vb. yerine `ah`, `bh`, `ch` Kullanılamıyor?
+
+Bunun nedeni, x86-64 (64-bit) mimarisi üzerinde yüksek byte register'larının (ch, dh, bh, ah) bazı işlemlerde kullanılamamasıdır. 64-bit işlemcilerde, rex öneki ile kodlanmış talimatlar yüksek byte register'larını (ah, bh, ch, dh) desteklemez. Ancak, düşük byte register'ları (al, bl, cl, dl) bu sınırlamaya tabi değildir.
+
+**`rex` Öneki ve Yüksek Byte Register'ları**
+
+x86-64 mimarisinde, rex öneki 64-bit register’lar üzerinde işlem yapabilmek ve genişletilmiş register’lara erişmek için kullanılır. Bu önek, register genişlemesi sağlar, yani 32-bit yerine 64-bit register’larla işlem yapılmasına olanak tanır. Ancak rex öneki etkinleştirildiğinde, ch, bh, ah, dh gibi yüksek byte register'larını kullanmak mümkün olmaz.
+
+Örnek olarak ft_strcmp fonksiyonunu ele alalım ve orada kullanılan "cl" register'ı yerine "ch" kullanalım ve kodu derleyelim. nasm'ın vereceği hata şu şekildedir;
+
+```bash
+error: cannot use high register in rex instruction
+```
+
+Kodda rbx veya rax gibi 64-bit register’lar kullanıldığında, NASM assembler bu register'ların 64-bit modda olduğunu varsayar ve rex öneki otomatik olarak eklenir. Bu önek kullanıldığı anda ch gibi yüksek byte register'ları artık desteklenmez, çünkü rex öneki, 64-bit işlemler için cl, bl, dl, al gibi düşük byte register'larının kullanılmasını zorunlu hale getirir.
+
+```asm
+movsx rax, ch
+```
+
+Nasm bu satırda rex önekinin etkinleştirildiğini algılıyor ve uyumsuzluk yaratacağından bu işleme izin verilmiyor.
+
+REX öneki etkin olduğunda, ch, dh, ah, bh gibi yüksek bayt register'ları kullanılamaz, çünkü x86-64 mimarisindeki adresleme modları bu yüksek bayt register'larıyla uyumlu değildir. Bunun temel nedeni, REX öneki ile eklenen bitlerin bu yüksek bayt register'larla çakışması ve işlemcinin doğru adresleme yapamamasıdır.
+
+REX Önekinin Adresleme Modu ve Yüksek Bayt Register'ları ile Uyumsuzluğu
+
+x86-64 mimarisinde REX öneki, register genişlemesini ve 64-bit işlem desteğini sağlamak için kullanılır. REX öneki, bir byte (8 bit) uzunluğunda bir önektir ve şu şekilde kodlanır:
+
+    REX önekinin 4 bitinden biri olan B biti, register adreslemesini genişletir.
+    Bu B biti, ah, bh, ch, dh gibi yüksek bayt register'ları için kullanılan eski adresleme moduyla çakışır.
+
+Örneğin:
+
+    x86-64'te rax, eax, ax ve al gibi düşük bayt register'ları REX öneki ile uyumlu çalışır, çünkü bunların adresleme modunda bir sorun yoktur.
+    Ancak ch, ah, dh, bh gibi register'lar, REX önekinin B bitiyle adreslemeyi genişletmeye çalıştığı sırada uyumsuzluk yaratır. Bu yüzden, REX öneki etkin olduğunda bu yüksek bayt register'larını kullanmak işlemcide kodlama çakışmasına neden olur.
+
+Alternatif: Düşük Bayt Register'ları Kullanmak
+
+Bu uyumsuzluk nedeniyle, x86-64’te REX öneki gerektiren bir işlemi yaparken, yüksek bayt register'ları yerine düşük bayt register'ları (al, bl, cl, dl) kullanmalısınız. Düşük bayt register'ları, REX önekiyle uyumlu olarak adreslenir ve işlemler bu uyumlulukla sorunsuz yürütülür.
+Özet
+
+    REX öneki ve yüksek bayt register'ları (örneğin ch, dh, ah, bh) arasındaki uyumsuzluk, x86-64’teki genişletilmiş adresleme modlarının çakışmasından kaynaklanır.
+    REX öneki kullanmanız gereken bir durumda, yüksek bayt register'ları yerine düşük bayt register'larını (cl, dl, al, bl) tercih etmeniz gerekir. Bu, kodun doğru çalışmasını sağlar.
+
+### `rex` prefix'i (Öneki)
+
+REX öneki, x86-64 mimarisinde 64-bit işlemleri ve genişletilmiş register kullanımını destekleyen özel bir önektir. REX, Register Extension ifadesinin kısaltmasıdır ve 64-bit işlemcilerin ek özelliklerini kullanabilmesini sağlar.
+
+**REX Öneki'nin İşlevi**
+
+x86-64 işlemciler, 32-bit mimariden 64-bit mimariye geçiş yaptığında bazı ek ihtiyaçlar ortaya çıkmıştır:
+
+	64-bit İşlem Desteği: Standart 32-bit mimaride, register’lar maksimum 32-bit veri işleyebiliyordu. Ancak 64-bit mimaride daha geniş veri işlemek gerektiğinden, REX öneki eklenerek işlemcinin 64-bit veri ile işlem yapması sağlandı.
+    	Genişletilmiş Register'lar: 32-bit işlemcilerde eax, ebx, ecx, edx gibi register'lar vardı. 64-bit işlemcilerde bunlara ek olarak r8-r15 isimli 8 yeni genel amaçlı register eklendi. Bu genişletilmiş register'lara erişebilmek için REX öneki gereklidir.
+
+**REX Öneki Yapısı**
+
+REX öneki, 0100 bit dizisi ile başlar ve 4 bitlik bir alana sahiptir (REX öneki toplamda 1 bayttır). Bu 4 bit, çeşitli özellikleri kontrol eder:
+
+    W: 64-bit genişliğinde işlem yapılacağını belirtir.
+    R: Ek register bitidir; r8-r15 gibi genişletilmiş register'lara erişmek için kullanılır.
+    X: Ek index register bitidir; bazı adresleme modlarında ek register'lara erişimi sağlar.
+    B: Ek base register bitidir; r8-r15 gibi genişletilmiş base register'lara erişim sağlar.
+
+**REX Öneki ile Kullanılamayan Yüksek Bayt Register'ları**
+
+REX öneki etkinleştirildiğinde, eski mimaride kullanılan bazı yüksek bayt register'ları (ah, bh, ch, dh) ile işlem yapılamaz. Bunun nedeni, bu register'ların kodlamasının REX öneki ile çakışması ve işlemcinin kodlamayı doğru yorumlayamamasıdır. Bu yüzden 64-bit modda, al, bl, cl, dl gibi düşük bayt register'ları kullanılabilir, ancak ah, bh, ch, dh gibi yüksek bayt register'ları kullanılamaz.
+Örnek: REX Öneki Gerektiren ve Gerektirmeyen İşlemler
+
+    REX Öneki Gerekli: mov rax, 1 – 64-bit veriyle işlem yapıldığından W biti 1 olur ve REX öneki eklenir.
+    REX Öneki Gerekli Değil: mov eax, 1 – 32-bit veriyle işlem yapıldığından REX öneki gerekmez.
+
+Özet
+
+    REX öneki, 64-bit modda 64-bit veri işlemleri ve genişletilmiş register'lara erişimi sağlar.
+    ah, bh, ch, dh gibi yüksek bayt register'ları REX öneki ile uyumlu olmadığı için, 64-bit modda düşük bayt register'ları (örneğin al, bl, cl, dl) tercih edilir.
+
+### `movzx` ve `movsx` Gibi Talitmatların İşlevleri
+
+8-bit bir register'daki (orn: al, bl, cl vb.) degeri 64-bit bir register'a genisleterek atamak istersek "movzx" veya "movsx" komutlarini kullanabiliriz.
+
+`movzx` ve `movsx` gibi talimatların farkı da değerin işaretli (signed) veya işaretsiz (unsigned) şekilde genişletilip genişletilmemesi seçeneği sunuyor.
+
+`movsx` - işaretli şekilde genişleme yapıp değeri taşır
+
+`movzx` - işaretsiz şekilde genişleme yapıp değeri taşır
+
+Örneğin _ft_strcmp_ fonksiyonunda `movzx` kullanılırsa şayet negatif değeleri döndürmüyor ancak bize negatif değer döndüren bir return degeri gerekli oldugundan `movsx` kullanılıyor.
+
+### Assembly'de Signed ve Unsigned
+
+Assembly ve diğer düşük seviyeli programlama dillerinde "işaretli" (signed) ve "işaretsiz" (unsigned) kavramları, verinin pozitif veya negatif olma durumunu belirler. Bu kavramları anlamak için veri türünün bellekte nasıl temsil edildiğine bakmamız gerekiyor.
+
+**İşaretsiz (Unsigned) Sayılar**
+
+İşaretsiz bir sayı, yalnızca **pozitif** değerleri ifade eder. Bütün bitler, sayının değerini temsil eder, işaret bitine gerek yoktur. 
+
+Örneğin, 8-bitlik bir işaretsiz sayı için:
+
+- Minimum değer: `0`
+- Maksimum değer: `255` (2^8 - 1)
+
+Örnek:
+- `00000000` (binary) = `0` (decimal)
+- `11111111` (binary) = `255` (decimal)
+
+**İşaretli (Signed) Sayılar**
+
+İşaretli sayılar hem pozitif hem de negatif değerleri temsil edebilir. Bu durumda en yüksek bit (sol baştaki bit) sayı için **işaret bitidir**:
+- İşaret biti `0` ise, sayı pozitif kabul edilir.
+- İşaret biti `1` ise, sayı negatif kabul edilir.
+
+İşaretli sayılar genellikle **iki'nin tümleyeni** (two's complement) yöntemi ile temsil edilir. Örneğin, 8-bitlik bir işaretli sayı için:
+
+- Minimum değer: `-128`
+- Maksimum değer: `127`
+
+Örnek:
+- `00000000` (binary) = `0` (decimal)
+- `01111111` (binary) = `127` (decimal)
+- `10000000` (binary) = `-128` (decimal)
+- `11111111` (binary) = `-1` (decimal)
+
+**Genişletme İşlemlerinde İşaretli ve İşaretsiz Farkı**
+
+İşaretsiz (`movzx`) ve işaretli (`movsx`) genişletme komutları, küçük bir değeri daha büyük bir register'a genişletirken verinin pozitif veya negatif olma durumuna göre davranır:
+
+1. **İşaretsiz Genişletme (`movzx`)**:
+   - `movzx`, "Move with Zero Extension" (sıfır ile genişletme) anlamına gelir. Bu komut, küçük değerin işaretini dikkate almaz ve genişletilen üst bitleri sıfır ile doldurur.
+   - Örneğin, `DL` registerındaki `11111111` (8-bit) değeri `MOVZX` ile `RAX` registerına taşınırsa, `RAX` değeri `00000000 00000000 00000000 000000FF` olur, yani `255`.
+
+2. **İşaretli Genişletme (`movsx`)**:
+   - `movsx`, "Move with Sign Extension" (işaret ile genişletme) anlamına gelir. Bu komut, küçük değerin işaret bitini koruyarak genişletme yapar. Eğer sayı negatifse (yani işaret biti `1` ise), üst bitleri `1` ile doldurur; pozitifse (işaret biti `0` ise) üst bitleri `0` ile doldurur.
+   - Örneğin, `DL` registerındaki `11111111` değeri `MOVSX` ile `RAX` registerına genişletilirse, `RAX` değeri `FFFFFFFFFFFFFFFF` olur, yani `-1` (çünkü işaret bitini korumuş olur).
+  
+**Örneklerle Karşılaştırma**
+
+Farz edelim ki `DL` registerında `11111111` (8-bit) değeri var:
+
+- **İşaretsiz olarak ele alındığında (`movzx` ile)**:
+  ```asm
+  movzx rax, dl
+  ```
+  Bu komut `RAX`'a `255` değerini yükler, çünkü tüm üst bitler `0` ile doldurulur.
+
+- **İşaretli olarak ele alındığında (`movsx` ile)**:
+  ```asm
+  movsx rax, dl
+  ```
+  Bu komut `RAX`'a `-1` değerini yükler, çünkü işaret bitine göre üst bitler `1` ile doldurulur.
+
+- **İşaretsiz (Unsigned)**: Sayılar yalnızca pozitif değerlidir, işaret biti kullanılmaz.
+- **İşaretli (Signed)**: Sayılar hem pozitif hem de negatif olabilir; en yüksek bit işaret bitidir.
+- `movzx`: Üst bitleri sıfır ile doldurur (işaretsiz genişletme).
+- `movsx`: Üst bitleri işarete göre doldurur (işaretli genişletme).
+
+Bu ayrım, özellikle taşma ve işaret bitinin korunmasının önemli olduğu durumlarda işlemcinin doğru sonucu vermesi açısından kritik öneme sahiptir.
+
+### Assembly'de `malloc` Çağrısı Yapıldığında Arkaplanda ki Değişimler
+
+Assembly'de bir fonksiyon çağrısı yapıldığında o fonksiyon parametre kullanıyorsa rdi, rsi, rdx vb. gibi parametre geçiş register'larına gerekli atamalar yapılmalıdır fonksiyonun isteğine göre (bunun için harici fonkisyon çağrısı yapılıyorsa `man` kullanılarak gerekliliklerine bakılabilir). Ve geri dönüş değeri varsa her zaman rax'a geri dönüş yapıldığı unutulmamalıdır. Örneğin `malloc` bellekte yer tahsisi yapabilmek için parametre olarak bir boyut (size) istiyor. Bunun için rdi'ye (ABI'den dolayı) çağrı yapmadan önce istenilen boyut sayısını atayıp/hazırlayıp daha sonrasında `malloc` fonksiyonu çağırmamız gerekiyor. Çağırdıktan sonra da `malloc` fonksiyonunun (eğer tahsis edebilsiyse) rax register'ına bellekte ayrılan kısmın başlangıç adresini döndürdüğünü bilmemiz gerekiyor. `man malloc` yazarak detaylar incelenebilir.
+
+Assembly'de `malloc` fonksiyonunu çağırdığınızda, bellekte belirli bir boyutta alan tahsis edilmesi süreci başlatılır. Bu fonksiyon genellikle `libc` (C standart kütüphanesi) tarafından sağlanır ve çağrıldıktan sonra belirli bir sistem çağrısını veya bir bellek yönetim mekanizmasını tetikler. Bu süreçte `RAX` ve diğer bazı kayıtlarda önemli değişiklikler olur.
+
+**`malloc` Çağrısında `RAX` ve Diğer Kayıtlarda Ne Olur?**
+
+1. **`RDI` ve `RAX` Kayıtlarının Ayarlanması**:
+   - `malloc`'a tahsis edilmesi istenilen bellek boyutu parametre olarak verilir. Sistem V AMD64 ABI'ye göre, ilk argüman (bu durumda tahsis edilmesi gereken boyut) `RDI` kaydında geçilir.
+   - `malloc`, `RAX`'ı kullanarak işletim sistemi veya kütüphane içindeki alt fonksiyonlara çağrı yapar. Bu nedenle, `malloc` çağrıldıktan sonra `RAX`’in içeriği değişmiş olur.
+
+2. **Bellek Tahsisi**:
+   - `malloc`, işletim sistemindeki bellek tahsis fonksiyonlarını (örneğin `brk` veya `mmap`) kullanarak belirtilen miktarda belleği ayırır. Eğer `brk` veya `mmap` çağrılırsa, `RAX` ve diğer kayıtlar farklı değerlere sahip olabilir.
+   - Bellek tahsisi başarılı olursa, `malloc` tahsis edilen bellek bloğunun başlangıç adresini döndürür. Bu adres de genellikle `RAX` kaydında saklanır.
+
+3. **`RAX` Kaydının Dönüş Değeri Olarak Kullanılması**:
+   - `malloc` başarılı olduğunda, tahsis edilen belleğin başlangıç adresini `RAX` kaydına yazar ve çağrıyı yapan kod bu değeri `RAX` üzerinden alır.
+   - Eğer `malloc` başarısız olursa, `RAX` değeri `NULL` (0) olarak döner. Bu durumda, bellek tahsis edilemediği anlamına gelir.
+  
+**`malloc` Arkaplanda Ne Yapar?**
+
+1. **Heap Bölgesini Yönetme**:
+   - `malloc`, heap adı verilen bellek bölgesinde alan ayırır. İşletim sistemi tarafından heap bölgesi, programın başında belirlenir ve büyütülüp küçültülebilir.
+   - Küçük bellek tahsisleri genellikle mevcut bir heap bloğundan yapılır ve heap sınırlarını değiştirmez. Ancak daha büyük tahsisler gerektiğinde `sbrk` veya `mmap` gibi sistem çağrıları ile heap büyütülür.
+
+2. **Serbest Blokları Yönetme**:
+   - `malloc`, serbest blokları takip eden bir veri yapısı kullanır. Bellekten alan ayrıldıkça veya serbest bırakıldıkça (`free` ile), bu veri yapısı güncellenir.
+   - Küçük bellek parçaları için `malloc` genellikle mevcut bloklardan birini kullanır, bu sayede heap'i yeniden düzenlemek gerekmez.
+
+3. **Sistem Çağrısı Yapılması**:
+   - Büyük bir bellek bloğu talebi olduğunda, `malloc`, işletim sistemine bir sistem çağrısı yaparak yeni bir bellek bölgesi ayırır. Bu genellikle `mmap` çağrısı ile yapılır ve işletim sistemi belleğin fiziksel tahsisini sağlar.
+   - Bu sistem çağrıları sırasında `RAX` kaydında çağrı numarası ve diğer kayıtlarda gerekli argümanlar bulunur.
+  
+**`malloc` ve `RAX` ile İlgili Özet**
+
+- `malloc`, `RAX` kaydında tahsis edilen belleğin başlangıç adresini döndürür veya başarısız olduğunda 0 (NULL) döner.
+- `malloc` çağrıldığında, `RAX` ve diğer kayıtlardaki veriler değişebilir.
+- Arka planda, `malloc` heap alanını yönetir ve gerektiğinde sistem çağrıları ile işletim sisteminden yeni bellek blokları alır.
+
+Bu süreç, performans optimizasyonu ve bellek verimliliği sağlamak amacıyla oldukça karmaşıktır. Ancak özetle `malloc`, `RAX`'ı dönüş değeri olarak kullanır ve işletim sisteminden gerekli olan bellek alanını tahsis eder.
+
+### PLT Prosedür Tablosu Aracılığıyla `malloc` Çağrısı
+
+`call malloc WRT ..plt` ifadesi, **malloc** fonksiyonunun **Procedure Linkage Table (PLT)** aracılığıyla çağrılmasını ifade eder. Bu, özellikle **konumdan bağımsız (position-independent)** çalışması gereken kodlarda veya **dinamik olarak bağlanmış (dynamically linked)** fonksiyonların adreslerinin belirsiz olduğu durumlarda kullanılır.
+
+**PLT Nedir?**
+
+**Procedure Linkage Table (PLT)**, programın **dinamik kütüphanelerdeki fonksiyonlara ulaşmasını sağlayan bir tablodur**. PLT, yürütme sırasında dış fonksiyon adreslerine (örneğin `malloc`, `printf` gibi) erişimi sağlayan bir aracıdır. Bu mekanizma sayesinde:
+
+1. **Programın konumdan bağımsız çalışması sağlanır**: Kod, belleğe farklı adreslerde yüklenmiş olsa bile, PLT üzerinden çağrılan fonksiyonların adresleri güncellenir.
+2. **Dinamik bağlama** yapılır: Fonksiyonun adresi ilk çağrıldığında PLT aracılığıyla dinamik olarak bulunur ve çalıştırılır. Sonraki çağrılar, PLT’ye kaydedilmiş bu adrese doğrudan yönlendirilir.
+
+**`malloc` Fonksiyonuna `WRT ..plt` ile Çağrı Yapılması**
+
+`call malloc WRT ..plt` ifadesinde:
+
+- **`malloc` fonksiyonu**, `malloc` fonksiyonunun dinamik olarak yüklenmiş bir adresine erişmek anlamına gelir.
+- **`WRT ..plt` ifadesi**, **With Respect To Procedure Linkage Table** anlamına gelir. Yani, `malloc` fonksiyonunun PLT tablosu üzerinden çağrılacağını ifade eder.
+
+Bu çağrı yöntemi sayesinde, **programın çalışma zamanında** `malloc`'un gerçek adresi **PLT üzerinden çözümlenir** ve programın bulunduğu yerden bağımsız olarak `malloc` işlevi güvenli bir şekilde çağrılır.
+
+- `call malloc WRT ..plt`: `malloc` fonksiyonuna çağrıyı PLT tablosu üzerinden yapar.
+- Bu, `malloc`'un adresinin çalışma zamanında dinamik olarak çözüleceğini ve `malloc` gibi dinamik bağlanan fonksiyonların konumdan bağımsız olarak çalışabileceğini garanti eder.
+
+### Assembly'de Debug (Hata Ayıklama) Nasıl Yapılabilir?
 
 Hazırlanıyor..
