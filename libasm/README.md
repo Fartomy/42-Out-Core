@@ -1312,6 +1312,8 @@ r15             | r15d          | r15w          | r15b
 
 ![rdx](https://github.com/Fartomy/42-Out-Core/blob/main/libasm/mats/imgs/rdx.png)
 
+![Table of x86 Registers](https://github.com/Fartomy/42-Out-Core/blob/main/libasm/mats/imgs/Table_of_x86_Registers_svg.svg.png)
+
 ---
 
 ## :three: Yaygın Assembly Talimatları - Section'lar, Direktifler, Etiketler - İşlenenler (Operands)
@@ -3626,11 +3628,11 @@ Diğer Komutlar
 
 2. **SASM Kullanarak**
 
-gdb'de ki TUI (Text-based User Interface) yerine daha sade bir görünüm için GUI kullanan SASM programını kullanarak debugging yapılabilir.
+gdb'de ki TUI (Text-based User Interface) yerine daha sade bir görünüm için GUI kullanan [SASM](https://dman95.github.io/SASM/english.html) programını kullanarak debugging yapılabilir. Sadece Debugging değil aynı zaman da içerisinde pek çok assembler barındırdığından assembly kodu da çalıştırmak mümkündür.
 
 3. **QtCreator Kullanarak**
 
-Yine GUI'lı bir şekilde debugging için `QtCreator` kullanılabilir.
+Yine GUI'lı bir şekilde debugging için [Qt Creator](https://www.qt.io/product/development-tools) kullanılabilir.
 
 **Diğer Debugger'lar**
 
@@ -3641,5 +3643,132 @@ Yine GUI'lı bir şekilde debugging için `QtCreator` kullanılabilir.
 ---
 
 ## :six: Kaynaklar
+
+### CPU
+1. [x86](https://en.wikipedia.org/wiki/X86)
+2. [x86-32-bit Wiki](https://en.wikipedia.org/wiki/X86#32-bit)
+3. [Intel® 64 and IA-32 Architectures Software Developer’s Manual Volume 1: Basic Architecture](https://web.archive.org/web/20150123212110/http://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-vol-1-manual.pdf)
+4. [16-bit Operations](https://en.wikipedia.org/wiki/Intel_8080#16-bit_operations)
+5. [ntel® 64 and IA-32 Architectures Software Developer Manuals](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)
+
+
+### Register
+1. [What are the Names of the new x86-64 Processors Registers](https://stackoverflow.com/questions/1753602/what-are-the-names-of-the-new-x86-64-processors-registers#1753627)
+2. [What Does X Mean in eax ebx ecx in Assembly](https://stackoverflow.com/questions/2545192/what-does-x-mean-in-eax-ebx-ecx-in-assembly/2545226#2545226)
+3. [What do the E and R prefixes stand for in the names of Intel 32-bit and 64-bit registers?](https://stackoverflow.com/questions/43933379/what-do-the-e-and-r-prefixes-stand-for-in-the-names-of-intel-32-bit-and-64-bit-r)
+4. [What does ESP mean in assembly?](https://stackoverflow.com/questions/2537367/what-does-esp-mean-in-assembly/2537380#2537380)
+5. [File:Table of x86 Registers svg.svg](https://en.wikipedia.org/wiki/File:Table_of_x86_Registers_svg.svg)
+6. [Why did they use numbers for register names in x86-64?](https://stackoverflow.com/questions/12770378/why-did-they-use-numbers-for-register-names-in-x86-64)
+7. [Why are first four x86 General Purpose Registers named in such unintuitive order?](https://retrocomputing.stackexchange.com/questions/5121/why-are-first-four-x86-general-purpose-registers-named-in-such-unintuitive-order)
+8. [What does the 'R' in x64 register names stand for?](https://softwareengineering.stackexchange.com/questions/127668/what-does-the-r-in-x64-register-names-stand-for)
+9. [CPU Register Names](http://web.archive.org/web/20140413211300/http://www.x86-64.org/pipermail/discuss/2000-September/000283.html)
+10. [What is the purpose of the RBP register in x86_64 assembler?](https://stackoverflow.com/questions/41912684/what-is-the-purpose-of-the-rbp-register-in-x86-64-assembler#41912747)
+11. [X86 64 Register and Instruction Quick Start](https://wiki.cdot.senecapolytechnic.ca/wiki/X86_64_Register_and_Instruction_Quick_Start)
+
+
+### Sistem Çağrı Numaraları Tablosu
+1. [Linux - 1](https://blog.rchapman.org/posts/Linux_System_Call_Table_for_x86_64/)
+2. [MacOS](https://github.com/rewired-gh/macos-system-call-table/blob/main/arm64-system-calls.md)
+3. [Linux - 2](https://lxr.linux.no/#linux+v3.2/arch/x86/include/asm/unistd_64.h)
+4. [Linux - 3](https://github.com/torvalds/linux/blob/master/arch/x86/entry/syscalls/syscall_64.tbl)
+
+
+### NASM ve ASM
+1. [NASM Tutorial - 1](https://cs.lmu.edu/~ray/notes/nasmtutorial/)
+2. [ASM Tutorial - 1](https://github.com/0xAX/asm)
+3. [ASM Video - 1](https://www.youtube.com/watch?v=4gwYkEK0gOk)
+4. [ASM Tutorial - 2](https://docs.freebsd.org/en/books/developers-handbook/x86/#x86-system-calls)
+5. [NASM Tutorial - 2](https://www.nasm.us/doc/)
+6. [Kathleen Booth](https://en.wikipedia.org/wiki/Kathleen_Booth)
+7. [Dive Into Systems](https://diveintosystems.org/)
+8. [The Stack](https://yuriygeorgiev.com/2024/02/19/x86-64-cpu-architecture-the-stack/)
+9. [The Netwide Assembler: NASM](https://www.nasm.us/xdoc/2.11.02/html/nasmdoc3.html#section-3.2)
+10. [Assembly Files: Difference between .a .s .asm](https://stackoverflow.com/questions/34098596/assembly-files-difference-between-a-s-asm#34098830)
+11. [Geeks for Geeks What is Assembly Language](https://www.geeksforgeeks.org/what-is-assembly-language/)
+12. [How to change errno value in asm x64](https://stackoverflow.com/questions/62046052/how-to-change-errno-value-in-asm-x64)
+13. [x86-64 ASM French](https://perso.univ-st-etienne.fr/ezequel/L2info/coursAssembleur_x86_64.pdf)
+14. [Intro NASM French](http://asmongueur.free.fr/Apprendre/Nasm/Intro_Nasm_Linux.htm)
+15. [Le langage assembleur intel 64 bits French](https://www.lacl.fr/tan/asm)
+16. [x86-64 Linux Assembly Tutorial Video List](https://www.youtube.com/playlist?list=PLetF-YjXm-sCH6FrTz4AQhfH6INDQvQSn)
+17. [x86_64 NASM Assembly Quick Reference ("Cheat Sheet")](https://www.cs.uaf.edu/2017/fall/cs301/reference/x86_64.html)
+18. [vfuster 42 libasm github](https://github.com/vfuster66/42_libasm)
+19. [32-bit absolute addresses no longer allowed in x86-64 Linux?](https://stackoverflow.com/questions/43367427/32-bit-absolute-addresses-no-longer-allowed-in-x86-64-linux)
+20. [What does @plt mean here?](https://stackoverflow.com/questions/5469274/what-does-plt-mean-here)
+21. [Code in Assembly - Video](https://www.youtube.com/watch?v=6S5KRJv-7RU)
+22. [Assembly Programming GNU GAS x86-64 Video List](https://www.youtube.com/playlist?list=PLvv0ScY6vfd9BSBznpARlKGziF1xrlU54)
+23. [x86 Assembly with NASM](https://youtube.com/playlist?list=PL2EF13wm-hWCoj6tUBGUmrkJmH1972dBB&si=lpWxiJmMjL6mHHvz)
+24. [How to print a number in assembly NASM?](https://stackoverflow.com/questions/8194141/how-to-print-a-number-in-assembly-nasm#8194407)
+25. [Using printf while calling ASM from C](https://stackoverflow.com/questions/51177360/using-printf-while-calling-asm-from-c)
+26. [NASM](https://ece-research.unm.edu/jimp/310/nasm/nasmdoc6.html)
+27. [Linker error on calling C libraries from asm (using NASM)? ](https://www.reddit.com/r/asm/comments/1afi6nr/linker_error_on_calling_c_libraries_from_asm/)
+28. [x86 Assembly](https://www.cs.put.poznan.pl/tzok/public/cawllp-04-asm.html)
+29. [What is REX prefix in Instruction Encoding?](https://stackoverflow.com/questions/68604377/what-is-rex-prefix-in-instruction-encoding)
+30. [What does 'REX' stand for in an x86-64 REX prefix?](https://stackoverflow.com/questions/59164978/what-does-rex-stand-for-in-an-x86-64-rex-prefix)
+31. [x86-64 Instruction Encoding](https://blog.kenanb.com/code/low-level/2024/01/05/x86-64-insn-encoding.html)
+
+
+
+### Calling Conventions & ABI
+1. [Where is the x86-64 System V ABI documented?](https://stackoverflow.com/questions/18133812/where-is-the-x86-64-system-v-abi-documented)
+2. [What are the calling conventions for UNIX & Linux system calls (and user-space functions) on i386 and x86-64](https://stackoverflow.com/questions/2535989/what-are-the-calling-conventions-for-unix-linux-system-calls-and-user-space-f)
+3. [x86 Calling Conventions Wiki](https://en.wikipedia.org/wiki/X86_calling_conventions)
+4. [x86-64 ABI](http://x86-64.org/documentation/abi.pdf)
+5. [psABI x86-64](https://uclibc.org/docs/psABI-x86_64.pdf)
+6. [x32 ABI](https://sites.google.com/site/x32abi/)
+7. [System V ABI 4.1](https://www.sco.com/developers/devspecs/gabi41.pdf)
+8. [System V Application Binary Interface](https://www.sco.com/developers/gabi/2003-12-17/contents.html)
+9. [System V Application Binary Interface 0.95](http://refspecs.linux-foundation.org/elf/x86_64-abi-0.95.pdf)
+10. [Calling Conventions PDF](https://www.agner.org/optimize/calling_conventions.pdf)
+
+
+### Mix
+1. [Mix - 1](https://gist.github.com/FiloSottile/7125822)
+2. [Mix - 2](https://refspecs.linuxfoundation.org/)
+3. [Mix - 3](https://uclibc.org/specs.html)
+4. [Mix - 4](https://www.agner.org/optimize/)
+5. [Mix - 5](https://learn.microsoft.com/en-us/windows-hardware/drivers/debugger/x64-architecture)
+6. [Mix - 6](http://6.s081.scripts.mit.edu/sp18/x86-64-architecture-guide.html)
+7. [Mix - 7](https://cs.brown.edu/courses/cs033/docs/guides/x64_cheatsheet.pdf)
+8. [Mix - 8](https://refspecs.linuxbase.org/elf/)
+9. [Mix - 9](https://wiki.osdev.org/X86-64_Instruction_Encoding)
+
+
+
+### Konuyla Alakasız
+1. [CXX ABI](https://itanium-cxx-abi.github.io/cxx-abi/)
+2. [LLDB Debugger](https://lldb.llvm.org/index.html)
+3. [LLVM](https://llvm.org/)
+4. [Debuggin C with GDB](https://www.youtube.com/watch?v=ny6y0pPO--4)
+5. [GDB 101](https://www.youtube.com/watch?v=Dq8l1_-QgAc)
+6. [Nemiver Debugger](https://wiki.gnome.org/Apps/Nemiver)
+7. [DDD Debugger](https://www.gnu.org/software/ddd/)
+
+
+### ASM Debug
+1. [How to print register values in GDB?](https://stackoverflow.com/questions/5429137/how-to-print-register-values-in-gdb)
+2. [GDB (Step by Step Introduction)](https://www.geeksforgeeks.org/gdb-step-by-step-introduction/)
+3. [x86-64 Debugging ASM - Video](https://www.youtube.com/watch?v=xmvCoi3zfDY)
+4. [GDB - Video 1](https://www.youtube.com/watch?v=mfmXcbiRs0E)
+5. [GDB - Video 2](https://www.youtube.com/watch?v=mm0b_H0KIRw)
+6. [SASM](https://dman95.github.io/SASM/english.html)
+7. [Qt Creator](https://www.qt.io/product/development-tools)
+8. [Debugging NASM in VS code](https://stackoverflow.com/questions/63188810/debugging-nasm-in-vs-code)
+9. [NASM Assembler Debugger](https://stackoverflow.com/questions/2043105/nasm-assembler-debugger)
+10. [Introduction of SASM](https://www.youtube.com/watch?v=Gm2gVRyWLyI&t)
+11. [0104 How to debug assembly Using VS Code - video](https://www.youtube.com/watch?v=MMr2tzyqjhk)
+12. [NASM Debugger Qt Creator - Video](https://www.youtube.com/watch?v=1qroLN-Ep9g)
+13. [NASM Assembler and GDB with example - Video](https://www.youtube.com/watch?v=ZZTUgIFm9u0)
+14. [Godbolt](https://godbolt.org/)
+15. [VS-Code Assembly Tool](https://github.com/newtonsart/vscode-assembly)
+
+---
+
+## :seven: Onaylama ve Akran Değerlendirmesi
+
+Hazırlanıyor..
+
+---
+
+## :eight: Ekler
 
 Hazırlanıyor..
