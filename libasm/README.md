@@ -1314,7 +1314,7 @@ r15             | r15d          | r15w          | r15b
 
 ---
 
-## :three: YAYGIN ASSEMBLY TALIMATLARI, SECTİON'LAR, DİREKTİFLER, ETİKETLER VE İŞLENENLER (OPERANDS)
+## :three: Yaygın Assembly Talimatları - Section'lar, Direktifler, Etiketler - İşlenenler (Operands)
 
 ![nasmstructure](https://github.com/Fartomy/42-Out-Core/blob/main/libasm/mats/imgs/nasmstructure.png)
 
@@ -1758,7 +1758,7 @@ Burada `msg`, `'Hello, World!'` mesajının bellek adresini işaret eden bir ver
 >
 > Çoğu derleyici, işletim sisteminin varsayılan başlatma düzenini takip eder. Örneğin, C/C++ programlarında işletim sistemi, main fonksiyonuna ulaşmadan önce çeşitli başlangıç kodlarını (crt0 gibi) çalıştırır. Bu başlangıç kodları, C dilinin gerektirdiği ortamı hazırlayıp main fonksiyonunu çağırır.
 
-### Operands
+### İşlenenler (Operands)
 
 Assembly dilinde operandlar, bir talimatın üzerinde işlem yaptığı verilerdir. Operandlar, işlem yapılacak veri veya adresleri ifade eder ve her işlemci komutunun operandlara ihtiyacı vardır. Çoğu assembly komutu, iki veya daha fazla operand ile çalışır. Ancak bazı komutların hiç operandı yoktur (`nop, ret gibi`), bazı komutların ise yalnızca bir operandı vardır (`inc, dec gibi`). Kayıt, sabit, bellek ve adresleme modları gibi farklı operand türleri bulunur ve her tür farklı bir erişim yöntemi sağlar. Bu çeşitlilik, assembly dilinin esnekliği ve gücü açısından önemlidir. Operandların hangi bellek konumlarına veya kayıtlara işaret ettiğini doğru anlamak, düşük seviyeli programlamada performansı doğrudan etkiler.
 
@@ -1863,6 +1863,1164 @@ add rax, rbx   ; rax ve rbx'i toplar, sonucu rax'e yazar
 
 ---
 
-## :four: Assembler'lar (Nasm) ve Yazım Şekli - Linkleme `ld` ve Sıkıştırma - Gömme `arc rcs` - Obje Dosyaları - Statik (`.a` uzantılı dosyalar `libasm.a` gibi) ve Dinamik Kütüphaneler `.dll` `.so` - Runtime ve Compile Time - `errno` - Assembly ve C ile İlişkisel Bağlantı Kurma - `-no-pie` Flag'i nedir? Dışarıdan Harici Fonksiyon Çağırsma (malloc) - `.asm` ve `.s` Dosyası
+## :four: Assembler'lar (Nasm) ve Yazım Şekli - Linkleme `ld` ve Sıkıştırma - Gömme `arc rcs` - Obje Dosyaları - Statik (`.a` uzantılı dosyalar `libasm.a` gibi) ve Dinamik Kütüphaneler `.dll` `.so` - Runtime ve Compile Time - `errno` - Assembly ve C ile İlişkisel Bağlantı Kurma - `-no-pie` Flag'i nedir? Dışarıdan Harici Fonksiyon Çağırma (malloc) - `.asm` ve `.s` Dosyası
+
+### Assembler Nedir?
+
+Assembler, assembly dilinde yazılmış bir programı makine diline çevirmek için kullanılan bir yazılım aracıdır. Assembler, insan tarafından okunabilir komutları (assembly dilindeki talimatları), bilgisayarın doğrudan çalıştırabileceği ikili (binary) makine kodlarına dönüştürür. Bu süreç, yüksek seviyeli programlama dillerinin derlenmesine benzer; ancak assembler, işlemciye özgü komutları doğrudan makine diline çevirir.
+
+Assembly Kodu Makine Koduna Çevirme: Assembler’ın en temel işlevi, assembly kodunu makine diline çevirmektir. Assembly komutları işlemci mimarisine özgüdür ve assembler bu komutları ikili (binary) kodlara çevirerek işlemcinin anlayacağı biçime getirir.
+
+İnsan ile Makine Arasında Köprü Oluşturma: Makine kodları (ikili sistemde) doğrudan insan tarafından yazılması ve okunması zor bir formattır. Assembly dili, ikili komutlara göre daha okunabilir ve anlaşılırdır. Assembler, bu iki dil arasında bir çevirmen görevi üstlenerek, insan tarafından anlaşılır assembly dilini makine tarafından çalıştırılabilir hale getirir.
+
+Kodun İşlemciye Özgü Olmasını Sağlama: Her işlemci mimarisi (x86, ARM, MIPS gibi) kendine özgü bir komut seti kullanır. Bu komut seti, işlemcinin hangi komutları tanıyıp çalıştırabileceğini belirler. Assembler, bu komutları işlemciye uygun makine koduna dönüştürerek belirli bir mimariye özgü programlar oluşturmayı sağlar.
+
+**Assembler Çalışma Süreci: Derleme Adımları**
+
+- **Sözdizimi Analizi (Lexical Analysis):** Assembler, assembly kodunun sözdizimini kontrol eder ve her komutu belirli parçalarına ayırır (etiketler, talimatlar, operandlar).
+
+- **İşlemci Talimatları ile Eşleştirme:** Her assembly komutunu işlemciye özgü ikili bir talimat koduna (opcode) dönüştürür. Örneğin, mov rax, 1 komutu, işlemci komut setine bağlı olarak belirli bir makine koduna çevrilir.
+
+- **Semboller ve Etiketlerle Çalışma:** Assembler, etiketleri ve sabitleri değerlendirir. Bu semboller ve etiketler, programın dallanma komutlarında (jmp, call gibi) veya veri adreslerinde (belirli değişkenlerin adresleri) kullanılır.
+
+- **Bağlantı Tablosu Oluşturma:** Bazı assembler’lar, harici veya başka dosyalardaki sembollerle bağlantı kurmak için sembol tabloları oluşturur. Bu tablo, linker’ın (bağlayıcı) programın parçalarını bir araya getirmesine yardımcı olur.
+
+- **Çıkış Dosyası Üretme:** Assembler, nihayetinde çalıştırılabilir bir ikili dosya (örn. .exe veya .bin) veya bir nesne dosyası (örn. .o veya .obj) üretir. Bu dosya, bilgisayarın işletim sistemi tarafından çalıştırılabilir.
+
+**Farklı Assembler Türleri ve Örnekler**
+
+Assembler’lar, farklı işlemci mimarileri ve assembler sözdizimleri için çeşitli versiyonlara sahiptir. 
+
+	NASM (Netwide Assembler): Özellikle x86 ve x86_64 mimarisi için popüler bir assembler’dır.
+	MASM (Microsoft Macro Assembler): Microsoft’un x86 assembler’ıdır ve Windows platformlarında kullanılır.
+	GAS (GNU Assembler): GNU Assembler, GCC derleyici paketinin bir parçasıdır ve birçok platformda kullanılabilir.
+	FASM (Flat Assembler): x86 mimarisi için hızlı ve taşınabilir bir assembler’dır.
+ 
+ **Syntax (sözdizimi) farklılıkları**
+
+x86'da assembler’lar için sözdizimi (syntax) farklılıkları bulunur ve bu farklılıklar, komutların yazım biçiminde, operand sıralamasında ve belirli sembollerin kullanımında ortaya çıkar. Özellikle Intel ve AT&T olmak üzere iki ana sözdizimi standardı vardır. Intel sözdizimi NASM ve MASM gibi assembler’larda kullanılırken, AT&T sözdizimi genellikle UNIX ve Linux sistemlerinde GCC'nin GAS (GNU Assembler) ile birlikte varsayılan olarak kullanılır.
+
+Intel ve AT&T Sözdizimi Karşılaştırması
+
+	Operand Sıralaması:
+	Intel Sözdizimi: İlk operand hedef (destination), ikinci operand ise kaynak (source) olarak belirtilir.
+        AT&T Sözdizimi: İlk operand kaynak (source), ikinci operand ise hedef (destination) olarak belirtilir.
+
+Örnek:
+
+```asm
+; Intel sözdizimi
+mov rax, rbx    ; rbx’teki değeri rax’e kopyalar (hedef, kaynak)
+
+; AT&T sözdizimi
+movq %rbx, %rax ; rbx’teki değeri rax’e kopyalar (kaynak, hedef)
+```
+
+**Kayıtların (Register) Gösterimi:**
+
+    Intel Sözdizimi: Kayıt isimleri direkt yazılır (örn. rax, rbx).
+    AT&T Sözdizimi: Kayıt isimlerinin başına % eklenir (örn. %rax, %rbx).
+    
+Bu, AT&T sözdiziminde bir operandın kayıt mı, bellek mi olduğunu ayırt etmek için kullanılır.
+
+
+**Sabit (Immediate) Değerlerin Gösterimi:**
+
+    Intel Sözdizimi: Sabit değerler doğrudan yazılır (örn. 10, 0x1A).
+    AT&T Sözdizimi: Sabit değerlerin başına $ işareti eklenir (örn. $10, $0x1A).
+    
+Bu, AT&T sözdiziminde sabit değerleri bellek adreslerinden ayırmak için yapılır:
+
+```asm
+; Intel sözdizimi
+mov rax, 10
+
+; AT&T sözdizimi
+movq $10, %rax
+```
+
+**Bellek Adresleme:**
+
+    Intel Sözdizimi: Bellek adresleri köşeli parantez [] ile gösterilir.
+    AT&T Sözdizimi: Bellek adresleri parantez () ile gösterilir. Ayrıca, AT&T’de karmaşık adresleme biçimlerinde bileşenler ters sırada belirtilir.
+    
+```asm
+; Intel sözdizimi
+mov rax, [rbx]          ; rbx'in işaret ettiği adresteki değeri rax'e yükler
+mov rax, [rbx + 4*rcx]  ; rbx + 4*rcx'in işaret ettiği adresteki değeri rax'e yükler
+
+; AT&T sözdizimi
+movq (%rbx), %rax       ; %rbx'in işaret ettiği adresteki değeri %rax'e yükler
+movq (%rbx, %rcx, 4), %rax ; %rbx + 4*%rcx'in işaret ettiği adresteki değeri %rax'e yükler
+```
+
+**Komut İsimleri ve Uzantılar:**
+
+    Intel Sözdizimi: Komut isimleri, kullanılan operandların uzunluğunu belirtmez (örn. mov, add).
+    AT&T Sözdizimi: Komut isimlerine, operandların uzunluğunu belirtmek için b (byte), w (word), l (long) veya q (quadword) gibi uzantılar eklenir.
+
+```asm
+; Intel sözdizimi
+mov rax, rbx
+
+; AT&T sözdizimi
+movq %rbx, %rax   ; q, 64-bit (quadword) olduğunu belirtir
+```
+
+### Assembly Dosya Uzantısı Farklılıkları (`.s` - `.asm`)
+
+Her iki uzantı da assembly dilinde yazılmış kaynak dosyaları ifade eder, ancak kullanım farklılıkları vardır ve bu farklar tarihsel ve sistem gereksinimlerinden kaynaklanır.
+
+**`.asm` Dosya Uzantısı**
+
+    Kullanım Alanı: .asm uzantısı, özellikle Intel sözdizimini kullanan assembler’lar (NASM, MASM gibi) için yaygın olarak kullanılır.
+    Platformlar: .asm dosyaları çoğunlukla DOS/Windows sistemleri ve Intel işlemcilerde tercih edilir.
+    Derleyici/Assembler Uyumu: NASM (Netwide Assembler), MASM (Microsoft Macro Assembler) ve FASM (Flat Assembler) gibi assembler’lar .asm dosyalarını kullanır ve genellikle Intel sözdizimiyle uyumlu çalışır.
+    Tarihsel Nedenler: .asm uzantısı, özellikle 80'lerden itibaren PC'lerde ve Windows ortamında standartlaşmıştır. Bu nedenle Windows ve DOS tabanlı sistemlerde daha yaygındır.
+    
+    
+**`.s` Dosya Uzantısı**
+
+    Kullanım Alanı: .s uzantısı, UNIX ve Linux sistemlerinde yaygın olarak kullanılır ve çoğunlukla AT&T sözdizimini kullanan assembler’lar ile ilişkilidir.
+    Platformlar: .s dosyaları genellikle Linux ve UNIX tabanlı sistemlerde tercih edilir.
+    Derleyici/Assembler Uyumu: GCC derleyicisi veya Clang gibi araçlar, C veya C++ kaynak kodunu .s uzantılı assembly dosyalarına dönüştürür. GCC’nin parçası olan GNU Assembler (GAS) da varsayılan olarak .s dosya uzantısını kullanır.
+    Tarihsel Nedenler: UNIX tabanlı sistemlerde .s uzantısı, GCC gibi araçlarla üretilen assembly kodunun uzantısı olarak standartlaşmıştır. UNIX’in dosya isimlendirme geleneğine uygun olarak daha kısa ve basittir.
+
+**Neden İki Farklı Uzantı Kullanılıyor?**
+
+    Platform ve Sözdizimi Farklılıkları:
+    Windows/DOS sistemlerinde Intel tabanlı NASM ve MASM gibi assembler’lar yaygınken, UNIX ve Linux tabanlı sistemlerde GCC/GAS kullanımı daha yaygındır.
+    Intel sözdizimini kullanan assembler’lar için .asm uzantısı daha standarttır, AT&T sözdizimini kullananlar için ise .s tercih edilir.
+
+**GCC’nin Çıkışı Olarak `.s` Kullanımı:**
+
+    UNIX ve Linux sistemlerinde, C kodunun assembly çıktısını almak için GCC veya Clang derleyicileri .s uzantısını kullanır. Bu dosyalar, otomatik olarak GCC’nin ürettiği assembly dosyalarıdır.
+
+**Dosya İsmi Uzunluk Standartları:**
+
+    UNIX sistemleri, daha kısa dosya isimlerini tercih eder. Bu nedenle, AT&T ve UNIX kökenli araçlarda .s daha sık kullanılır.
+    Windows/DOS sistemlerinde daha açıklayıcı dosya uzantıları (.asm, .obj, .exe gibi) tercih edilir.
+
+**Derleme Araçları Uyumluluğu:**
+
+    GCC ve GAS gibi araçlar .s dosyalarını, NASM ve MASM gibi assembler’lar ise .asm dosyalarını varsayılan olarak kullanır.
+
+>[!IMPORTANT]
+>
+> **Konuyla tamamıyla ilgisiz de olmayan ama eyleme döküldüğünde anlamsız bir tatmin hissi uyandıran o bilgi**
+> GCC derleyicisi ile bir C dosyasının assembly kaynak dosyasının `.s` çıktısı alınabilir:
+>```
+> gcc -S main.c
+>```
+
+**Assembler (NASM) ile assembly dosyası derleme**
+
+**Linux'da:**
+
+```asm
+section .data
+msg db "Selam", 0xa
+msg_len equ $ - msg
+
+section .text
+global _start
+
+
+_start:
+	mov rax, 1
+	mov rdi, 1
+	mov rsi, msg
+	mov rdx, msg_len
+	syscall
+	mov rax, 60
+	mov rdi, 0
+	syscall
+```
+
+```bash
+$ nasm -f elf64 -o test.o test.s
+$ ld -o test test.o
+```
+
+1. `nasm`: Netwide Assembler (NASM), x86 mimarisi için kullanılan bir assembler'dır. Assembly dilini makine diline çevirir.
+2. `-f elf64`: Bu seçenek, çıktının ELF (Executable and Linkable Format) 64 bit biçiminde olacağını belirtir. ELF formatı, Linux gibi Unix tabanlı işletim sistemlerinde yaygın olarak kullanılır. 64 bit mimari için uygun olduğundan, bu komut nasm'a çıktıyı 64 bitlik bir formatta oluşturması gerektiğini söyler.
+3. `-o test.o`: Bu seçenek, derlenen çıkış dosyasının adını belirler. Burada merhaba.o adında bir nesne dosyası oluşturulacaktır. `o` uzantısı, bu dosyanın bir nesne dosyası olduğunu belirtir.
+4. `merhaba.s`: Bu, derlenecek olan assembly dosyasının adıdır. nasm, bu dosyayı alarak belirtilen formatta bir nesne dosyası oluşturur.
+5. `ld`: GNU Linker, nesne dosyalarını birleştirerek çalıştırılabilir bir dosya oluşturmak için kullanılan bir araçtır.
+6. `-o test`: Bu seçenek, oluşturulacak çalıştırılabilir dosyanın adını belirtir. Burada test adında bir dosya oluşturulacaktır. Yani, program çalıştırıldığında `./test` şeklinde çağrılabilir.
+7. `test.o`: Linker, bu nesne dosyasını alır ve bir çalıştırılabilir dosya oluşturur. Bu nesne dosyası, nasm ile oluşturulan makine dilinde sembolik kodları içerir.
+
+**MacOS'da:**
+
+```asm
+section .data
+msg db "Selam", 0x0a
+
+section .text
+global _main
+
+_main:
+	mov rax, 0x2000004 ; System call write = 4
+	mov rdi, 1 ; stdout
+	mov rsi, msg
+	mov rdx, 6 ; size of string + 1
+	syscall
+	mov rax, 0x2000001 ; system call exit = 1
+	mov rdi, 0 ; exit success = 0
+	syscall
+```
+
+```bash
+$ nasm -f macho64 test.s -o test.o
+$ ld -arch x86_64 -lSystem test.o -o test
+```
+
+1. `-f macho64`: Bu seçenek, NASM'a derleme için hedef dosya formatının mach-o 64-bit formatında olmasını belirtir.
+   1. **mach-o**, macOS işletim sisteminde kullanılan bir dosya formatıdır (Mach Object format). Mach-O formatı, macOS ve iOS sistemlerinde çalıştırılabilir dosyalar, paylaşımlı kütüphaneler ve nesne dosyaları için kullanılır.
+   2. **64**, 64-bit hedef mimari anlamına gelir. Bu seçenekle NASM, x86_64 işlemci mimarisi için uyumlu bir Mach-O nesne dosyası (test.o) oluşturur.
+2. `-arch x86_64`: Bu seçenek, oluşturulacak çalıştırılabilir dosyanın mimarisini belirtir. **x86_64**, 64-bit mimariye sahip bir çalıştırılabilir dosya üretileceğini ifade eder.
+
+3. `-lSystem`: Bu seçenek, System Framework ile bağlantı kurar.
+   3. System framework, macOS’ta temel sistem işlevlerini içeren kütüphaneleri kapsar (örneğin, bellek yönetimi, giriş/çıkış, sistem çağrıları). Bu seçenek olmadan, macOS sistem çağrıları ve diğer çekirdek işlevleri çalıştırılabilir dosyada eksik olabilir.
+
+**Neden Bu Şekilde Yapılıyor?**
+
+    Modülerlik:
+        Assembly kodu, makine diline dönüştürülürken önce bir nesne dosyasına (obj) dönüştürülür. Bu, kodu modüler hale getirir. Yani, farklı kaynak dosyalarını ayrı ayrı derleyebilir ve sonra birleştirebilirsin.
+
+    Bağımlılık Yönetimi:
+        Birden fazla nesne dosyasını birleştirerek, farklı modüllerin birbirleriyle nasıl etkileşime gireceğini belirleyebilirsin. Bu, özellikle büyük projelerde bağımlılıkları yönetmeyi kolaylaştırır.
+
+    Format Seçimi:
+        -f elf64 gibi seçenekler, hedef sistemin gereksinimlerine göre uygun dosya formatının seçilmesine yardımcı olur. ELF formatı, Linux'ta yaygın olarak kullanılan bir formattır ve dinamik bağlama gibi özellikleri destekler.
+
+    Hedef Dosya Tanımlama:
+        -o seçeneği ile çıktının ismi belirlenir. Bu, çıktının hangi isimle kaydedileceğini kontrol etmeni sağlar ve sistemdeki dosya karmaşasını önler.
+
+### Nesne Dosyaları `.o` Nedir?
+
+Nesne dosyası, derlenmiş kod ve veri içeren, fakat doğrudan çalıştırılabilir bir program olmayan bir dosya türüdür. Genellikle yazılım geliştirme sürecinin bir parçası olarak oluşturulan nesne dosyaları, derleyiciler veya assembler’lar tarafından üretilir ve sonrasında linker kullanılarak çalıştırılabilir bir dosya haline getirilir.
+
+Nesne Dosyasının Özellikleri:
+
+    İçerik:
+        Nesne dosyası, makine kodu, veri ve sembol bilgilerini içerir. Makine kodu, CPU tarafından doğrudan çalıştırılabilir. Veri kısmı, programın çalışması sırasında ihtiyaç duyulan değişkenleri içerir.
+        Semboller, fonksiyon ve değişkenlerin adlarını tanımlar. Linker, bu sembolleri çözerek çalıştırılabilir dosya oluşturur.
+
+    Format:
+        Nesne dosyaları, genellikle belirli bir formatta (örneğin, ELF, COFF, OMF) saklanır. Bu format, dosyanın nasıl okunacağını ve işleneceğini belirler.
+        ELF (Executable and Linkable Format): Linux gibi Unix tabanlı sistemlerde yaygın olarak kullanılan bir nesne dosyası formatıdır.
+        COFF (Common Object File Format): Windows sistemlerinde kullanılan bir nesne dosyası formatıdır.
+
+    Modülerlik:
+        Program kodu genellikle birden fazla kaynak dosyasına yayılır. Her kaynak dosyası ayrı bir nesne dosyası olarak derlenir. Linker, bu nesne dosyalarını birleştirerek çalıştırılabilir bir dosya oluşturur. Bu, kodun modüler olmasını sağlar ve geliştirme sürecini kolaylaştırır.
+
+    Yeniden Kullanılabilirlik:
+        Daha önce derlenmiş nesne dosyaları, tekrar derlemeye gerek kalmadan başka projelerde de kullanılabilir. Bu, geliştirme süresini kısaltır.
+
+    Debug Bilgisi:
+        Nesne dosyaları, hata ayıklama (debugging) bilgilerini içerebilir. Bu bilgiler, geliştiricilerin kodu hata ayıklarken daha iyi anlamalarına yardımcı olur.
+
+### Linkleme `ld` Nedir?
+
+Linkleme (linking), bir programın çalıştırılabilir hale getirilmesi için yapılan son adımdır. Derleyiciler, kaynak kodu tek başına çalıştırılamayan nesne dosyalarına dönüştürür. Linkleme işlemi ise bu nesne dosyalarını alır ve çalıştırılabilir bir dosya (örneğin .exe, .out veya bir Mach-O dosyası) oluşturur.
+
+Linkleme, statik ve dinamik olarak iki ana türde yapılabilir ve her iki tür de çalıştırılabilir dosyanın oluşmasında farklı şekilde işlev görür.
+
+Linkleme Aşamaları ve İşlevi
+
+    Sembol Çözümleme:
+        Nesne dosyaları içindeki semboller (fonksiyonlar, değişkenler) çözülür.
+        Örneğin, bir dosyada printf gibi bir fonksiyon çağrıldığında, linker bu fonksiyonun hangi kütüphanede olduğunu bulur ve adresini çözerek çağrıyı bağlar.
+
+    Bellek Düzenleme (Relocation):
+        Farklı nesne dosyalarındaki kod ve veri segmentleri (örneğin .text, .data) bellekte belirli adreslere yerleştirilir.
+        Linker, her segmentin adresini belirleyerek, gerektiğinde adresleri günceller.
+
+    Dış Kütüphaneleri Bağlama:
+        Programın dış kütüphanelere ihtiyaç duyduğu fonksiyon ve verileri, çalıştırılabilir dosyaya ekleyebilir.
+        Örneğin, math.h kütüphanesi gibi bir kütüphanedeki matematik fonksiyonları programa dahil edilir.
+
+    Çalıştırılabilir Dosya Üretme:
+        Linkleme işlemi sonunda tüm kod, veri, sembol ve kütüphaneler tek bir çalıştırılabilir dosyada birleştirilir.
+
+**Statik ve Dinamik Linkleme**
+
+**Statik Linkleme**
+
+Statik linkleme, gerekli tüm kütüphane fonksiyonlarının çalıştırılabilir dosyanın içine dahil edilmesidir. Bu yöntemde, program çalışırken ek bir dış kütüphane dosyasına ihtiyaç duymaz, çünkü kütüphanenin tüm kodları çalıştırılabilir dosyada yer alır.
+
+    Avantajları:
+        Taşınabilirliği kolaydır; başka sistemlerde çalıştırmak için gereken her şey tek dosya içinde bulunur.
+        Kütüphane sürümlerine bağımlılık yoktur; her sürüm çalıştırılabilir dosyada yer alır.
+    Dezavantajları:
+        Dosya boyutları daha büyük olur.
+        Kütüphane güncellemeleri yapılırsa, her çalıştırılabilir dosya yeniden linklenmelidir.
+
+**Dinamik Linkleme**
+
+Dinamik linklemede, kütüphane fonksiyonları çalıştırılabilir dosyanın içine dahil edilmez. Bunun yerine, kütüphaneler işletim sistemi tarafından program çalıştığında dinamik olarak bağlanır.
+
+    Avantajları:
+        Çalıştırılabilir dosya boyutu küçülür.
+        Aynı kütüphane birçok program tarafından paylaşılabilir, böylece bellekte verimli kullanım sağlanır.
+        Kütüphane güncellendiğinde programlar otomatik olarak bu güncel sürümü kullanır.
+
+    Dezavantajları:
+        Çalıştırılabilir dosya, kütüphanelerin yüklenebilir durumda olmasına bağlıdır. Bir kütüphane eksik veya hatalıysa program çalışmaz.
+        Kütüphanelerin güncellenmesi beklenmedik sorunlara neden olabilir.
+
+Örnek:
+
+Bir programda **_printf_** gibi bir C kütüphane fonksiyonu kullanıldığında, bu fonksiyonun gerçek tanımı libc kütüphanesinde bulunur. Derleyici **_printf_** fonksiyonunun varlığını doğrular ancak adresini çözmez; linker, libc kütüphanesinden bu sembolü bularak bağlar.
+
+```bash
+# C programını derleyip linklemek
+gcc -o program program.c
+```
+
+Derleyici tarafından önce program.c dosyasını nesne dosyasına (program.o) dönüştürür.
+Ardından linker, program.o dosyasını gerekli kütüphanelerle linkleyerek `program` adlı çalıştırılabilir dosyayı oluşturur.
+
+Linkleme, bir programın düzgün çalışması için tüm bileşenleri bir araya getirir. Dış kütüphanelerle ilişkileri kurarak ve kodları uygun bellek adreslerine yerleştirerek programın çalışmaya hazır hale gelmesini sağlar. Bu işlemler olmasaydı, nesne dosyaları eksik semboller içerir ve çalıştırılamaz hale gelirdi.
+
+### `.a` Dosyası, Statik (`.a`, `.lib` vb.) ve Dinamik (`.dll`, `.so` vb.) Kütüphaneler, `ar rcs` komutu, Runtime ve Compile Time
+
+#### `.a` Dosyası
+
+.a uzantılı dosya, statik kütüphane (static library) dosyasıdır ve genellikle C/C++ gibi programlama dillerinde kullanılan bir dosya formatıdır. Statik kütüphaneler, program derlenirken içerdiği fonksiyonların ve verilerin, programın yürütülebilir dosyasına (binary) statik olarak bağlandığı dosyalardır. Bu bağlama işlemi derleme sırasında yapılır ve çalışma zamanında (runtime) bu kütüphanelere erişilmez.
+
+.a Dosyasının Kullanımı
+
+    .a dosyaları derleme sırasında programlara linklenir.
+    Linux ve macOS gibi Unix tabanlı sistemlerde yaygındır. Windows'ta karşılığı .lib uzantılı dosyalardır.
+    C programları derlenirken .a dosyaları ile birlikte statik bağlantı yapılır. Bu işlem derleyici veya bağlayıcı (linker) tarafından gerçekleştirilir.
+
+**Statik ve Dinamik Kütüphaneler Arasındaki Fark**
+
+	Statik Kütüphane (.a dosyası): Program derlenirken kütüphanedeki kod programa dahil edilir ve bu kod çalıştırılabilir dosyanın içine gömülür. Program bağımsız çalışabilir çünkü gerekli tüm kütüphane kodları içeridedir.
+
+    Dinamik Kütüphane (.so dosyası): Çalışma zamanında (runtime) yüklenen ve paylaşılan kütüphanelerdir. Program, dinamik kütüphanelere çalışma sırasında ihtiyaç duyar. Örneğin, .so dosyası Linux'ta kullanılan dinamik kütüphane formatıdır (Windows'ta .dll dosyalarıyla benzer).
+    
+Örnek: `.a` Dosyasının Kullanımı (Statik Kütüphane Dosyasını `libmath.a` Derleyin)
+
+Bir `.a` dosyasını kullanarak bir C programı derlemek şu şekilde yapılabilir:
+
+```bash
+# add.c dosyasını derleyip .o nesne dosyası olarak kaydedin
+gcc -c -o add.o add.c
+# .o dosyasını libmath.a adlı statik kütüphaneye ekleyin
+ar rcs libmath.a add.o
+```
+
+`ar` aracı, bir ya da daha fazla nesne dosyasını `.o` birleştirip `.a` dosyasını oluşturur.
+
+Kütüphaneyi Kullanarak Programı Derleyin:
+
+```bash
+gcc main.c -L. -lmath -o program
+```
+
+- `L.` ile kütüphanelerin bulunduğu yolu (bu örnekte geçerli dizin) belirtiriz.
+- `lmath` ile `libmath.a` kütüphanesini kullanacağımızı söyleriz.
+
+Sonuçta program adlı yürütülebilir dosya oluşturulur ve kütüphanedeki kodlar programa dahil edilir.
+
+### Statik ve Dinamik Kütüphaneler
+
+Statik ve dinamik kütüphaneler, programların işlevselliğini artırmak için kullanılan, önceden derlenmiş kod ve veri koleksiyonlarıdır. Kütüphaneler, yazılım geliştirmeyi hızlandırır, kod tekrarını azaltır ve programların daha verimli çalışmasını sağlar. Bu kütüphaneler, çalıştırılabilir dosyalar (yani bir program) tarafından işlevlerin ve veri kaynaklarının yeniden kullanılabilir şekilde yüklenmesine olanak tanır. Ancak, kütüphaneler farklı yükleme ve bağlantı yöntemlerine göre statik ve dinamik olmak üzere iki ana türe ayrılır.
+
+**Statik Kütüphane (`.a`, `.lib` vb.)**
+
+Statik kütüphane, derleme zamanında çalıştırılabilir dosya ile birlikte tamamen bağlanan ve programın bir parçası haline gelen bir kütüphanedir. Statik kütüphaneler, belirli işlevleri yerine getiren önceden derlenmiş fonksiyonlar ve veri yapılarını içerir. Birden fazla programda yeniden kullanılabilir. Ancak, statik kütüphaneler programla birlikte derlendiği için bu kütüphaneleri kullanan her program, kütüphanenin ilgili kodunu kendi içinde taşır. Bu da programın boyutunu büyütebilir, fakat bağımsız çalışmasına olanak sağlar.
+
+    Dosya Uzantısı: Genellikle UNIX tabanlı sistemlerde .a (archive) olarak adlandırılır, Windows ortamında ise .lib uzantısıyla kullanılır.
+    Bağlantı Şekli: Program, statik kütüphaneyi içerdiği için çalışırken dış bir kütüphaneye ihtiyaç duymaz. Derleme sırasında, linker bu .a dosyasındaki tüm gerekli kodları çalıştırılabilir dosyaya dahil eder.
+    Çalışma Prensibi: Linker, .a dosyasındaki fonksiyonları ve veriyi programın koduna ekler. Böylece çalıştırılabilir dosya, kendi başına yeterli olacak şekilde bağımsız hale gelir.
+
+Avantajları:
+
+    Taşınabilirlik: Statik kütüphaneler ile bağlanan programlar bağımsızdır; başka bir sisteme taşınırken ek kütüphanelere ihtiyaç duymaz.
+    Stabilite: Program içindeki kütüphane kodları değişmediğinden kütüphane güncellemeleri, programın çalışmasını etkilemez.
+
+Dezavantajları:
+
+    Dosya Boyutu: Statik bağlama nedeniyle, her bir çalıştırılabilir dosya tüm kütüphane kodlarını içerir, bu da dosya boyutunu artırır.
+    Güncelleme Zorluğu: Kütüphanedeki bir fonksiyonda hata giderildiğinde veya iyileştirme yapıldığında, programın yeniden derlenmesi gerekir.
+
+
+**Statik Kütüphane Kullanımı**
+
+Bir statik kütüphane oluşturmak için `ar` (archiver) komutu kullanılabilir.
+
+
+**Dinamik Kütüphane (`.dll`, `.so` vb.)**
+
+Dinamik kütüphaneler, çalışma zamanında yüklenir ve programa bağlanır. Bu kütüphaneler programın çalıştırılabilir dosyasına dahil edilmez; program çalışırken işletim sistemi tarafından yüklenir.
+
+Dosya Uzantısı:
+
+    .so (Shared Object): UNIX/Linux sistemlerinde kullanılan dinamik kütüphane dosyalarıdır.
+    .dll (Dynamic Link Library): Windows işletim sistemlerinde kullanılan dinamik kütüphane dosyalarıdır.
+    
+	Bağlantı Şekli: Program, dinamik kütüphanedeki kod ve veriyi çalışırken çağırır. Kütüphane işletim sistemi tarafından bellek üzerinde paylaşımlı olarak yüklenir ve birden fazla program aynı kütüphaneyi paylaşabilir.
+
+	Çalışma Prensibi: Program, dinamik kütüphane içindeki kodu çalışma zamanında (runtime) işletim sisteminden ister. Bu da çalıştırılabilir dosyanın küçük kalmasını sağlar.
+
+ Avantajları:
+
+    Küçük Dosya Boyutu: Çalıştırılabilir dosya, kütüphane kodlarını içermez. Bu nedenle dosya boyutu küçülür.
+    Güncelleme Kolaylığı: Kütüphanede yapılan güncellemeler, kütüphaneyi kullanan tüm programlara yansır ve programların yeniden derlenmesi gerekmez.
+    Bellek Verimliliği: Aynı anda birden fazla program aynı dinamik kütüphaneyi kullandığında bellek kullanımı daha verimli hale gelir.
+
+Dezavantajları:
+
+    Bağımlılık: Program, çalıştığı sistemde bu kütüphanelerin bulunmasını gerektirir. Eksik bir dinamik kütüphane programın çalışmamasına yol açabilir.
+    Uyumluluk Sorunları: Kütüphanede yapılan değişiklikler veya güncellemeler, bazı programların bu kütüphaneyle uyumsuz hale gelmesine neden olabilir.
+    
+    
+Örnek:
+
+```bash
+# foo.c'yi dinamik bir kütüphane olarak derleyin
+gcc -fPIC -c foo.c -o foo.o
+gcc -shared -o libfoo.so foo.o
+```
+
+Bu komutlar `libfoo.so` adında bir dinamik kütüphane oluşturur. 
+
+Programı bu dinamik kütüphane ile linklemek için:
+```bash
+gcc main.c -L. -lfoo -o program
+```
+
+Program çalıştırıldığında, `libfoo.so` kütüphanesi sistemde bulunmalı veya `LD_LIBRARY_PATH` ortam değişkenine eklenmelidir.
+
+**Statik ve Dinamik Kütüphaneler Arasındaki Fark**
+
+	Statik Kütüphane (.a dosyası): Program derlenirken kütüphanedeki kod programa dahil edilir ve bu kod çalıştırılabilir dosyanın içine gömülür. Program bağımsız çalışabilir çünkü gerekli tüm kütüphane kodları içeridedir.
+
+    Dinamik Kütüphane (.so dosyası): Çalışma zamanında (runtime) yüklenen ve paylaşılan kütüphanelerdir. Program, dinamik kütüphanelere çalışma sırasında ihtiyaç duyar. Örneğin, .so dosyası Linux'ta kullanılan dinamik kütüphane formatıdır (Windows'ta .dll dosyalarıyla benzer).
+
+### `ar rcs` Komutu Nedir?
+
+`ar rcs` komutu, statik kütüphane dosyaları oluşturmak için kullanılan bir komuttur. `ar`, archiver anlamına gelir ve nesne dosyalarını birleştirerek statik bir kütüphane (`.a` uzantılı dosya) oluşturmak için kullanılır. Bu komut, özellikle C ve C++ programlarında kullanılan `.a` dosyalarını oluşturmak için yaygın olarak kullanılır.
+
+`ar` komutunun sözdizimi ve `rcs` seçenekleri şunlardır:
+
+    ar: Archiver komutunun kendisidir; dosyaları arşivleyerek bir kütüphane oluşturur veya mevcut kütüphaneyi günceller.
+    r: Dosyaları kütüphaneye ekler veya günceller. Kütüphanede zaten bir dosya varsa, r seçeneğiyle güncellenir, yoksa yeni bir dosya olarak eklenir.
+    c: Yeni bir kütüphane dosyası oluşturur (örneğin, libfoo.a gibi) ve dosya önceden mevcut değilse bir uyarı vermez.
+    s: Kütüphaneye bir dizin ekler, yani kütüphanedeki sembollerin hızlı erişim için dizinlenmesini sağlar. Bu seçenek, bağlama işlemlerinin hızlanmasını sağlar.
+
+Özetle, `ar rcs` komutu, bir kütüphane dosyası oluşturur, nesne dosyalarını kütüphaneye ekler veya günceller ve sembol tablosu oluşturur.
+
+Örnek:
+
+`foo.o` ve `bar.o` adlı iki nesne dosyamız var ve bunları bir statik kütüphaneye dönüştürmek istiyoruz:
+
+```bash
+ar rcs libexample.a foo.o bar.o
+```
+
+Bu komut:
+
+    libexample.a adlı bir kütüphane dosyası oluşturur.
+    foo.o ve bar.o dosyalarını bu kütüphaneye ekler.
+    Sembol tablosu ekler ve hızlı erişim için kütüphaneyi optimize eder.
+
+**`ar rcs` Kullanımının Amacı**
+
+    Statik kütüphanelerle çalışırken .o nesne dosyalarını bir araya toplamak ve bir tek dosya üzerinden bağlama işlemlerini kolaylaştırmak için kullanılır.
+    Bu kütüphaneler, daha sonra gcc -o program main.c -L. -lexample gibi komutlarla programa bağlanarak programın libexample.a içindeki işlevlere erişmesini sağlar.
+
+**Sembol Tablosu Nedir?**
+
+Sembol tablosu, derlenmiş bir kütüphane veya çalıştırılabilir dosyada, fonksiyonlar, değişkenler ve diğer tanımlı sembollerin isimlerini ve adres bilgilerini içeren bir tablodur. Statik kütüphanelerde sembol tablosu, linker’ın (bağlayıcı) kütüphane içinde belirli sembolleri hızlıca bulmasını ve programda doğru yere bağlamasını sağlar.
+
+**Sembol Tablosunun İşlevi**
+
+Bir program bir kütüphanedeki fonksiyonları veya değişkenleri kullanmak istediğinde, linker bu fonksiyonları ve değişkenleri **isimleri ile bulur** ve programda kullanılacak adreslerle ilişkilendirir. Örneğin, bir statik kütüphane içinde `foo` adlı bir fonksiyon varsa, linker programda `foo` fonksiyonunu çağıran yerlere kütüphanedeki `foo` fonksiyonunun adresini bağlar.
+
+Sembol tablosu, linker’ın bu sembollerin yerini kütüphane içinde hızlı bir şekilde bulmasını sağlar:
+- **Bağlama işlemi hızlanır**: Sembol tablosu olmadan linker, kütüphanedeki tüm dosyaları ve sembolleri tek tek aramak zorunda kalır.
+- **Sembollere erişim kolaylaşır**: Fonksiyonlar ve değişkenler gibi semboller, isimlerinden doğrudan bulunabilir hale gelir.
+
+**Sembol Tablosunun Yapısı**
+
+Sembol tablosu, her sembol için:
+- **Sembol adı** (örneğin, `foo`, `bar`, vb.)
+- **Sembol türü** (fonksiyon, global değişken, vb.)
+- **Adres** veya **offset** (sembolün kütüphane veya dosya içindeki yeri)
+gibi bilgileri içerir. Bu bilgiler, linker’ın sembolleri programdaki kullanımlarla ilişkilendirmesi için gereklidir.
+
+**Sembol Tablosunun Gerekliliği ve `ar rcs` ya da `ranlib` ile Oluşturulması**
+
+Statik kütüphaneler, bir veya daha fazla nesne dosyasının birleştirilmiş halidir. `ar` komutu veya `ranlib` ile kütüphaneye eklenen sembol tablosu, linker’a hızlı erişim sağlar.
+
+Örnek:
+
+```bash
+ar rcs libexample.a foo.o bar.o
+```
+
+Bu komut `libexample.a` kütüphanesi içinde `foo` ve `bar` nesne dosyalarının sembollerini hızlı erişim için indeksler. Böylece linker, `libexample.a` kütüphanesindeki `foo` veya `bar` fonksiyonlarını doğrudan sembol tablosundan bulabilir.
+
+Sembol tablosu:
+- Kütüphane veya çalıştırılabilir dosyadaki sembollerin isim ve adres bilgilerini içerir.
+- Linker’ın program içindeki fonksiyon ve değişken referanslarını kütüphanedeki gerçek adreslerle ilişkilendirmesine yardımcı olur.
+- Linkleme sürecini hızlandırır ve kolaylaştırır, böylece her program derlendiğinde sembollerin tek tek aranmasına gerek kalmaz.
+
+Sembol tablosu olmadan, linker’ın sembolleri bulması çok yavaş olur ve bu da derleme sürecini uzatır. Bu yüzden statik kütüphanelerde sembol tablosu, hızlı bağlama ve verimlilik açısından kritik öneme sahiptir.
+
+**`ar rcs` ve `ranlib`**
+
+    ar rcs komutu, hem nesne dosyalarını kütüphaneye ekler hem de s seçeneği sayesinde sembol tablosunu oluşturur.
+    ranlib, statik kütüphaneye yalnızca sembol tablosu eklemek veya var olan sembol tablosunu güncellemek için kullanılır.
+
+Çoğu modern sistemde `ar rcs` kullanarak sembol tablosu oluşturmak yeterlidir, ancak eski sistemlerde veya `s` seçeneği desteklenmeyen `ar` sürümlerinde sembol tablosu eklemek için `ranlib` kullanmak gerekebilir.
+
+
+### Runtime ve Compile Time nedir?
+
+Compile time (derleme zamanı) ve runtime (çalışma zamanı), programın yaşam döngüsünde farklı aşamaları ifade eden iki önemli terimdir. Bu aşamalar, kodun yazılmasından çalıştırılmasına kadar geçen süreçte önemli bir rol oynar.
+
+**Runtime**
+
+Runtime, programın derlendikten sonra çalıştırıldığı zaman dilimini ifade eder. Bu aşamada, derlenmiş kod işlemci tarafından yürütülür ve kullanıcı ile etkileşime geçer. Çalışma zamanında oluşan olaylar programın işleyiş sürecini belirler.
+Runtime’da Gerçekleşen İşlemler:
+
+    Değişkenlerin Bellekte Saklanması: Program çalışırken değişkenler ve veri yapıları bellekte oluşturulur.
+    Kullanıcı Etkileşimleri: Kullanıcıdan veri alma, ekran çıktıları veya diğer I/O işlemleri runtime aşamasında gerçekleşir.
+    Dinamik Bellek Ayırma: Heap gibi dinamik bellek alanında runtime sırasında bellek ayrılır. Örneğin, malloc ve free gibi C işlevleri bu aşamada çalışır.
+    Koşullu İfadeler ve Döngüler: Koşullu ifadeler (if-else) ve döngüler (for, while) çalıştırıldıkça kontrol akışı runtime’da belirlenir.
+
+**Runtime Hataları**
+
+Runtime hataları, program çalışırken meydana gelen hatalardır ve genellikle derleme sırasında tespit edilemezler. Bu hatalar, çalışma sürecinde oluştuğundan genellikle daha kritiktir, çünkü programın çökmesine veya beklenmedik davranışlara yol açabilir. Örneğin, sıfıra bölme veya bir dizi sınırını aşma gibi hatalar runtime’da oluşur.
+
+Örnek:
+
+```c
+int main() {
+    int arr[5] = {1, 2, 3, 4, 5};
+    printf("%d", arr[10]);  // Array sınırını aşma hatası
+    return 0;
+}
+```
+
+Bu örnekte, `arr[10]` ifadesi dizi sınırını aşar. Bu hata runtime’da oluşur ve programın beklenmedik bir davranış sergilemesine veya çökmesine neden olabilir.
+Runtime’ın Önemi
+
+Runtime’da programın kullanıcıyla etkileşime geçmesi, dinamik veri işlemleri yapması ve hedeflenen işlevleri yerine getirmesi beklenir. Runtime sırasında oluşabilecek hataları yakalamak için hataya dayanıklı programlama teknikleri (örneğin, hata kontrolü) ve bazen hata ayıklama araçları kullanılır.
+
+**Compile Time**
+
+Compile time, programın derleyici tarafından işlenip makine diline veya ara koda dönüştürüldüğü zaman dilimini ifade eder. Derleme zamanında, kaynak koddaki hatalar tespit edilir, kod optimize edilir ve işlemci için uygun komutlara çevrilir.
+
+Compile Time’da Gerçekleşen İşlemler:
+
+    Sözdizimi Kontrolü: Derleyici, kodun yazım kurallarına uygun olup olmadığını kontrol eder ve hatalı yazımlar tespit edilir.
+    Tür Kontrolü: Değişkenlerin ve işlevlerin türleri, işleme uygun olup olmadığı açısından kontrol edilir. Yanlış tür kullanımları derleme hatası oluşturur.
+    Optimizasyonlar: Derleyici, kodu optimize ederek daha hızlı ve daha az bellek kullanan bir çalışma ortamı oluşturabilir.
+    Bağlama (Linking): Program, gerekli kütüphane ve modüllerle bağlanır. Bu işlem, çalıştırılabilir dosyanın eksiksiz hale gelmesini sağlar.
+
+**Compile Time Hataları**
+
+Compile time’da bulunan hatalar, derleme hataları olarak bilinir. Bu hatalar, kodun sözdizimsel hataları veya yanlış veri türü kullanımı gibi program çalışmadan önce fark edilen hatalardır. Örneğin, bir değişkenin tanımlanmadan kullanılması veya yanlış işlev çağrısı compile time hatasına yol açar.
+
+Örnek:
+
+```c
+int main() {
+    int x = "Hello";  // Hatalı tür kullanımı
+    return 0;
+}
+```
+
+Yukarıdaki örnekte, int türündeki x değişkenine string ("Hello") atanamaz. Bu, derleyici tarafından bir tür hatası olarak algılanır ve compile time’da tespit edilir.
+Compile Time’ın Önemi
+
+Compile time aşamasında kodun doğru bir şekilde çalıştırılabilir hale getirilmesi sağlanır. Compile time hatalarını çözmek, programın doğru çalışmasını ve runtime hatalarının azalmasını sağlar.
+
+**Compile Time ve Runtime Arasındaki Farklar**
+
+| Özellik       	   | Compile Time           			 | Runtime 					|
+| ------------------------ |-------------------------------------------- |----------------------------------------------|
+| Amaç      		   | Kodun derlenmesi ve hataların tespiti 	 | Programın çalıştırılması ve yürütülmesi   	|
+| Hata Türleri      	   | Sözdizimi, tür ve derleme hataları      	 | Çalışma zamanı hataları (runtime errors)   	|
+| Hata Yakalama Zamanı 	   | Derleme sırasında       	 		 | Program çalışırken   			|
+| Optimizasyonlar 	   | Derleyici optimizasyonları       	 	 | Çalışma zamanı optimizasyonları   		|
+| Dinamik Bellek Kullanımı | Genelde yapılmaz       	 		 | Yapılır (heap kullanımı gibi)   		|
+
+### Assembly ve C dosyaları ile İlişkisel Bağlantı Kurma
+
+Assembly dosyalarını C dosyalarında kullanmak, C programının doğrudan düşük seviyeli işlemler yapabilmesini sağladığı için çok güçlü bir yöntemdir. Bu entegrasyon iki dosya türünü derleyip bağlama işlemleriyle gerçekleştirilir. Temel olarak, C kodundan bir assembly fonksiyonunu çağırarak veya C’de yazılmış bir fonksiyona assembly kodunu entegre ederek bu işlemi yapabilirsiniz.
+
+**Assembly Dosyasını C Programında Harici Bir Fonksiyon Olarak Kullanma**
+
+Bir assembly dosyasında yazılmış bir fonksiyonu C kodunda çağırmak için aşağıdaki adımları takip edebilirsiniz.
+
+Örnek Senaryo: Assembly’de Yazılmış _add_ Fonksiyonunu C’de Kullanmak
+
+Örneğin, bir add fonksiyonunu assembly’de yazıp, C programında çağırmak istiyoruz.
+
+**Adım 1: Assembly Fonksiyonunu Yazma**
+
+İlk olarak, assembly dosyasını (örneğin `add.s`) şu şekilde yazıyoruz:
+
+```asm
+; add.s - Assembly fonksiyonu
+section .text
+    global add             ; add fonksiyonunu C'den erişilebilmesi için global yapıyoruz
+
+add:
+    mov rax, rdi           ; İlk argümanı rax'e yükle
+    add rax, rsi           ; İkinci argümanı rax'e ekle
+    ret                    ; Sonucu rax'te döndür
+```
+
+Bu assembly fonksiyonu:
+
+    İlk argümanı rdi kaydında, ikinci argümanı ise rsi kaydında alır (x86-64 mimarisi için).
+    Bu iki değeri toplayarak sonucu rax kaydına yazar ve fonksiyonu ret komutuyla sonlandırır.
+
+**Adım 2: C Programında Assembly Fonksiyonunu Bildirme ve Çağırma**
+
+Bir C programı (main.c) yazıyoruz ve add fonksiyonunu C koduna harici bir fonksiyon olarak tanıtıyoruz:
+
+```c
+#include <stdio.h>
+
+extern long add(long a, long b);  // Assembly fonksiyonunu bildiriyoruz
+
+int main()
+{
+    long result = add(5, 10);     // Assembly fonksiyonunu çağırıyoruz
+    printf("Result: %ld\n", result);  // Sonucu yazdırıyoruz
+    return 0;
+}
+```
+
+`extern long add(long a, long b);` ifadesi, derleyiciye `add` adlı harici bir fonksiyonun var olduğunu bildirir. Bu sayede add fonksiyonu C programında tanımlı olmasa bile çağrılabilir.
+
+**Adım 3: Derleme ve Linkleme**
+
+C ve assembly dosyalarını birlikte derleyip linkleyerek çalıştırılabilir bir dosya elde ediyoruz. 
+
+NASM kullanarak şu adımları izleyebilirsiniz:
+
+Assembly dosyasını nesne dosyasına çevirin:
+
+```bash
+nasm -f elf64 -o add.o add.s
+```
+
+C dosyasını assembly nesne dosyasıyla birlikte derleyin:
+
+```bash
+gcc -o main main.c add.o
+```
+
+Programı çalıştırın:
+
+```bash
+./main
+```
+
+>[!IMPORTANT]
+>
+> **Konuyla alakası olmayan bir bilgi daha**
+>
+> **C Fonksiyonuna Assembly Kodunu Satır İçi (Inline Assembly) Olarak Eklemek**
+>
+> GCC, asm ifadesiyle inline assembly (satır içi assembly) kodu yazmayı destekler. Bu yöntem, C kodunun içinde assembly kodu eklemek için kullanılır. Daha kontrollü bir erişim sağlar ancak yalnızca küçük assembly kodları için uygundur.
+>
+> Örnek: Inline Assembly Kullanarak Toplama İşlemi
+>
+> ```c
+> #include <stdio.h>
+>
+> int main() {
+>    int a = 5, b = 10, result;
+>
+>    asm("addl %%ebx, %%eax"       // Assembly kodu
+>        : "=a"(result)            // Çıktı operatörü, sonucu `result` değişkenine ata
+>        : "a"(a), "b"(b)          // Girdi operatörleri, a ve b değerlerini eax ve ebx'e ata
+>    );
+>
+>    printf("Result: %d\n", result);
+>    return 0;
+> }
+> ```
+>
+> Burada:
+>
+> 		"addl %%ebx, %%eax": Assembly komutudur. ebx’i eax’e ekler.
+>		"=a"(result): Assembly komutundan çıkan değeri result değişkenine atar (eax kaydındaki değeri result olarak belirtir).
+>		"a"(a), "b"(b): Girdi operatörleri, a ve b değişkenlerini sırasıyla eax ve ebx kayıtlarına yükler.
+>
+> Bu yöntem, C kodunun içine küçük assembly kodları eklemek için uygundur. Program çalıştırıldığında Result: 15 çıktısını verecektir.
+>
+> C programları ve assembly kodları arasında entegrasyon iki ana yolla yapılabilir:
+>
+> 		Harici Assembly Dosyalarını C Programına Dahil Etmek: Assembly dosyasındaki fonksiyonları extern anahtar kelimesi ile tanımlayarak C kodunda kullanılabilir hale getirirsiniz. Derleme ve linkleme aşamasında her iki dosyayı da dahil ederek çalıştırılabilir dosya oluşturulur.
+> 		Inline Assembly Kullanmak: Küçük assembly kod bloklarını C kodu içinde asm ifadesi ile yazabilirsiniz. Bu yöntem daha basit görevler için uygundur ancak büyük fonksiyonlar için tavsiye edilmez.
+>
+> Her iki yöntemde de C ile düşük seviyeli optimizasyonlar veya donanım etkileşimleri yapılabilir. Bu yöntemler sayesinde C programı, donanım seviyesinde daha verimli işlemler yapma imkanına sahip olur.
+
+
+**Assembly içerisinde dışarıdan hazır fonksiyon (malloc, printf) bildirme ve çağırma ve kendi assembly fonksiyonlarını assembly'de kullanma**
+
+Assembly dilinde dış kütüphanelerden hazır fonksiyonları (örneğin malloc, printf gibi C kütüphane fonksiyonlarını) kullanmak ve ayrıca kendi assembly fonksiyonlarını tanımlayıp çağırmak mümkündür. Bu işlemler, extern ve global direktifleri ile yapılır ve call komutu ile çağrılır. Aşağıda bu işlemlerin nasıl yapılacağı ayrıntılı olarak açıklanmıştır.
+
+**Assembly'de Hazır Fonksiyonları (malloc, printf gibi) Kullanma**
+
+Assembly kodunda C kütüphanelerindeki hazır fonksiyonları kullanmak için:
+
+    Fonksiyonu extern ile tanımlamak gerekir. Böylece derleyiciye bu fonksiyonun başka bir kütüphanede bulunduğunu ve bağlama (linking) sırasında erişilebileceğini belirtmiş oluruz.
+    Gerekli parametreleri doğru kayıtlara yükleyerek call komutu ile fonksiyonu çağırabiliriz.
+
+Örnek: malloc ve printf Fonksiyonlarını Assembly’de Kullanma
+
+```asm
+section .data
+    format db "Allocated memory address: %p", 0xA, 0  ; printf için format string
+
+section .text
+    global _start
+    extern malloc             ; malloc fonksiyonunu dışarıdan kullanmak için bildiriyoruz
+    extern printf             ; printf fonksiyonunu dışarıdan kullanmak için bildiriyoruz
+
+_start:
+    ; Bellekten 64 bayt ayırmak için malloc çağrısı
+    mov rdi, 64               ; malloc için gereken boyutu rdi'ye yükle (x86-64 çağrı kuralları)
+    call malloc               ; malloc çağrısı, dönen adres rax'e yazılır
+
+    ; printf ile bellek adresini yazdırma
+    mov rsi, rax              ; malloc'tan dönen adresi printf'in ikinci argümanı olarak rsi'ye yükle
+    mov rdi, format           ; printf'in format string'i için ilk argümanı rdi'ye yükle
+    xor rax, rax              ; printf fonksiyonunda gereksiz sonuç kaydı ayarı
+    call printf               ; printf çağrısı, format ve bellek adresi yazdırılır
+
+    ; Çıkış yap
+    mov rax, 60               ; sys_exit sistem çağrısı
+    xor rdi, rdi              ; Çıkış kodu 0
+    syscall
+```
+
+Derleme ve Linkleme
+
+Bu assembly kodunu çalıştırmak için, malloc ve printf fonksiyonlarına erişim sağlayacak olan C kütüphanelerine link yapmalıyız.
+
+```bash
+$ nasm -f elf64 -o example.o example.asm
+$ gcc -no-pie -o example example.o -lc
+```
+
+- `-lc` seçeneği, programı C standart kütüphanesine bağlar ve malloc, printf gibi işlevlerin erişilebilir olmasını sağlar.
+-`-no-pie` seçeneği, programın konum bağımsız bir çalıştırılabilir dosya oluşturmasını engeller, böylece kod örneğimizin çalışması garanti altına alınır.
+
+>[!WARNING]
+>
+> Dosyayı linklerken "çift tanım" hatası alıyorsanız. Aşağıda ki biçimde tekrar linkleyin;
+>
+>```bash
+> gcc -nostartfiles -no-pie -o example example.o -lc
+>```
+>
+> `-nostartfiles`: C'nin başlangıç dosyalarını eklemeyi devre dışı bırakır.
+>
+> Çift tanım hatası, GCC'nin kendi başlangıç kodunu (C programları için _start etiketi içeren bir dosya) linklemeye çalışmasından kaynaklanıyor. GCC, C programlarını linklerken crt1.o gibi dosyaları otomatik olarak ekler ve bu dosyalarda _start etiketi tanımlıdır. Ancak assembly programında zaten _start etiketini tanımladığımız için çift tanım hatası alıyoruz.
+>
+> Bu sorunu çözmek için GCC'yi C başlangıç kodlarını eklememeye zorlayabiliriz. Bunu yapmak için GCC’ye `-nostartfiles` seçeneği verilir. Bu seçenek, GCC'nin C başlangıç dosyalarını eklemeden linkleme yapmasını sağlar.
+
+**Assembly'de Kendi Fonksiyonlarını Tanımlama ve Çağırma**
+
+Assembly'de kendi fonksiyonlarınızı tanımlamak ve çağırmak için:
+
+    Fonksiyonu başka dosyalardan erişebilmek için global ile tanımlayabilirsiniz.
+    Başka dosyada tanımlanan bir fonksiyonu başka bir dosya da bildirmek için extern komutu kullanılabilir.
+    call komutu ile bu fonksiyonları çağırabilirsiniz.
+
+_Örnek-1: Assembly’de Kendi Fonksiyonunu Tanımlama ve Çağırma_
+
+```asm
+section .text
+    global _start
+    global add_numbers         ; add_numbers fonksiyonunu global yaparak erişilebilir hale getiriyoruz
+
+; add_numbers fonksiyonu
+; İlk argüman rdi, ikinci argüman rsi kayıtlarında
+add_numbers:
+    mov rax, rdi               ; İlk argümanı rax'e kopyala
+    add rax, rsi               ; İkinci argümanı rax'e ekle
+    ret                        ; Sonucu rax'te döndür
+
+; Programın ana kısmı (_start)
+_start:
+    mov rdi, 5                 ; İlk argümanı ayarla (5)
+    mov rsi, 10                ; İkinci argümanı ayarla (10)
+    call add_numbers           ; add_numbers fonksiyonunu çağır
+    ; rax'te dönen sonuç 15 olacaktır
+
+    ; Çıkış yap
+    mov rax, 60                ; sys_exit sistem çağrısı
+    xor rdi, rdi               ; Çıkış kodu 0
+    syscall
+```
+
+_add_numbers_ adlı fonksiyon iki argüman alır: rdi ve rsi kayıtlarında gelen bu argümanları toplar ve sonucu rax kaydında döndürür.
+`_start` bölümünde add_numbers fonksiyonunu `call add_numbers` ile çağırıyoruz. _add_numbers_ fonksiyonu `ret` ile geri döndüğünde, rax kaydında sonucu (15) taşır.
+
+Derleme ve Çalıştırma
+
+```bash
+nasm -f elf64 -o example.o example.asm
+ld -o example example.o
+```
+
+_Örnek-2: Assembly’de Kendi Fonksiyonunu Tanımlama ve Başka Assembly Dosyasından Çağırma_
+
+Assembly’de bir dosyada tanımlanan fonksiyonu başka bir dosyada kullanmak için, global ve extern direktiflerini kullanarak iki dosya arasında fonksiyon paylaşımı yapabilirsiniz. Birinci dosyada fonksiyonu tanımlayıp, ikinci dosyada onu çağırabilirsiniz.
+
+Örneğin, `add_numbers.asm` dosyasında bir toplama fonksiyonu tanımlayalım ve `main.asm` dosyasından bu fonksiyonu çağıralım.
+
+Adım 1: İlk Dosyada Fonksiyonu Tanımlama `add_numbers.asm`:
+
+Bu dosyada add_numbers adlı bir fonksiyon tanımlıyoruz. Bu fonksiyon iki argüman alır, toplama işlemini yapar ve sonucu döndürür;
+
+`add_numbers.asm`:
+```asm
+section .text
+    global add_numbers        ; Fonksiyonu başka dosyalardan erişilebilir yapmak için global yapıyoruz
+
+add_numbers:
+    mov rax, rdi              ; İlk argümanı rax’e taşıyoruz
+    add rax, rsi              ; İkinci argümanı rax ile topluyoruz
+    ret                       ; Sonucu rax’te döndürüyoruz
+```
+
+	Bu dosyada add_numbers adlı bir fonksiyon tanımlanır.
+	global add_numbers ifadesi ile bu fonksiyonu başka dosyalardan erişime açıyoruz.
+	rdi ve rsi register’larına gelen iki argümanı topluyor ve sonucu rax register’ında döndürüyoruz.
+
+Adım 2: İkinci Dosyada Fonksiyonu Bildirme ve Çağırma (main.asm)
+
+Bu dosyada add_numbers fonksiyonunu extern ile tanımlayıp call komutuyla çağırıyoruz;
+
+`main.asm`:
+```asm
+section .text
+    global _start
+    extern add_numbers         ; add_numbers fonksiyonunun başka bir dosyada tanımlı olduğunu belirtiyoruz
+
+_start:
+    mov rdi, 5                 ; İlk argümanı ayarla (5)
+    mov rsi, 10                ; İkinci argümanı ayarla (10)
+    call add_numbers           ; add_numbers fonksiyonunu çağır
+
+    ; Sonuç rax kaydında dönecek. Burada sadece çıktıyı test etmek için sonlandırma işlemi yapılacak.
+    mov rax, 60                ; sys_exit çağrısı
+    xor rdi, rdi               ; Çıkış kodu 0
+    syscall
+```
+
+	extern add_numbers ifadesi, add_numbers fonksiyonunun başka bir dosyada tanımlı olduğunu belirtir ve link aşamasında add_numbers'ın adresi buraya bağlanır.
+	_start etiketi altında, add_numbers fonksiyonunu call komutu ile çağırıyoruz.
+	rax'ta add_numbers'ın sonucu bulunacaktır (15), ancak bu örnekte çıktıyı yazdırmak için ek bir işlem yapılmamıştır.
+
+ Adım 3: Derleme ve Linkleme
+
+```bash
+nasm -f elf64 -o add_numbers.o main.o add_numbers.s main.s
+```
+
+```bash
+ld -o example main.o add_numbers.o
+```
+
+### **_errno_** nedir?
+
+errno, C dilinde standart kütüphane işlevleri ve sistem çağrıları tarafından kullanılan (hata durumlarında errno'ya gerekli değer atamalarını yapıyorlar (Örn: open, write, read, malloc, fopen vb.)) bir hata durumunu gösteren küresel bir değişkendir. Programın çalışması sırasında oluşabilecek hata durumlarını belirlemek için kullanılır. errno’ya atanan değer, son çalıştırılan fonksiyonda bir hata meydana gelip gelmediğini anlamaya yarar ve bu hata durumlarına karşılık gelen hata kodlarını tutar.
+
+**errno Nasıl Çalışır?**
+
+Birçok standart C kütüphane işlevi (örneğin, open, read, write gibi dosya işlemleri ya da malloc gibi bellek ayırma işlevleri) hata durumlarında bir değer döndürür ve oluşan hatanın ayrıntıları errno değişkeninde saklanır. Hata türü, errno'nun pozitif tam sayı değeriyle belirtilir. Bu sayıyı kontrol ederek veya strerror(errno) gibi işlevlerle anlamlı hale getirerek hatanın ne olduğunu anlayabiliriz.
+
+```c
+#include <stdio.h>
+#include <errno.h>
+#include <string.h>
+
+int main() {
+    FILE *file = fopen("nonexistent.txt", "r");  // Bu dosya muhtemelen yok
+    if (file == NULL) {
+        printf("Error: %s\n", strerror(errno));   // errno'nun anlamlı bir hata mesajını yazdırır
+    }
+    return 0;
+}
+```
+
+Bu örnekte `fopen` fonksiyonu başarısız olursa errno otomatik olarak uygun hata koduyla güncellenir ve strerror(errno) ile anlamlı bir hata mesajı döndürülür. Örneğin, böyle bir hata kodu 2 olabilir ve strerror(errno) ile bu, `No such file or directory` olarak çevrilebilir.
+
+Çoğu işletim sisteminde errno, doğrudan bir küresel değişken olarak tanımlanmaz; bunun yerine bir işlev veya bir makro aracılığıyla erişilir. Bu, özellikle çoklu iş parçacıklı (multi-threaded) programlarda farklı iş parçacıklarının errno'yu bağımsız şekilde kullanabilmesini sağlar. errno'yu doğrudan bir değişken yapmak yerine, iş parçacığına özgü hata durumu elde etmek için errno'ya bir işlev aracılığıyla erişilir.
+
+`extern int *__errno_location(void);` veya benzeri ifadeler, errno'nun iş parçacığına özel bir bellek konumunu döndürmek için kullanılan bir işlev tanımıdır. Bu sayede her iş parçacığı kendi errno değerine sahip olur.
+`__error` veya `errno_location` gibi işlevler veya makrolar, errno'ya doğrudan erişim yerine errno’yu bir işlev veya makro aracılığıyla erişilen bir gösterici yapar.
+
+Çoklu iş parçacıklı ortamlarda, errno iş parçacığına özgü bir yapı olmalıdır; aksi halde bir iş parçacığının hata durumu diğerini etkileyebilir:
+
+    extern veya __errno_location gibi ifadeler, errno’yu doğrudan bir değişken değil, iş parçacığına özgü bir bellek adresini işaret eden bir gösterici yapar.
+    Bu gösterici, her iş parçacığı için ayrı ayrı tanımlanır ve böylece her iş parçacığı kendi errno durumunu bağımsız olarak kullanır.
+
+>[!IMPORTANT]
+>
+> **Konuyla alakasız bir bilgi C için**
+>
+> **Errno'yu manuel ayarlama**
+>
+> errno standart olarak sistem çağrıları ve kütüphane işlevleri tarafından otomatik olarak ayarlanır. Ancak errno değişkenine doğrudan bir değer atama yapılabilir. errno, teknik olarak global bir tam sayı değişkenidir, bu nedenle geliştirici tarafından el ile de bir değer atanabilir.
+>
+> **errno Değerine Elle Atama Yapmanın Durumları ve Kullanım Örnekleri**
+>
+> ```c
+> #include <stdio.h>
+> #include <errno.h>
+> #include <string.h>
+>
+> int main() {
+>     errno = EACCES;   // errno'ya 'Permission denied' anlamına gelen bir hata kodu atıyoruz
+>     printf("Error: %s\n", strerror(errno));  // Ayarlanan errno değerini anlamlı bir mesaj olarak yazdırır
+>
+>     errno = 0;        // errno'yu sıfırlayarak önceki hatayı temizliyoruz
+>     return 0;
+>  }
+> ```
+> - `errno = EACCES`; ifadesi, errno'ya `Permission denied` anlamına gelen hata kodunu el ile atar.
+> - `strerror(errno)` ile bu hata kodunun anlamı yazdırılır.
+> - `errno = 0;` ifadesiyle errno sıfırlanır ve sonraki hatalar için temiz bir başlangıç yapılır.
+>
+> Hata kodlarının daha fazlasına erişim için `man errno` dokümanını inceleyebilirsiniz.
+
+
+**`extern __error` veya `__errno_location` Nedir?**
+
+`extern __error` veya `extern __errno_location`, genellikle C kütüphanelerinde tanımlı olan errno değişkenine erişim sağlamak için kullanılan fonksiyonlar veya sembollerdir. Bu semboller sayesinde, assembly kodunda errno’ya erişim sağlanabilir ve hata durumları kontrol edilebilir. errno, doğrudan bir değişken olmaktan ziyade, bir işlev veya sembolle iş parçacığına özgü hale getirilir. Böylece, her iş parçacığı kendi errno değerini kullanarak farklı hata durumlarını bağımsız olarak saklayabilir.
+
+**`__errno_location` (Linux ve glibc üzerinde):**
+
+__errno_location, bir fonksiyon olarak tanımlanmıştır ve çağrıldığında, errno'yu iş parçacığına özgü şekilde saklayan bellekteki adresini döndürür.
+Çok iş parçacıklı programlarda, her iş parçacığının kendi errno değerini tutmasını sağlar.
+Linux sistemlerinde, glibc gibi kütüphanelerde errno’ya erişmek için __errno_location fonksiyonunu kullanılır.
+
+Örnek:
+
+```asm
+extern __errno_location
+
+; örnek kullanım
+call __errno_location
+mov rax, [rax]       ; `errno` değerini `rax`’e yükler
+```
+
+`call __errno_location` komutu errno’nun adresini döndürür ve ardından `[rax]` ile errno değerini okuyabiliriz.
+
+`__error` (macOS üzerinde):
+
+`__error`, errno adresini döndürmek için kullanılan macOS ve bazı BSD tabanlı sistemlerde yaygın olarak bulunan bir semboldür.
+`__error` işlevi, errno’nun adresini döndürerek çok iş parçacıklı uygulamalarda her iş parçacığının kendi errno değerine erişimini sağlar.
+
+Örnek:
+
+```asm
+extern __error
+
+; örnek kullanım
+call __error
+mov rax, [rax]       ; `errno` değerini `rax`’e yükler
+```
+
+`__error` fonksiyonunu çağırarak errno adresini elde ediyoruz ve ardından `[rax]` ile errno değerini okuyabiliyoruz.
+
+Örnek Senaryo: Hata Kodunu errno Üzerinden Elde Etmek
+
+Bir dosya açma işlemi yaparken oluşabilecek hatayı assembly kodunda `__errno_location` veya `__error` aracılığıyla errno'dan alabiliriz:
+
+```asm
+section .data
+    filename db 'nonexistent.txt', 0   ; Açılacak dosya adı
+    errmsg db 'Error code: %d', 0xA    ; Hata mesajı formatı
+
+section .text
+    global _start
+    extern __errno_location            ; Linux/glibc sistemlerde errno erişimi için
+    ; veya macOS'ta: extern __error
+
+_start:
+    ; open() sistem çağrısını yap
+    mov rax, 2                         ; sys_open çağrısı
+    mov rdi, filename                  ; İlk argüman: dosya adı
+    mov rsi, 0                         ; İkinci argüman: yalnızca okuma
+    syscall
+
+    ; Hata kontrolü
+    cmp rax, 0                         ; rax < 0 ise hata oluşmuş, errno'yu kontrol et
+    jl error_handler                   ; Hata durumu varsa error_handler'a dallan
+
+    ; Başarıyla açılmışsa program buradan devam eder
+    jmp end_program                    ; Programı bitir
+
+error_handler:
+    call __errno_location              ; errno'nun adresini al
+    mov rbx, [rax]                     ; errno değerini rbx'e yükle
+    ; Burada rbx'teki hata kodunu kullanarak işlem yapılabilir
+
+end_program:
+    mov rax, 60                        ; sys_exit çağrısı
+    xor rdi, rdi                       ; Çıkış kodu 0
+    syscall
+```
+
+- **`__errno_location` (Linux) ve `__error` (macOS)**: errno değerini tutan bellekteki adresi döndürür, böylece assembly kodu errno'ya erişebilir.
+- **Kullanım Amacı**: Çok iş parçacıklı uygulamalarda her iş parçacığının kendi errno değerini kullanmasını sağlamak ve hata durumlarını assembly dilinde yönetmektir.
+- **Assembly’de `call` ile Kullanımı**: Bu işlevler `call` komutu ile çağrılır ve errno adresi döndürülür. Bu sayede errno değeri kontrol edilebilir ve uygun hata yönetimi yapılabilir.
+
+Bu yapı, düşük seviyeli kodlarda hata yönetimi açısından önemli bir araçtır ve özellikle sistem çağrıları veya C kütüphaneleriyle çalışırken hata durumlarını kontrol etmek için kullanılır.
+
+Örnek Kullanım:
+
+```asm
+extern __ernno_location
+global my_write
+
+section .text
+my_write:
+    mov rax, 1  ; sys_write
+    syscall     ; call write
+    cmp rax, 0
+    jl error
+    ret
+error:
+    neg rax    ; get absolute value of syscall return
+    mov rdi, rax
+    call __ernno_location
+    mov [rax], rdi  ; set the value of errno
+    mov rax, -1
+    ret
+```
+
+Bu assembly kodu, my_write adlı bir fonksiyonu tanımlıyor. Bu fonksiyon, Linuxdaki sys_write sistem çağrısını kullanarak veri yazmaya çalışıyor ve bir hata oluşursa `errno` değişkenine hata kodunu yazıyor.
+
+	 extern __errno_location: __errno_location işlevinin başka bir dosyada (genellikle bir C kütüphanesinde) tanımlı olduğunu belirtir. Bu işlev, errno'yu iş parçacığına özel bir değişken olarak döndürür.
+	global my_write: my_write fonksiyonunu diğer dosyalardan erişilebilir hale getirir.
+	section .text: Kodun .text bölümünü başlatır; bu bölüm, çalıştırılabilir talimatları içerir.
+	my_write:: Fonksiyonun başlangıcını tanımlar.
+	mov rax, 1: sys_write sistem çağrısını kullanmak için rax kaydına 1 koyar. rax sistem çağrısının numarasını içerir ve sys_write sistem çağrısının numarası 1’dir.
+	syscall: sys_write sistem çağrısını gerçekleştirir. Sistem çağrısı başarılı olursa, yazılan bayt sayısı rax’e döner. Başarısız olursa rax negatif bir hata kodu içerir.
+	cmp rax, 0: rax değerinin sıfırdan küçük olup olmadığını kontrol eder. Sıfırdan küçükse, sistem çağrısı başarısız olmuş demektir ve hata durumuna geçilir.
+	jl error: rax sıfırdan küçükse (jl – jump if less), error etiketine dallanır.
+	ret: Sistem çağrısı başarılıysa fonksiyon başarılı olarak sona erer ve program akışı geri döner.
+	neg rax: rax negatif bir hata kodu içerir, neg ile bu değeri pozitif yaparız. Bu, errno'ya yazacağımız mutlak hata kodunu elde etmemizi sağlar.
+	mov rdi, rax: rax kaydındaki pozitif hata kodunu rdi kaydına yükleriz. Bu değeri daha sonra errno değişkenine yazacağız.
+	call __errno_location: __errno_location işlevini çağırarak errno değişkeninin adresini alırız. __errno_location, iş parçacığına özgü errno adresini döndürür ve bu adres rax kaydında saklanır.
+	mov [rax], rdi: rax’in işaret ettiği bellek konumuna (errno adresine), rdi kaydındaki hata kodunu yazarız. Bu adım, errno değerini ayarlamış olur.
+	mov rax, -1: rax kaydına -1 koyarız; bu değer, my_write fonksiyonunun hata durumunda döneceği değerdir.
+	ret: Fonksiyondan hata durumu sonucu ile çıkar.
+
+ **`neg` Komutunun Görevi**
+
+ neg komutu, bir değerin negatifini alır, yani değeri işaret değiştirir. Bu işlem, değer pozitifse negatif, negatifse pozitif hale gelir.
+
+İşleyiş Mantığı
+
+`neg` komutu, değeri matematiksel olarak negatif yaparken ikiye tümleyen (two’s complement) yöntemi kullanır, çünkü işlemciler negatif sayıları bu yöntemle ifade eder.
+
+    Pozitif bir değere neg uygulanırsa, bu değeri negatif hale getirir.
+    Negatif bir değere neg uygulanırsa, bu değerin pozitif mutlak değerini elde ederiz.
+
+```asm
+mov rax, -5   ; rax = -5
+neg rax       ; rax = 5
+```
+
+**Hata Kodları ve `neg` Kullanımı**
+
+Sistem çağrıları genellikle bir hata oluştuğunda negatif bir değer döndürür. Linux'ta sys_write gibi birçok sistem çağrısı başarısız olduğunda rax’te negatif bir hata kodu döner. Ancak `errno` ya yazılacak hata kodları pozitif tam sayılar olarak ifade edilir:
+
+`neg` komutu, negatif olan hata kodunu pozitif hale getirerek errno'ya yazmaya uygun hale getirir.
+
+Örneğin:
+
+    Bir sistem çağrısı başarısız olduğunda rax değeri -2 ise, errno için bu hata kodu 2 olarak kaydedilmelidir.
+    neg komutu ile rax’teki negatif değer pozitife çevrilir ve bu pozitif hata kodu errno'ya yazılır.
+
+errno'ya yazılacak hata kodlarının pozitif tam sayılar olarak ifade edilmesini POSIX (Portable Operating System Interface) standartları belirler. POSIX standardı, UNIX tabanlı işletim sistemlerinde hata yönetimi ve errno gibi küresel hata değişkenlerinin nasıl çalışacağı konusunda bazı kurallar koyar.
+
+**POSIX Standardı ve errno**
+
+POSIX standardına göre:
+
+    Hata kodları, pozitif tam sayılar olarak tanımlanmıştır. Bu hata kodları, belirli hataları tanımlayan pozitif sabit değerler olarak kullanılır. Örneğin:
+        EACCES (Permission denied) hatası için hata kodu 13
+        ENOENT (No such file or directory) hatası için hata kodu 2
+    Bu standart, errno değişkenine atanacak hata kodlarının pozitif olması gerektiğini belirler, çünkü bu sayılar birer sabit hata kodu olarak yorumlanır ve işletim sistemlerinde hataların kolayca tanımlanabilmesi için aynı kalması sağlanır.
+
+**Sistem Çağrılarında Negatif Hata Kodları**
+
+Birçok sistem çağrısı (örneğin, Linux'taki sys_write gibi) hata durumunda negatif bir değer döndürür, çünkü dönen değer rax kaydına işlenir ve sistem çağrısının başarılı olup olmadığını kontrol etmek için sıfırdan küçük olup olmadığına bakılır. Bu sayede, sistem çağrısının başarısızlık durumlarını kontrol etmek kolaylaşır:
+
+    Negatif bir döndürme değeri → Hata
+    Pozitif veya sıfır bir döndürme değeri → Başarılı sonuç veya başarıyla işlem gören bayt sayısı
+
+Bu negatif hata kodları, POSIX tarafından tanımlanan pozitif errno kodlarına uygun hale getirilmek üzere mutlak değere çevrilir. Bu sayede, POSIX uyumlu yazılımlar, errno'ya atanmış pozitif hata kodlarını kullanarak bir hatanın ne olduğunu anlayabilir ve buna göre işlem yapabilir.
+
+**Neden `[rax]` Kullanılıyor?**
+
+`[rax]` ifadesi, rax kaydında tutulan adresin işaret ettiği bellek konumuna erişmek için kullanılır. Bu şekilde errno adresinin işaret ettiği yere, yani errno değişkeninin bulunduğu bellek alanına yazma işlemi yapılır.
+
+	Bellek Adresine Erişim: __errno_location işlevi, errno değişkeninin bellek adresini döndürür ve bu adres rax kaydında saklanır. rax kaydında errno değişkeninin adresi olduğu için, [rax] ifadesiyle bu adresin işaret ettiği bellek konumuna erişiriz.
+	Değeri Adrese Yazmak: mov [rax], rdi komutuyla, rdi kaydındaki hata kodunu rax kaydındaki adresin işaret ettiği bellek konumuna yazarız. Bu bellek konumu errno değişkenine ayrılmış olduğu için, bu işlem errno'nun değerini ayarlamış olur.
+	
+ 	rax: errno'nun bellek adresini tutar.
+	[rax]: rax’teki adresin işaret ettiği bellek konumunu ifade eder.
+ 
+Bu yüzden mov `[rax]`, rdi ifadesi, errno değişkenine rdi kaydındaki hata kodunu atamak için kullanılır.
+
+### gcc'de ki `-no-pie` Seçeneği Nedir?
+
+GCC derleyicisindeki `-no-pie` seçeneği, oluşturulan çalıştırılabilir dosyanın konum bağımsız çalıştırılabilir dosya (Position Independent Executable, PIE) olmamasını sağlar. Bu seçenek, programın sabit bellek adreslerinden çalışmasını zorlar. Konum bağımsız çalıştırılabilir dosyalar, güvenlik açısından avantajlıdır, ancak assembly dilinde veya düşük seviyeli programlama yaparken belirli durumlarda `-no-pie` seçeneği kullanmak gerekebilir.
+
+**Konum Bağımsız Çalıştırılabilir Dosya (PIE) Nedir?**
+
+PIE dosyalar, programın çalıştığı bellek adreslerinin rastgeleleştirilmesine olanak sağlar. Bellek adreslerinin rastgeleleştirilmesi (ASLR - Address Space Layout Randomization), program her çalıştığında kodun, verinin ve yığın alanlarının farklı bellek adreslerinden başlamasını sağlar. Bu özellik, güvenlik açısından faydalıdır çünkü kötü niyetli yazılımların sabit adresleri hedef almasını zorlaştırır.
+
+- **PIE Dosyaları**: Derleme sırasında programın kodu, adreslerin mutlak (sabit) bellek konumlarına değil, göreceli (relative) adreslerle bağlanır.
+- **ASLR Desteği**: Çalışma anında, işletim sistemi her çalıştırmada farklı bir bellek adresi aralığı belirler, bu da bellekten kod ve veri çalınmasını zorlaştırır.
+
+Özetle, PIE özellikli çalıştırılabilir dosyalar ASLR ile uyumlu çalışır.
+
+**`-no-pie` Seçeneği Ne Yapar?**
+
+`-no-pie`, GCC'ye PIE modunu devre dışı bırakmasını ve programı sabit adresler kullanarak derlemesini söyler. Bu, programın konum bağımlı bir çalıştırılabilir dosya olarak oluşturulmasını sağlar. Konum bağımlı bir çalıştırılabilir dosya, kod ve veri segmentlerinin her çalıştırmada aynı adreslerde başlamasına yol açar.
+-no-pie Seçeneğinin Özellikleri:
+
+    Sabit Adresler: -no-pie ile oluşturulan dosyalar sabit adresleri kullanır, dolayısıyla belirli adreslere doğrudan erişim yapılabilir.
+    Eski Kod ve Assembly Uyumluluğu: Düşük seviyeli kodlarda veya assembly dilinde yazarken sabit adreslerle çalışmak gerekebilir. -no-pie seçeneği bu duruma uyum sağlar.
+    Performans: Konum bağımlı çalıştırılabilir dosyalar bazı durumlarda daha hızlı çalışabilir, çünkü her işlem için adres çevirisi yapmaya gerek kalmaz.
+
+Neden `-no-pie` Kullanalım?
+
+Düşük seviyeli programlamada, özellikle assembly kodunda veya sabit bellek adresleriyle çalışan sistem programlarında konum bağımsızlık (PIE) gereksiz veya karmaşıklığa yol açabilir. Örneğin:
+
+    Assembly Programlama: Assembly kodları, mutlak bellek adreslerine doğrudan erişim gerektirebilir. -no-pie ile sabit adres kullanmak, adres hesaplamalarını daha kolay hale getirir.
+    Gömülü Sistemler: Gömülü sistemlerde bellek alanları sabittir. Konum bağımsız çalıştırılabilir dosya bu sistemlerde gereksiz olabilir.
+    Performans Gereksinimleri: Bazı durumlarda ASLR'nin getirdiği ek maliyetler performans açısından sakıncalı olabilir.
+    
+Assembly programlama, gömülü sistemler ve sabit adres gerektiren sistem programlarında bu seçenek sıklıkla kullanılır.
+
+---
+
+## :five: Diğer Terim ve Kavramlar ve Sorular ve İfadeler
 
 Hazırlanıyor..
