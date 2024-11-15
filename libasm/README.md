@@ -135,6 +135,8 @@ Neredeyse her konu birbiriyle ilişkili olduğundan sadece yukarıdan aşağıya
    - [https://github.com/Fartomy/42-Out-Core/blob/main/libasm/README.md#asm-debug](https://github.com/Fartomy/42-Out-Core/blob/main/libasm/README.md#asm-debug)
 7. [Onaylama ve Akran Değerlendirmesi](https://github.com/Fartomy/42-Out-Core/blob/main/libasm/README.md#seven-onaylama-ve-akran-de%C4%9Ferlendirmesi)
 8. [Ekler](https://github.com/Fartomy/42-Out-Core/blob/main/libasm/README.md#eight-ekler)
+   - [Linux System Call Table For x86-64](https://github.com/Fartomy/42-Out-Core/blob/main/libasm/README.md#linux-system-call-table-for-x86-64)
+   - [Macos System Call Table](https://github.com/Fartomy/42-Out-Core/blob/main/libasm/README.md#macos-system-call-table)
 
 ---
 
@@ -3846,4 +3848,796 @@ Hazırlanıyor..
 
 ## :eight: Ekler
 
-Hazırlanıyor..
+### Linux System Call Table for x86-64
+
+| %rax          | System call                | %rdi                           | %rsi                             | %rdx                  | %r10               | %r8                   | %r9                 |
+|---------------|----------------------------|---------------------------------|-----------------------------------|-----------------------|--------------------|-----------------------|---------------------|
+| 0             | sys_read                   | unsigned int fd                | char *buf                        | size_t count          |                    |                       |                     |
+| 1             | sys_write                  | unsigned int fd                | const char *buf                  | size_t count          |                    |                       |                     |
+| 2             | sys_open                   | const char *filename           | int flags                        | int mode              |                    |                       |                     |
+| 3             | sys_close                  | unsigned int fd                |                                   |                       |                    |                       |                     |
+| 4             | sys_stat                   | const char *filename           | struct stat *statbuf             |                       |                    |                       |                     |
+| 5             | sys_fstat                  | unsigned int fd                | struct stat *statbuf             |                       |                    |                       |                     |
+| 6             | sys_lstat                  | const char *filename           | struct stat *statbuf             |                       |                    |                       |                     |
+| 7             | sys_poll                   | struct poll_fd *ufds           | unsigned int nfds                | long timeout_msecs    |                    |                       |                     |
+| 8             | sys_lseek                  | unsigned int fd                | off_t offset                     | unsigned int origin   |                    |                       |                     |
+| 9             | sys_mmap                   | unsigned long addr             | unsigned long len                | unsigned long prot    | unsigned long flags | unsigned long fd      | unsigned long off   |
+| 10            | sys_mprotect               | unsigned long start            | size_t len                       | unsigned long prot    |                    |                       |                     |
+| 11            | sys_munmap                 | unsigned long addr             | size_t len                       |                       |                    |                       |                     |
+| 12            | sys_brk                    | unsigned long brk              |                                   |                       |                    |                       |                     |
+| 13            | sys_rt_sigaction           | int sig                        | const struct sigaction *act      | struct sigaction *oact | size_t sigsetsize |                       |                     |
+| 14            | sys_rt_sigprocmask         | int how                        | sigset_t *nset                   | sigset_t *oset        | size_t sigsetsize |                       |                     |
+| 15            | sys_rt_sigreturn           | unsigned long __unused         |                                   |                       |                    |                       |                     |
+| 16            | sys_ioctl                  | unsigned int fd                | unsigned int cmd                 | unsigned long arg     |                    |                       |                     |
+| 17            | sys_pread64                | unsigned long fd               | char *buf                        | size_t count          | loff_t pos         |                       |                     |
+| 18            | sys_pwrite64               | unsigned int fd                | const char *buf                  | size_t count          | loff_t pos         |                       |                     |
+| 19            | sys_readv                  | unsigned long fd               | const struct iovec *vec          | unsigned long vlen    |                    |                       |                     |
+| 20            | sys_writev                 | unsigned long fd               | const struct iovec *vec          | unsigned long vlen    |                    |                       |                     |
+| 21            | sys_access                 | const char *filename           | int mode                         |                       |                    |                       |                     |
+| 22            | sys_pipe                   | int *filedes                   |                                   |                       |                    |                       |                     |
+| 23            | sys_select                 | int n                          | fd_set *inp                      | fd_set *outp          | fd_set *exp        | struct timeval *tvp   |                     |
+| 24            | sys_sched_yield            |                                 |                                   |                       |                    |                       |                     |
+| 25            | sys_mremap                 | unsigned long addr             | unsigned long old_len            | unsigned long new_len | unsigned long flags | unsigned long new_addr |                     |
+| 26            | sys_msync                  | unsigned long start            | size_t len                       | int flags             |                    |                       |                     |
+| 27            | sys_mincore                | unsigned long start            | size_t len                       | unsigned char *vec    |                    |                       |                     |
+| 28            | sys_madvise                | unsigned long start            | size_t len_in                    | int behavior          |                    |                       |                     |
+| 29            | sys_shmget                 | key_t key                      | size_t size                      | int shmflg            |                    |                       |                     |
+| 30            | sys_shmat                  | int shmid                      | char *shmaddr                    | int shmflg            |                    |                       |                     |
+| 31            | sys_shmctl                 | int shmid                      | int cmd                          | struct shmid_ds *buf  |                    |                       |                     |
+| 32            | sys_dup                    | unsigned int fildes            |                                   |                       |                    |                       |                     |
+| 33            | sys_dup2                   | unsigned int oldfd             | unsigned int newfd               |                       |                    |                       |                     |
+| 34            | sys_pause                  |                                 |                                   |                       |                    |                       |                     |
+| 35            | sys_nanosleep              | struct timespec *rqtp          | struct timespec *rmtp            |                       |                    |                       |                     |
+| 36            | sys_getitimer              | int which                      | struct itimerval *value          |                       |                    |                       |                     |
+| 37            | sys_alarm                  | unsigned int seconds           |                                   |                       |                    |                       |                     |
+| 38            | sys_setitimer              | int which                      | struct itimerval *value          | struct itimerval *ovalue |                 |                       |                     |
+| 39            | sys_getpid                 |                                 |                                   |                       |                    |                       |                     |
+| 40            | sys_sendfile               | int out_fd                     | int in_fd                        | off_t *offset         | size_t count       |                       |                     |
+| 41            | sys_socket                 | int family                     | int type                         | int protocol          |                    |                       |                     |
+| 42            | sys_connect                | int fd                         | struct sockaddr *uservaddr       | int addrlen           |                    |                       |                     |
+| 43            | sys_accept                 | int fd                         | struct sockaddr *upeer_sockaddr  | int *upeer_addrlen    |                    |                       |                     |
+| 44            | sys_sendto                 | int fd                         | void *buff                       | size_t len            | unsigned flags     | struct sockaddr *addr | int addr_len        |
+| 45            | sys_recvfrom               | int fd                         | void *ubuf                       | size_t size           | unsigned flags     | struct sockaddr *addr | int *addr_len       |
+| 46            | sys_sendmsg                | int fd                         | struct msghdr *msg               | unsigned flags        |                    |                       |                     |
+| 47            | sys_recvmsg                | int fd                         | struct msghdr *msg               | unsigned int flags    |                    |                       |                     |
+| 48            | sys_shutdown               | int fd                         | int how                          |                       |                    |                       |                     |
+| 49            | sys_bind                   | int fd                         | struct sockaddr *umyaddr         | int addrlen           |                    |                       |                     |
+| 50            | sys_listen                 | int fd                         | int backlog                      |                       |                    |                       |                     |
+| 51            | sys_getsockname            | int fd                         | struct sockaddr *usockaddr       | int *usockaddr_len    |                    |                       |                     |
+| 52            | sys_getpeername            | int fd                         | struct sockaddr *usockaddr       | int *usockaddr_len    |                    |                       |                     |
+| 53            | sys_socketpair             | int family                     | int type                         | int protocol          | int *usockvec      |                       |                     |
+| 54            | sys_setsockopt             | int fd                         | int level                        | int optname           | char *optval       | int optlen            |                     |
+| 55            | sys_getsockopt             | int fd                         | int level                        | int optname           | char *optval       | int *optlen           |                     |
+| 56            | sys_clone                  | unsigned long clone_flags      | unsigned long newsp              | void *parent_tid      | void *child_tid    | unsigned int tid      |                     |
+| 57            | sys_fork                   |                                 |                                   |                       |                    |                       |                     |
+| 58            | sys_vfork                  |                                 |                                   |                       |                    |                       |                     |
+| 59            | sys_execve                 | const char *filename           | const char *const argv[]         | const char *const envp[] |               |                       |                     |
+| 60            | sys_exit                   | int error_code                 |                                   |                       |                    |                       |                     |
+| 61            | sys_wait4                  | pid_t pid                      | int *wstatus                     | int options           | struct rusage *rusage |                    |                     |
+| 62            | sys_kill                   | pid_t pid                      | int sig                          |                       |                    |                       |                     |
+| 63            | sys_uname                  | struct new_utsname *name       |                                   |                       |                    |                       |                     |
+| 64            | sys_semget                 | key_t key                      | int nsems                        | int semflg            |                    |                       |                     |
+| 65            | sys_semop                  | int semid                      | struct sembuf *tsops             | unsigned nsops        |                    |                       |                     |
+| 66            | sys_semctl                 | int semid                      | int semnum                       | int cmd               | union semun arg    |                       |                     |
+| 67            | sys_shmdt                  | char *shmaddr                  |                                   |                       |                    |                       |                     |
+| 68            | sys_msgget                 | key_t key                      | int msgflg                       |                       |                    |                       |                     |
+| 69            | sys_msgsnd                 | int msqid                      | struct msgbuf *msgp              | size_t msgsz          | int msgflg         |                       |                     |
+| 70            | sys_msgrcv                 | int msqid                      | struct msgbuf *msgp              | size_t msgsz          | long msgtyp        | int msgflg            |                     |
+| 71            | sys_msgctl                 | int msqid                      | int cmd                          | struct msqid_ds *buf  |                    |                       |                     |
+| 72            | sys_fcntl                  | unsigned int fd                | unsigned int cmd                 | unsigned long arg     |                    |                       |                     |
+| 73            | sys_flock                  | unsigned int fd                | unsigned int cmd                 |                       |                    |                       |                     |
+| 74            | sys_fsync                  | unsigned int fd                |                                   |                       |                    |                       |                     |
+| 75            | sys_fdatasync              | unsigned int fd                |                                   |                       |                    |                       |                     |
+| 76            | sys_truncate               | const char *path               | long length                      |                       |                    |                       |                     |
+| 77            | sys_ftruncate              | unsigned int fd                | unsigned long length             |                       |                    |                       |                     |
+| 78            | sys_getdents               | unsigned int fd                | struct linux_dirent *dirp        | unsigned int count    |                    |                       |                     |
+| 79            | sys_getcwd                 | char *buf                      | unsigned long size               |                       |                    |                       |                     |
+| 80            | sys_chdir                  | const char *filename           |                                   |                       |                    |                       |                     |
+| 81            | sys_fchdir                 | unsigned int fd                |                                   |                       |                    |                       |                     |
+| 82            | sys_rename                 | const char *oldname            | const char *newname              |                       |                    |                       |                     |
+| 83            | sys_mkdir                  | const char *pathname           | mode_t mode                      |                       |                    |                       |                     |
+| 84            | sys_rmdir                  | const char *pathname           |                                   |                       |                    |                       |                     |
+| 85            | sys_creat                  | const char *pathname           | mode_t mode                      |                       |                    |                       |                     |
+| 86            | sys_link                   | const char *oldname            | const char *newname              |                       |                    |                       |                     |
+| 87            | sys_unlink                 | const char *pathname           |                                   |                       |                    |                       |                     |
+| 88            | sys_symlink                | const char *oldname            | const char *newname              |                       |                    |                       |                     |
+| 89            | sys_readlink               | const char *path               | char *buf                        | int bufsiz            |                    |                       |                     |
+| 90            | sys_chmod                  | const char *filename           | mode_t mode                      |                       |                    |                       |                     |
+| 91            | sys_fchmod                 | unsigned int fd                | mode_t mode                      |                       |                    |                       |                     |
+| 92            | sys_chown                  | const char *filename           | uid_t user                       | gid_t group           |                    |                       |                     |
+| 93            | sys_fchown                 | unsigned int fd                | uid_t user                       | gid_t group           |                    |                       |                     |
+| 94            | sys_lchown                 | const char *filename           | uid_t user                       | gid_t group           |                    |                       |                     |
+| 95            | sys_umask                  | int mask                       |                                   |                       |                    |                       |                     |
+| 96            | sys_gettimeofday           | struct timeval *tv             | struct timezone *tz              |                       |                    |                       |                     |
+| 97            | sys_getrlimit              | unsigned int resource          | struct rlimit *rlim              |                       |                    |                       |                     |
+| 98            | sys_getrusage              | int who                        | struct rusage *ru                |                       |                    |                       |                     |
+| 99            | sys_sysinfo                | struct sysinfo *info           |                                   |                       |                    |                       |                     |
+| 100           | sys_times                  | struct tms *tbuf               |                                   |                       |                    |                       |                     |
+| 101           | sys_ptrace                 | long request                   | long pid                         | unsigned long addr    | unsigned long data |                       |                     |
+| 102           | sys_getuid                 |                                 |                                   |                       |                    |                       |                     |
+| 103           | sys_syslog                 | int type                       | char *bufp                       | int len               |                    |                       |                     |
+| 104           | sys_getgid                 |                                 |                                   |                       |                    |                       |                     |
+| 105           | sys_setuid                 | uid_t uid                      |                                   |                       |                    |                       |                     |
+| 106           | sys_setgid                 | gid_t gid                      |                                   |                       |                    |                       |                     |
+| 107           | sys_geteuid                |                                 |                                   |                       |                    |                       |                     |
+| 108           | sys_getegid                |                                 |                                   |                       |                    |                       |                     |
+| 109           | sys_setpgid                | pid_t pid                      | pid_t pgid                       |                       |                    |                       |                     |
+| 110           | sys_getppid                |                                 |                                   |                       |                    |                       |                     |
+| 111           | sys_getpgrp                |                                 |                                   |                       |                    |                       |                     |
+| 112           | sys_setsid                 |                                 |                                   |                       |                    |                       |                     |
+| 113           | sys_setreuid               | uid_t ruid                     | uid_t euid                       |                       |                    |                       |                     |
+| 114           | sys_setregid               | gid_t rgid                     | gid_t egid                       |                       |                    |                       |                     |
+| 115           | sys_getgroups              | int gidsetsize                 | gid_t *grouplist                 |                       |                    |                       |                     |
+| 116           | sys_setgroups              | int gidsetsize                 | gid_t *grouplist                 |                       |                    |                       |                     |
+| 117           | sys_setresuid              | uid_t ruid                     | uid_t euid                       | uid_t suid            |                    |                       |                     |
+| 118           | sys_getresuid              | uid_t *ruid                    | uid_t *euid                      | uid_t *suid           |                    |                       |                     |
+| 119           | sys_setresgid              | gid_t rgid                     | gid_t egid                       | gid_t sgid            |                    |                       |                     |
+| 120           | sys_getresgid              | gid_t *rgid                    | gid_t *egid                      | gid_t *sgid           |                    |                       |                     |
+| 121           | sys_getpgid                | pid_t pid                      |                                   |                       |                    |                       |                     |
+| 122           | sys_setfsuid               | uid_t fsuid                    |                                   |                       |                    |                       |                     |
+| 123           | sys_setfsgid               | gid_t fsgid                    |                                   |                       |                    |                       |                     |
+| 124           | sys_getsid                 | pid_t pid                      |                                   |                       |                    |                       |                     |
+| 125           | sys_capget                 | cap_user_header_t header       | cap_user_data_t datap            |                       |                    |                       |                     |
+| 126           | sys_capset                 | cap_user_header_t header       | const cap_user_data_t data       |                       |                    |                       |                     |
+| 127           | sys_rt_sigpending          | sigset_t *uset                 | size_t sigsetsize                |                       |                    |                       |                     |
+| 128           | sys_rt_sigtimedwait        | const sigset_t *uthese         | siginfo_t *uinfo                 | const struct timespec *uts  |                |                    |                     |
+| 129           | sys_rt_sigqueueinfo        | pid_t pid                      | int sig                          | siginfo_t *uinfo      |                    |                       |                     |
+| 130           | sys_rt_sigsuspend          | sigset_t *unewset              | size_t sigsetsize                |                       |                    |                       |                     |
+| 131           | sys_sigaltstack            | const stack_t *uss             | stack_t *uoss                    |                       |                    |                       |                     |
+| 132           | sys_utime                  | char *filename                 | struct utimbuf *times            |                       |                    |                       |                     |
+| 133           | sys_mknod                  | const char *filename           | umode_t mode                     | unsigned dev          |                    |                       |                     |
+| 134           | sys_uselib                 | const char *library            |                                   |                       |                    |                       |                     |
+| 135           | sys_personality            | unsigned int personality       |                                   |                       |                    |                       |                     |
+| 136           | sys_ustat                  | unsigned dev                   | struct ustat *ubuf               |                       |                    |                       |                     |
+| 137           | sys_statfs                 | const char *path               | struct statfs *buf               |                       |                    |                       |                     |
+| 138           | sys_fstatfs                | unsigned int fd                | struct statfs *buf               |                       |                    |                       |                     |
+| 139           | sys_sysfs                  | int option                     | unsigned long arg1               | unsigned long arg2    |                    |                       |                     |
+| 140           | sys_getpriority            | int which                      | int who                          |                       |                    |                       |                     |
+| 141           | sys_setpriority            | int which                      | int who                          | int niceval           |                    |                       |                     |
+| 142           | sys_sched_setparam         | pid_t pid                      | struct sched_param *param        |                       |                    |                       |                     |
+| 143           | sys_sched_getparam         | pid_t pid                      | struct sched_param *param        |                       |                    |                       |                     |
+| 144           | sys_sched_setscheduler     | pid_t pid                      | int policy                       | struct sched_param *param  |             |                    |                     |
+| 145           | sys_sched_getscheduler     | pid_t pid                      |                                   |                       |                    |                       |                     |
+| 146           | sys_sched_get_priority_max | int policy                     |                                   |                       |                    |                       |                     |
+| 147           | sys_sched_get_priority_min | int policy                     |                                   |                       |                    |                       |                     |
+| 148           | sys_sched_rr_get_interval  | pid_t pid                      | struct timespec *interval        |                       |                    |                       |                     |
+| 149           | sys_mlock                  | unsigned long start            | size_t len                       |                       |                    |                       |                     |
+| 150           | sys_munlock                | unsigned long start            | size_t len                       |                       |                    |                       |                     |
+| 151           | sys_mlockall               | int flags                      |                                   |                       |                    |                       |                     |
+| 152           | sys_munlockall             |                                 |                                   |                       |                    |                       |                     |
+| 153           | sys_vhangup                |                                 |                                   |                       |                    |                       |                     |
+| 154           | sys_modify_ldt             | int func                       | void *ptr                        | unsigned long bytecount |                |                    |                     |
+| 155           | sys_pivot_root             | const char *new_root           | const char *put_old              |                       |                    |                       |                     |
+| 156           | sys__sysctl                | struct __sysctl_args *args     |                                   |                       |                    |                       |                     |
+| 157           | sys_prctl                  | int option                     | unsigned long arg2               | unsigned long arg3    | unsigned long arg4 | unsigned long arg5    |                     |
+| 158           | sys_arch_prctl             | int code                       | unsigned long addr               |                       |                    |                       |                     |
+| 159           | sys_adjtimex               | struct timex *txc_p            |                                   |                       |                    |                       |                     |
+| 160           | sys_setrlimit              | unsigned int resource          | struct rlimit *rlim              |                       |                    |                       |                     |
+| 161           | sys_chroot                 | const char *filename           |                                   |                       |                    |                       |                     |
+| 162           | sys_sync                   |                                 |                                   |                       |                    |                       |                     |
+| 163           | sys_acct                   | const char *name               |                                   |                       |                    |                       |                     |
+| 164           | sys_settimeofday           | struct timeval *tv             | struct timezone *tz              |                       |                    |                       |                     |
+| 165           | sys_mount                  | const char *dev_name           | const char *dir_name             | const char *type      | unsigned long flags | void *data           |                     |
+| 166           | sys_umount2                | const char *name               | int flags                        |                       |                    |                       |                     |
+| 167           | sys_swapon                 | const char *specialfile        | int swap_flags                   |                       |                    |                       |                     |
+| 168           | sys_swapoff                | const char *specialfile        |                                   |                       |                    |                       |                     |
+| 169           | sys_reboot                 | int magic1                     | int magic2                       | unsigned int cmd      | void *arg         |                       |                     |
+| 170           | sys_sethostname            | char *name                     | int len                          |                       |                    |                       |                     |
+| 171           | sys_setdomainname          | char *name                     | int len                          |                       |                    |                       |                     |
+| 172           | sys_iopl                   | unsigned int level             |                                   |                       |                    |                       |                     |
+| 173           | sys_ioperm                 | unsigned long from             | unsigned long num                | int turn_on           |                    |                       |                     |
+| 174           | sys_create_module          | const char *name_user          | unsigned long len                | const struct module *mod |              |                    |                     |
+| 175           | sys_init_module            | void *umod                     | unsigned long len                | const char *uargs     |                    |                       |                     |
+| 176           | sys_delete_module          | const char *name_user          | unsigned int flags               |                       |                    |                       |                     |
+| 177           | sys_get_kernel_syms        | struct kernel_sym *table       |                                   |                       |                    |                       |                     |
+| 178           | sys_query_module           | const char *name               | int which                        | void *buf             | size_t bufsize     | size_t *ret          |                     |
+| 179           | sys_quotactl               | unsigned int cmd               | const char *special              | qid_t id              | void *addr        |                    |                     |
+| 180           | sys_nfsservctl             | int cmd                        | struct nfsctl_arg *arg           | union nfsctl_res *res |                    |                       |                     |
+| 181           | sys_getpmsg                | int fd                         | struct strbuf *ctl               | struct strbuf *dat    | int *flags         |                     |                     |
+| 182           | sys_putpmsg                | int fd                         | struct strbuf *ctl               | struct strbuf *dat    | int flags         |                     |                     |
+| 183           | sys_afs_syscall            |                                 |                                   |                       |                    |                       |                     |
+| 184           | sys_tuxcall                |                                 |                                   |                       |                    |                       |                     |
+| 185           | sys_security               |                                 |                                   |                       |                    |                       |                     |
+| 186           | sys_gettid                 |                                 |                                   |                       |                    |                       |                     |
+| 187           | sys_readahead              | int fd                         | loff_t offset                    | size_t count         |                    |                       |                     |
+| 188           | sys_setxattr               | const char *path               | const char *name                 | const void *value     | size_t size        | int flags            |                     |
+| 189           | sys_lsetxattr              | const char *path               | const char *name                 | const void *value     | size_t size        | int flags            |                     |
+| 190           | sys_fsetxattr              | int fd                         | const char *name                 | const void *value     | size_t size        | int flags            |                     |
+| 191           | sys_getxattr               | const char *path               | const char *name                 | void *value           | size_t size        |                    |                     |
+| 192           | sys_lgetxattr              | const char *path               | const char *name                 | void *value           | size_t size        |                    |                     |
+| 193           | sys_fgetxattr              | int fd                         | const char *name                 | void *value           | size_t size        |                    |                     |
+| 194           | sys_listxattr              | const char *path               | char *list                       | size_t size           |                    |                       |                     |
+| 195           | sys_llistxattr             | const char *path               | char *list                       | size_t size           |                    |                       |                     |
+| 196           | sys_flistxattr             | int fd                         | char *list                       | size_t size           |                    |                       |                     |
+| 197           | sys_removexattr            | const char *path               | const char *name                 |                    |                    |                       |                     |
+| 198           | sys_lremovexattr           | const char *path               | const char *name                 |                    |                    |                       |                     |
+| 199           | sys_fremovexattr           | int fd                         | const char *name                 |                    |                    |                       |                     |
+| 200           | sys_tkill                  | int pid                        | int sig                          |                       |                    |                       |                     |
+| 201           | sys_time                   | time_t *tloc                   |                                   |                       |                    |                       |                     |
+| 202           | sys_futex                  | int *uaddr                     | int futex_op                     | int val               | const struct timespec *timeout | int *uaddr2 | int val3            |
+| 203           | sys_sched_setaffinity      | pid_t pid                      | unsigned int len                 | unsigned long *user_mask_ptr |             |                    |                     |
+| 204           | sys_sched_getaffinity      | pid_t pid                      | unsigned int len                 | unsigned long *user_mask_ptr |             |                    |                     |
+| 205           | sys_set_thread_area        | struct user_desc *u_info       |                                   |                       |                    |                       |                     |
+| 206           | sys_io_setup               | unsigned int nr_events         | aio_context_t *ctx_idp           |                       |                    |                       |                     |
+| 207           | sys_io_destroy             | aio_context_t ctx_id           |                                   |                       |                    |                       |                     |
+| 208           | sys_io_getevents           | aio_context_t ctx_id           | long min_nr                      | long nr               | struct io_event *events | struct timespec *timeout | |
+| 209           | sys_io_submit              | aio_context_t ctx_id           | long nr                          | struct iocb **iocbpp |                    |                       |                     |
+| 210           | sys_io_cancel              | aio_context_t ctx_id           | struct iocb *iocb                | struct io_event *result |                |                    |                     |
+| 211           | sys_get_thread_area        | struct user_desc *u_info       |                                   |                       |                    |                       |                     |
+| 212           | sys_lookup_dcookie         | u64 cookie                     | char *buf                        | size_t len            |                    |                       |                     |
+| 213           | sys_epoll_create           | int size                       |                                   |                       |                    |                       |                     |
+| 214           | sys_epoll_ctl_old          |                                 |                                   |                       |                    |                       |                     |
+| 215           | sys_epoll_wait_old         |                                 |                                   |                       |                    |                       |                     |
+| 216           | sys_remap_file_pages       | unsigned long start            | unsigned long size               | unsigned long prot    | unsigned long pgoff | unsigned long flags  |                     |
+| 217           | sys_getdents64             | unsigned int fd                | struct linux_dirent64 *dirp      | unsigned int count    |                    |                       |                     |
+| 218           | sys_set_tid_address        | int *tidptr                    |                                   |                       |                    |                       |                     |
+| 219           | sys_restart_syscall        |                                 |                                   |                       |                    |                       |                     |
+| 220           | sys_semtimedop             | int semid                      | struct sembuf *sops              | unsigned nsops        | const struct timespec *timeout |   |                     |
+| 221           | sys_fadvise64              | int fd                         | loff_t offset                    | size_t len            | int advice         |                       |                     |
+| 222           | sys_timer_create           | const clockid_t clockid        | struct sigevent *sevp            | timer_t *timerid      |                    |                       |                     |
+| 223           | sys_timer_settime          | timer_t timerid                | int flags                        | const struct itimerspec *new_value | struct itimerspec *old_value |   |     |
+| 224           | sys_timer_gettime          | timer_t timerid                | struct itimerspec *curr_value    |                       |                    |                       |                     |
+| 225           | sys_timer_getoverrun       | timer_t timerid                |                                   |                       |                    |                       |                     |
+| 226           | sys_timer_delete           | timer_t timerid                |                                   |                       |                    |                       |                     |
+| 227           | sys_clock_settime          | const clockid_t clockid        | const struct timespec *tp        |                       |                    |                       |                     |
+| 228           | sys_clock_gettime          | const clockid_t clockid        | struct timespec *tp              |                       |                    |                       |                     |
+| 229           | sys_clock_getres           | const clockid_t clockid        | struct timespec *res             |                       |                    |                       |                     |
+| 230           | sys_clock_nanosleep        | const clockid_t clockid        | int flags                        | const struct timespec *rqtp | struct timespec *rmtp |          |   |
+| 231           | sys_exit_group             | int status                     |                                   |                       |                    |                       |                     |
+| 232           | sys_epoll_wait             | int epfd                       | struct epoll_event *events       | int maxevents         | int timeout        |                       |                     |
+| 233           | sys_epoll_ctl              | int epfd                       | int op                           | int fd                | struct epoll_event *event |   |             |
+| 234           | sys_tgkill                 | pid_t tgid                     | pid_t pid                        | int sig               |                    |                       |                     |
+| 235           | sys_utimes                 | char *filename                 | struct timeval *utimes           |                       |                    |                       |                     |
+| 236           | sys_vserver                |                                 |                                   |                       |                    |                       |                     |
+| 237           | sys_mbind                  | unsigned long start            | unsigned long len                | int mode              | const unsigned long *nmask | unsigned long maxnode | int flags |
+| 238           | sys_set_mempolicy          | int mode                       | const unsigned long *nmask       | unsigned long maxnode |                    |                       |                     |
+| 239           | sys_get_mempolicy          | int *mode                      | unsigned long *nmask             | unsigned long addr    | unsigned long maxnode | int flags          |                     |
+| 240           | sys_mq_open                | const char *name               | int oflag                        | mode_t mode           | struct mq_attr *attr |                       |                     |
+| 241           | sys_mq_unlink              | const char *name               |                                   |                       |                    |                       |                     |
+| 242           | sys_mq_timedsend           | mqd_t mqdes                    | const char *msg_ptr              | size_t msg_len        | unsigned int msg_prio | const struct timespec *abs_timeout | |
+| 243           | sys_mq_timedreceive        | mqd_t mqdes                    | char *msg_ptr                    | size_t msg_len        | unsigned int *msg_prio | const struct timespec *abs_timeout | |
+| 244           | sys_mq_notify              | mqd_t mqdes                    | const struct sigevent *notification |                    |                    |                       |                     |
+| 245           | sys_mq_getsetattr          | mqd_t mqdes                    | struct mq_attr *newattr          | struct mq_attr *oldattr |                 |                    |                     |
+| 246           | sys_kexec_load             | unsigned long entry            | unsigned long nr_segments        | struct kexec_segment *segments | unsigned long flags |       |    |
+| 247           | sys_waitid                 | int which                      | pid_t pid                        | struct siginfo *infop | int options        | struct rusage *ru    |                     |
+| 248           | sys_add_key                | const char *type               | const char *description          | const void *payload   | size_t plen        | key_serial_t destringid |         |
+| 249           | sys_request_key            | const char *type               | const char *description          | const char *callout_info | key_serial_t destringid |       |     |
+| 250           | sys_keyctl                 | int cmd                        | unsigned long arg2               | unsigned long arg3    | unsigned long arg4 | unsigned long arg5   |                     |
+| 251           | sys_ioprio_set             | int which                      | int who                          | int ioprio            |                    |                       |                     |
+| 252           | sys_ioprio_get             | int which                      | int who                          |                       |                    |                       |                     |
+| 253           | sys_inotify_init           |                                 |                                   |                       |                    |                       |                     |
+| 254           | sys_inotify_add_watch      | int fd                         | const char *pathname             | uint32_t mask         |                    |                       |                     |
+| 255           | sys_inotify_rm_watch       | int fd                         | __s32 wd                         |                       |                    |                       |                     |
+| 256           | sys_migrate_pages          | pid_t pid                      | unsigned long maxnode            | const unsigned long *old_nodes | const unsigned long *new_nodes |       |    |
+| 257           | sys_openat                 | int dfd                        | const char *filename             | int flags             | mode_t mode        |                       |                     |
+| 258           | sys_mkdirat                | int dfd                        | const char *pathname             | mode_t mode           |                    |                       |                     |
+| 259           | sys_mknodat                | int dfd                        | const char *filename             | mode_t mode           | dev_t dev          |                       |                     |
+| 260           | sys_fchownat               | int dfd                        | const char *filename             | uid_t user            | gid_t group        | int flag             |                     |
+| 261           | sys_futimesat              | int dfd                        | const char *filename             | struct timeval *utimes |                   |                       |                     |
+| 262           | sys_newfstatat             | int dfd                        | const char *filename             | struct stat *statbuf  | int flag           |                       |                     |
+| 263           | sys_unlinkat               | int dfd                        | const char *pathname             | int flag              |                    |                       |                     |
+| 264           | sys_renameat               | int olddfd                     | const char *oldname              | int newdfd            | const char *newname |                      |                     |
+| 265           | sys_linkat                 | int olddfd                     | const char *oldname              | int newdfd            | const char *newname | int flags            |                     |
+| 266           | sys_symlinkat             | const char *oldname            | int newdfd                       | const char *newname   |                    |                       |                     |
+| 267           | sys_readlinkat            | int dfd                        | const char *pathname             | char *buf             | int bufsiz         |                       |                     |
+| 268           | sys_fchmodat              | int dfd                        | const char *filename             | mode_t mode           | int flag           |                       |                     |
+| 269           | sys_faccessat             | int dfd                        | const char *filename             | int mode              | int flag           |                       |                     |
+| 270           | sys_pselect6              | int n                          | fd_set *inp                      | fd_set *outp          | fd_set *exp        | const struct timespec *tsp | const sigset_t *sig   |
+| 271           | sys_ppoll                 | struct pollfd *ufds            | unsigned int nfds                | const struct timespec *tsp | const sigset_t *sigmask |                |  |
+| 272           | sys_unshare               | unsigned long unshare_flags    |                                   |                       |                    |                       |                     |
+| 273           | sys_set_robust_list       | struct robust_list_head *head  | size_t len                       |                       |                    |                       |                     |
+| 274           | sys_get_robust_list       | int pid                        | struct robust_list_head **head   | size_t *len           |                    |                       |                     |
+| 275           | sys_splice                | int fd_in                      | loff_t *off_in                   | int fd_out            | loff_t *off_out    | size_t len           | unsigned int flags  |
+| 276           | sys_tee                   | int fdin                       | int fdout                        | size_t len            | unsigned int flags |                       |                     |
+| 277           | sys_sync_file_range       | int fd                         | loff_t offset                    | loff_t nbytes         | unsigned int flags |                       |                     |
+| 278           | sys_vmsplice              | int fd                         | const struct iovec *iov          | unsigned long nr_segs | unsigned int flags |                       |                     |
+| 279           | sys_move_pages            | pid_t pid                      | unsigned long nr_pages           | const void **pages    | const int *nodes   | int *status          | int flags           |
+| 280           | sys_utimensat             | int dfd                        | const char *filename             | struct timespec *utimes | int flags        |                       |                     |
+| 281           | sys_epoll_pwait           | int epfd                       | struct epoll_event *events       | int maxevents         | int timeout        | const sigset_t *sigmask | int sigsetsize  |
+| 282           | sys_signalfd              | int ufd                        | const sigset_t *user_mask        | size_t sizemask       |                    |                       |                     |
+| 283           | sys_timerfd_create        | int clockid                    | int flags                        |                       |                    |                       |                     |
+| 284           | sys_eventfd               | unsigned int count             |                                   |                       |                    |                       |                     |
+| 285           | sys_fallocate              | int fd                         | int mode                         | loff_t offset         | loff_t len         |                       |                     |
+| 286           | sys_timerfd_settime        | int ufd                        | int flags                        | const struct itimerspec *utmr | const struct itimerspec *otmr |   |         |
+| 287           | sys_timerfd_gettime        | int ufd                        | struct itimerspec *otmr          |                       |                    |                       |                     |
+| 288           | sys_accept4                | int fd                         | struct sockaddr *upeer_sockaddr  | int *upeer_addrlen    | int flags          |                       |                     |
+| 289           | sys_signalfd4              | int ufd                        | const sigset_t *user_mask        | size_t sizemask       | int flags          |                       |                     |
+| 290           | sys_eventfd2               | unsigned int count             | int flags                        |                       |                    |                       |                     |
+| 291           | sys_epoll_create1          | int flags                      |                                   |                       |                    |                       |                     |
+| 292           | sys_dup3                   | unsigned int oldfd             | unsigned int newfd               | int flags             |                    |                       |                     |
+| 293           | sys_pipe2                  | int *fildes                    | int flags                        |                       |                    |                       |                     |
+| 294           | sys_inotify_init1          | int flags                      |                                   |                       |                    |                       |                     |
+| 295           | sys_preadv                 | unsigned long fd               | const struct iovec *vec          | unsigned long vlen    | unsigned long pos_l | unsigned long pos_h |                    |
+| 296           | sys_pwritev                | unsigned long fd               | const struct iovec *vec          | unsigned long vlen    | unsigned long pos_l | unsigned long pos_h |                    |
+| 297           | sys_rt_tgsigqueueinfo      | pid_t tgid                     | pid_t pid                        | int sig               | siginfo_t *uinfo   |                       |                     |
+| 298           | sys_perf_event_open        | struct perf_event_attr *attr_uptr | pid_t pid                      | int cpu               | int group_fd       | unsigned long flags   |                     |
+| 299           | sys_recvmmsg               | int fd                         | struct msghdr *msg               | unsigned int vlen     | unsigned int flags | struct timespec *timeout |                    |
+| 300           | sys_fanotify_init          | unsigned int flags             | unsigned int event_f_flags       |                       |                    |                       |                     |
+| 301           | sys_fanotify_mark          | int fanotify_fd                | unsigned int flags               | uint64_t mask         | int dfd            | const char *pathname  |                    |
+| 302           | sys_prlimit64              | pid_t pid                      | unsigned int resource            | const struct rlimit64 *new_limit | struct rlimit64 *old_limit |   |      |
+| 303           | sys_name_to_handle_at      | int dfd                        | const char *name                 | struct file_handle *handle | int *mnt_id      | int flags            |                    |
+| 304           | sys_open_by_handle_at      | int mount_fd                   | struct file_handle *handle       | int flags             |                    |                       |                     |
+| 305           | sys_clock_adjtime          | clockid_t which_clock          | struct timex *tx                 |                       |                    |                       |                     |
+| 306           | sys_syncfs                 | int fd                         |                                   |                       |                    |                       |                     |
+| 307           | sys_sendmmsg               | int fd                         | struct msghdr *msg               | unsigned int vlen     | unsigned int flags |                       |                     |
+| 308           | sys_setns                  | int fd                         | int nstype                       |                       |                    |                       |                     |
+| 309           | sys_getcpu                 | unsigned *cpu                  | unsigned *node                   | struct getcpu_cache *cache |                |                    |                     |
+| 310           | sys_process_vm_readv       | pid_t pid                      | const struct iovec *lvec         | unsigned long liovcnt | const struct iovec *rvec | unsigned long riovcnt | unsigned long flags |
+| 311           | sys_process_vm_writev      | pid_t pid                      | const struct iovec *lvec         | unsigned long liovcnt | const struct iovec *rvec | unsigned long riovcnt | unsigned long flags |
+| 312           | sys_kcmp                   | pid_t pid1                     | pid_t pid2                       | int type              | unsigned long idx1 | unsigned long idx2    |                    |
+| 313           | sys_finit_module           | int fd                         | const char *uargs                | int flags             |                    |                       |                     |
+| 314           | sys_sched_setattr          | pid_t pid                      | struct sched_attr *attr          | unsigned int flags    |                    |                       |                     |
+| 315           | sys_sched_getattr          | pid_t pid                      | struct sched_attr *attr          | unsigned int size     | unsigned int flags |                       |                     |
+| 316           | sys_renameat2              | int olddfd                     | const char *oldname              | int newdfd            | const char *newname | unsigned int flags   |                    |
+| 317           | sys_seccomp                | unsigned int op                | unsigned int flags               | const char *uargs     |                    |                       |                     |
+| 318           | sys_getrandom              | char *buf                      | size_t count                     | unsigned int flags    |                    |                       |                     |
+| 319           | sys_memfd_create           | const char *uname_ptr          | unsigned int flags               |                       |                    |                       |                     |
+| 320           | sys_kexec_file_load        | int kernel_fd                  | int initrd_fd                    | unsigned long cmdline_len | const char *cmdline_ptr | unsigned long flags |   |
+| 321           | sys_bpf                    | int cmd                        | union bpf_attr *attr             | unsigned int size     |                    |                       |                     |
+| 322           | sys_execveat               | int dfd                        | const char *filename             | const char *const *argv | const char *const *envp | int flags       |   |
+| 323           | sys_userfaultfd            | int flags                      |                                   |                       |                    |                       |                     |
+| 324           | sys_membarrier             | int cmd                        | int flags                        |                       |                    |                       |                     |
+| 325           | sys_mlock2                 | unsigned long start            | size_t len                       | int flags             |                    |                       |                     |
+| 326           | sys_copy_file_range        | int fd_in                      | loff_t *off_in                   | int fd_out            | loff_t *off_out    | size_t len           | unsigned int flags  |
+| 327           | sys_preadv2                | unsigned long fd               | const struct iovec *vec          | unsigned long vlen    | unsigned long pos_l | unsigned long pos_h  | int flags           |
+| 328           | sys_pwritev2               | unsigned long fd               | const struct iovec *vec          | unsigned long vlen    | unsigned long pos_l | unsigned long pos_h  | int flags           |
+| 329           | sys_pkey_mprotect          | unsigned long start            | size_t len                       | unsigned long prot    | int pkey           |                       |                     |
+| 330           | sys_pkey_alloc             | unsigned long flags            | unsigned long access_rights      |                       |                    |                       |                     |
+| 331           | sys_pkey_free              | int pkey                       |                                   |                       |                    |                       |                     |
+| 332           | sys_statx                  | int dfd                        | const char *filename             | unsigned int flags    | unsigned int mask  | struct statx *buffer |                    |
+| 333           | io_pgetevents              |                                |                                  |                       |                    |                      |                    |
+| 334           | rseq                       |                                |                                  |                       |                    |                      |                    |
+| 335           | pkey_mprotect              |                                |                                  |                       |                    |                      |                    |
+
+
+### MacOS System Call Table
+
+| **NR**|             **name**           | **%x8**| **description**                                               |
+| :---: | :----------------------------: | :---: | :------------------------------------------------------------- |
+| 0   | syscall                          | 0x0   | indirect system call                                           |
+| 1   | exit                             | 0x1   | terminate the calling process                                  |
+| 2   | fork                             | 0x2   | create a new process                                           |
+| 3   | read                             | 0x3   | read input                                                     |
+| 4   | write                            | 0x4   | write output                                                   |
+| 5   | open                             | 0x5   | open or create a file for reading or writing                   |
+| 6   | close                            | 0x6   | delete a descriptor                                            |
+| 7   | wait4                            | 0x7   | wait for process termination                                   |
+| 9   | link                             | 0x9   | make a hard file link                                          |
+| 10  | unlink                           | 0xa   | remove directory entry                                         |
+| 12  | chdir                            | 0xc   | change current working directory                               |
+| 13  | fchdir                           | 0xd   | change current working directory                               |
+| 14  | mknod                            | 0xe   | make a special file node                                       |
+| 15  | chmod                            | 0xf   | change mode of file                                            |
+| 16  | chown                            | 0x10  | change owner and group of a file                               |
+| 18  | getfsstat                        | 0x12  | get list of all mounted file systems                           |
+| 20  | getpid                           | 0x14  | get parent or calling process identification                   |
+| 23  | setuid                           | 0x17  | set user and group ID                                          |
+| 24  | getuid                           | 0x18  | get user identification                                        |
+| 25  | geteuid                          | 0x19  | get user identification                                        |
+| 26  | ptrace                           | 0x1a  | process tracing and debugging                                  |
+| 27  | recvmsg                          | 0x1b  | receive a message from a socket                                |
+| 28  | sendmsg                          | 0x1c  | send a message from a socket                                   |
+| 29  | recvfrom                         | 0x1d  | receive a message from a socket                                |
+| 30  | accept                           | 0x1e  | accept a connection on a socket                                |
+| 31  | getpeername                      | 0x1f  | get address of connected peer                                  |
+| 32  | getsockname                      | 0x20  | get socket name                                                |
+| 33  | access                           | 0x21  | check accessibility of a file                                  |
+| 34  | chflags                          | 0x22  | set file flags                                                 |
+| 35  | fchflags                         | 0x23  | set file flags                                                 |
+| 36  | sync                             | 0x24  | synchronize disk block in-core status with that on disk        |
+| 37  | kill                             | 0x25  | send signal to a process                                       |
+| 39  | getppid                          | 0x27  | get parent or calling process identification                   |
+| 41  | dup                              | 0x29  | duplicate an existing file descriptor                          |
+| 42  | pipe                             | 0x2a  | create descriptor pair for interprocess communication          |
+| 43  | getegid                          | 0x2b  | get group process identification                               |
+| 46  | sigaction                        | 0x2e  | software signal facilities                                     |
+| 47  | getgid                           | 0x2f  | get group process identification                               |
+| 48  | sigprocmask                      | 0x30  | manipulate current signal mask                                 |
+| 49  | getlogin                         | 0x31  | get/set login name                                             |
+| 50  | setlogin                         | 0x32  | get/set login name                                             |
+| 51  | acct                             | 0x33  | enable or disable process accounting                           |
+| 52  | sigpending                       | 0x34  | get pending signals                                            |
+| 53  | sigaltstack                      | 0x35  | set and/or get signal stack context                            |
+| 54  | ioctl                            | 0x36  | control device                                                 |
+| 55  | reboot                           | 0x37  | reboot system or halt processor                                |
+| 56  | revoke                           | 0x38  | revoke file access                                             |
+| 57  | symlink                          | 0x39  | make symbolic link to a file                                   |
+| 58  | readlink                         | 0x3a  | read value of a symbolic link                                  |
+| 59  | execve                           | 0x3b  | execute a file                                                 |
+| 60  | umask                            | 0x3c  | set file creation mode mask                                    |
+| 61  | chroot                           | 0x3d  | change root directory                                          |
+| 65  | msync                            | 0x41  | synchronize a mapped region                                    |
+| 66  | vfork                            | 0x42  | deprecated system call to create a new process                 |
+| 73  | munmap                           | 0x49  | remove a mapping                                               |
+| 74  | mprotect                         | 0x4a  | control the protection of pages                                |
+| 75  | madvise                          | 0x4b  | give advice about use of memory                                |
+| 78  | mincore                          | 0x4e  | determine residency of memory pages                            |
+| 79  | getgroups                        | 0x4f  | get group access list                                          |
+| 80  | setgroups                        | 0x50  | set group access list                                          |
+| 81  | getpgrp                          | 0x51  | get process group                                              |
+| 82  | setpgid                          | 0x52  | set process group                                              |
+| 83  | setitimer                        | 0x53  | get/set value of interval timer                                |
+| 85  | swapon                           | 0x55  | start/stop swapping to file/device                             |
+| 86  | getitimer                        | 0x56  | get/set value of interval timer                                |
+| 89  | getdtablesize                    | 0x59  | get descriptor table size                                      |
+| 90  | dup2                             | 0x5a  | duplicate an existing file descriptor                          |
+| 92  | fcntl                            | 0x5c  | file control                                                   |
+| 93  | select                           | 0x5d  | synchronous I/O                                                |
+| 95  | fsync                            | 0x5f  | synchronize a file's in-core state with that on disk           |
+| 96  | setpriority                      | 0x60  | get/set program scheduling priority                            |
+| 97  | socket                           | 0x61  | create an endpoint for communication                           |
+| 98  | connect                          | 0x62  | initiate a connection on a socket                              |
+| 100 | getpriority                      | 0x64  | get/set program scheduling priority                            |
+| 104 | bind                             | 0x68  | bind a name to a socket                                        |
+| 105 | setsockopt                       | 0x69  | get and set options on sockets                                 |
+| 106 | listen                           | 0x6a  | listen for connections on a socket                             |
+| 111 | sigsuspend                       | 0x6f  | atomically release blocked signals and wait for interrupt      |
+| 116 | gettimeofday                     | 0x74  | get/set date and time                                          |
+| 117 | getrusage                        | 0x75  | get information about resource utilization                     |
+| 118 | getsockopt                       | 0x76  | get and set options on sockets                                 |
+| 120 | readv                            | 0x78  | read input                                                     |
+| 121 | writev                           | 0x79  | write output                                                   |
+| 122 | settimeofday                     | 0x7a  | get/set date and time                                          |
+| 123 | fchown                           | 0x7b  | change owner and group of a file                               |
+| 124 | fchmod                           | 0x7c  | change mode of file                                            |
+| 126 | setreuid                         | 0x7e  | set real and effective user IDs                                |
+| 127 | setregid                         | 0x7f  | set real and effective group ID                                |
+| 128 | rename                           | 0x80  | change the name of a file                                      |
+| 131 | flock                            | 0x83  | apply or remove an advisory lock on an open file               |
+| 132 | mkfifo                           | 0x84  | make a fifo file                                               |
+| 133 | sendto                           | 0x85  | send a message from a socket                                   |
+| 134 | shutdown                         | 0x86  | shut down part of a full-duplex connection                     |
+| 135 | socketpair                       | 0x87  | create a pair of connected sockets                             |
+| 136 | mkdir                            | 0x88  | make a directory file                                          |
+| 137 | rmdir                            | 0x89  | remove a directory file                                        |
+| 138 | utimes                           | 0x8a  | set file access and modification times                         |
+| 139 | futimes                          | 0x8b  | set file access and modification times                         |
+| 140 | adjtime                          | 0x8c  | correct the time to allow synchronization of the system clock  |
+| 142 | gethostuuid                      | 0x8e  | return a unique identifier for the current machine             |
+| 147 | setsid                           | 0x93  | create session and set process group ID                        |
+| 151 | getpgid                          | 0x97  | get process group                                              |
+| 152 | setprivexec                      | 0x98  | (not available)                                                |
+| 153 | pread                            | 0x99  | read input                                                     |
+| 154 | pwrite                           | 0x9a  | write output                                                   |
+| 155 | nfssvc                           | 0x9b  | NFS services                                                   |
+| 157 | statfs                           | 0x9d  | get file system statistics                                     |
+| 158 | fstatfs                          | 0x9e  | get file system statistics                                     |
+| 159 | unmount                          | 0x9f  | mount or dismount a filesystem                                 |
+| 161 | getfh                            | 0xa1  | get file handle                                                |
+| 165 | quotactl                         | 0xa5  | manipulate filesystem quotas                                   |
+| 167 | mount                            | 0xa7  | mount or dismount a filesystem                                 |
+| 169 | csops                            | 0xa9  | (not available)                                                |
+| 170 | csops_audittoken                 | 0xaa  | (not available)                                                |
+| 173 | waitid                           | 0xad  | (not available)                                                |
+| 177 | kdebug_typefilter                | 0xb1  | (not available)                                                |
+| 178 | kdebug_trace_string              | 0xb2  | (not available)                                                |
+| 179 | kdebug_trace64                   | 0xb3  | (not available)                                                |
+| 180 | kdebug_trace                     | 0xb4  | (not available)                                                |
+| 181 | setgid                           | 0xb5  | set user and group ID                                          |
+| 182 | setegid                          | 0xb6  | set user and group ID                                          |
+| 183 | seteuid                          | 0xb7  | set user and group ID                                          |
+| 184 | sigreturn                        | 0xb8  | (not available)                                                |
+| 186 | thread_selfcounts                | 0xba  | (not available)                                                |
+| 187 | fdatasync                        | 0xbb  | (not available)                                                |
+| 188 | stat                             | 0xbc  | get file status                                                |
+| 189 | fstat                            | 0xbd  | get file status                                                |
+| 190 | lstat                            | 0xbe  | get file status                                                |
+| 191 | pathconf                         | 0xbf  | get configurable pathname variables                            |
+| 192 | fpathconf                        | 0xc0  | get configurable pathname variables                            |
+| 194 | getrlimit                        | 0xc2  | control maximum system resource consumption                    |
+| 195 | setrlimit                        | 0xc3  | control maximum system resource consumption                    |
+| 196 | getdirentries                    | 0xc4  | get directory entries in a filesystem independent format       |
+| 197 | mmap                             | 0xc5  | "allocate memory, or map files or devices into memory"         |
+| 199 | lseek                            | 0xc7  | reposition read/write file offset                              |
+| 200 | truncate                         | 0xc8  | truncate or extend a file to a specified length                |
+| 201 | ftruncate                        | 0xc9  | truncate or extend a file to a specified length                |
+| 202 | sysctl                           | 0xca  | read/write system parameters                                   |
+| 203 | mlock                            | 0xcb  | lock (unlock) physical pages in memory                         |
+| 204 | munlock                          | 0xcc  | lock (unlock) physical pages in memory                         |
+| 205 | undelete                         | 0xcd  | attempt to recover a deleted file                              |
+| 216 | open_dprotected_np               | 0xd8  | (not available)                                                |
+| 217 | fsgetpath_ext                    | 0xd9  | (not available)                                                |
+| 220 | getattrlist                      | 0xdc  | get file system attributes                                     |
+| 221 | setattrlist                      | 0xdd  | set file system attributes                                     |
+| 222 | getdirentriesattr                | 0xde  | get file system attributes for multiple                        |
+| 223 | exchangedata                     | 0xdf  | atomically exchange data between two files                     |
+| 225 | searchfs                         | 0xe1  | search a volume quickly                                        |
+| 226 | delete                           | 0xe2  | (not available)                                                |
+| 227 | copyfile                         | 0xe3  | (not available)                                                |
+| 228 | fgetattrlist                     | 0xe4  | get file system attributes                                     |
+| 229 | fsetattrlist                     | 0xe5  | set file system attributes                                     |
+| 230 | poll                             | 0xe6  | synchronous I/O multiplexing                                   |
+| 234 | getxattr                         | 0xea  | get an extended attribute value                                |
+| 235 | fgetxattr                        | 0xeb  | get an extended attribute value                                |
+| 236 | setxattr                         | 0xec  | set an extended attribute value                                |
+| 237 | fsetxattr                        | 0xed  | set an extended attribute value                                |
+| 238 | removexattr                      | 0xee  | remove an extended attribute value                             |
+| 239 | fremovexattr                     | 0xef  | remove an extended attribute value                             |
+| 240 | listxattr                        | 0xf0  | list extended attribute names                                  |
+| 241 | flistxattr                       | 0xf1  | list extended attribute names                                  |
+| 242 | fsctl                            | 0xf2  | (not available)                                                |
+| 243 | initgroups                       | 0xf3  | (not available)                                                |
+| 244 | posix_spawn                      | 0xf4  | spawn a process                                                |
+| 245 | ffsctl                           | 0xf5  | (not available)                                                |
+| 247 | nfsclnt                          | 0xf7  | NFS client services                                            |
+| 248 | fhopen                           | 0xf8  | open a file by file handle                                     |
+| 250 | minherit                         | 0xfa  | control the inheritance of pages                               |
+| 251 | semsys                           | 0xfb  | (not available)                                                |
+| 252 | msgsys                           | 0xfc  | (not available)                                                |
+| 253 | shmsys                           | 0xfd  | (not available)                                                |
+| 254 | semctl                           | 0xfe  | control operations on a semaphore set                          |
+| 255 | semget                           | 0xff  | obtain a semaphore id                                          |
+| 256 | semop                            | 0x100 | atomic array of operations on a semaphore set                  |
+| 258 | msgctl                           | 0x102 | (not available)                                                |
+| 259 | msgget                           | 0x103 | (not available)                                                |
+| 260 | msgsnd                           | 0x104 | (not available)                                                |
+| 261 | msgrcv                           | 0x105 | (not available)                                                |
+| 262 | shmat                            | 0x106 | map/unmap shared memory                                        |
+| 263 | shmctl                           | 0x107 | shared memory control operations                               |
+| 264 | shmdt                            | 0x108 | map/unmap shared memory                                        |
+| 265 | shmget                           | 0x109 | get shared memory area identifier                              |
+| 266 | shm_open                         | 0x10a | open a shared memory object                                    |
+| 267 | shm_unlink                       | 0x10b | remove shared memory object                                    |
+| 268 | sem_open                         | 0x10c | initialize and open a named semaphore                          |
+| 269 | sem_close                        | 0x10d | close a named semaphore                                        |
+| 270 | sem_unlink                       | 0x10e | remove a named semaphore                                       |
+| 271 | sem_wait                         | 0x10f | lock a semaphore                                               |
+| 272 | sem_trywait                      | 0x110 | lock a semaphore                                               |
+| 273 | sem_post                         | 0x111 | unlock a semaphore                                             |
+| 274 | sysctlbyname                     | 0x112 | (not available)                                                |
+| 277 | open_extended                    | 0x115 | (not available)                                                |
+| 278 | umask_extended                   | 0x116 | (not available)                                                |
+| 279 | stat_extended                    | 0x117 | (not available)                                                |
+| 280 | lstat_extended                   | 0x118 | (not available)                                                |
+| 281 | fstat_extended                   | 0x119 | (not available)                                                |
+| 282 | chmod_extended                   | 0x11a | (not available)                                                |
+| 283 | fchmod_extended                  | 0x11b | (not available)                                                |
+| 284 | access_extended                  | 0x11c | (not available)                                                |
+| 285 | settid                           | 0x11d | (not available)                                                |
+| 286 | gettid                           | 0x11e | (not available)                                                |
+| 287 | setsgroups                       | 0x11f | (not available)                                                |
+| 288 | getsgroups                       | 0x120 | (not available)                                                |
+| 289 | setwgroups                       | 0x121 | (not available)                                                |
+| 290 | getwgroups                       | 0x122 | (not available)                                                |
+| 291 | mkfifo_extended                  | 0x123 | (not available)                                                |
+| 292 | mkdir_extended                   | 0x124 | (not available)                                                |
+| 293 | identitysvc                      | 0x125 | (not available)                                                |
+| 294 | shared_region_check_np           | 0x126 | (not available)                                                |
+| 296 | vm_pressure_monitor              | 0x128 | (not available)                                                |
+| 297 | psynch_rw_longrdlock             | 0x129 | (not available)                                                |
+| 298 | psynch_rw_yieldwrlock            | 0x12a | (not available)                                                |
+| 299 | psynch_rw_downgrade              | 0x12b | (not available)                                                |
+| 300 | psynch_rw_upgrade                | 0x12c | (not available)                                                |
+| 301 | psynch_mutexwait                 | 0x12d | (not available)                                                |
+| 302 | psynch_mutexdrop                 | 0x12e | (not available)                                                |
+| 303 | psynch_cvbroad                   | 0x12f | (not available)                                                |
+| 304 | psynch_cvsignal                  | 0x130 | (not available)                                                |
+| 305 | psynch_cvwait                    | 0x131 | (not available)                                                |
+| 306 | psynch_rw_rdlock                 | 0x132 | (not available)                                                |
+| 307 | psynch_rw_wrlock                 | 0x133 | (not available)                                                |
+| 308 | psynch_rw_unlock                 | 0x134 | (not available)                                                |
+| 309 | psynch_rw_unlock2                | 0x135 | (not available)                                                |
+| 310 | getsid                           | 0x136 | get process session                                            |
+| 311 | settid_with_pid                  | 0x137 | (not available)                                                |
+| 312 | psynch_cvclrprepost              | 0x138 | (not available)                                                |
+| 313 | aio_fsync                        | 0x139 | (not available)                                                |
+| 314 | aio_return                       | 0x13a | retrieve return status of asynchronous I/O operation           |
+| 315 | aio_suspend                      | 0x13b | suspend until asynchronous I/O operations or timeout complete  |
+| 316 | aio_cancel                       | 0x13c | cancel an outstanding asynchronous I/O operation (REALTIME)    |
+| 317 | aio_error                        | 0x13d | retrieve error status of asynchronous I/O operation (REALTIME) |
+| 318 | aio_read                         | 0x13e | asynchronous read from a file (REALTIME)                       |
+| 319 | aio_write                        | 0x13f | asynchronous write to a file (REALTIME)                        |
+| 320 | lio_listio                       | 0x140 | (not available)                                                |
+| 322 | iopolicysys                      | 0x142 | (not available)                                                |
+| 323 | process_policy                   | 0x143 | (not available)                                                |
+| 324 | mlockall                         | 0x144 | (not available)                                                |
+| 325 | munlockall                       | 0x145 | (not available)                                                |
+| 327 | issetugid                        | 0x147 | is current process tainted by uid or gid changes               |
+| 328 | __pthread_kill                   | 0x148 | (not available)                                                |
+| 329 | __pthread_sigmask                | 0x149 | (not available)                                                |
+| 330 | __sigwait                        | 0x14a | (not available)                                                |
+| 331 | __disable_threadsignal           | 0x14b | (not available)                                                |
+| 332 | __pthread_markcancel             | 0x14c | (not available)                                                |
+| 333 | __pthread_canceled               | 0x14d | (not available)                                                |
+| 334 | __semwait_signal                 | 0x14e | (not available)                                                |
+| 336 | proc_info                        | 0x150 | (not available)                                                |
+| 337 | sendfile                         | 0x151 | send a file to a socket                                        |
+| 338 | stat64                           | 0x152 | get file status                                                |
+| 339 | fstat64                          | 0x153 | get file status                                                |
+| 340 | lstat64                          | 0x154 | get file status                                                |
+| 341 | stat64_extended                  | 0x155 | (not available)                                                |
+| 342 | lstat64_extended                 | 0x156 | (not available)                                                |
+| 343 | fstat64_extended                 | 0x157 | (not available)                                                |
+| 344 | getdirentries64                  | 0x158 | (not available)                                                |
+| 345 | statfs64                         | 0x159 | get file system statistics                                     |
+| 346 | fstatfs64                        | 0x15a | get file system statistics                                     |
+| 347 | getfsstat64                      | 0x15b | (not available)                                                |
+| 348 | __pthread_chdir                  | 0x15c | (not available)                                                |
+| 349 | __pthread_fchdir                 | 0x15d | (not available)                                                |
+| 350 | audit                            | 0x15e | commit BSM audit record to audit log                           |
+| 351 | auditon                          | 0x15f | configure system audit parameters                              |
+| 353 | getauid                          | 0x161 | retrieve audit user ID                                         |
+| 354 | setauid                          | 0x162 | set audit indentifier                                          |
+| 357 | getaudit_addr                    | 0x165 | retrieve audit session state                                   |
+| 358 | setaudit_addr                    | 0x166 | set audit session state                                        |
+| 359 | auditctl                         | 0x167 | configure system audit parameters                              |
+| 360 | bsdthread_create                 | 0x168 | (not available)                                                |
+| 361 | bsdthread_terminate              | 0x169 | (not available)                                                |
+| 362 | kqueue                           | 0x16a | kernel event notification                                      |
+| 363 | kevent                           | 0x16b | kernel event notification                                      |
+| 364 | lchown                           | 0x16c | change owner and group of a file                               |
+| 366 | bsdthread_register               | 0x16e | (not available)                                                |
+| 367 | workq_open                       | 0x16f | (not available)                                                |
+| 368 | workq_kernreturn                 | 0x170 | (not available)                                                |
+| 369 | kevent64                         | 0x171 | kernel event notification                                      |
+| 370 | __old_semwait_signal             | 0x172 | (not available)                                                |
+| 371 | __old_semwait_signal_nocancel    | 0x173 | (not available)                                                |
+| 372 | thread_selfid                    | 0x174 | (not available)                                                |
+| 373 | ledger                           | 0x175 | (not available)                                                |
+| 374 | kevent_qos                       | 0x176 | kernel event notification                                      |
+| 375 | kevent_id                        | 0x177 | (not available)                                                |
+| 380 | __mac_execve                     | 0x17c | (not available)                                                |
+| 381 | __mac_syscall                    | 0x17d | (not available)                                                |
+| 382 | __mac_get_file                   | 0x17e | (not available)                                                |
+| 383 | __mac_set_file                   | 0x17f | (not available)                                                |
+| 384 | __mac_get_link                   | 0x180 | (not available)                                                |
+| 385 | __mac_set_link                   | 0x181 | (not available)                                                |
+| 386 | __mac_get_proc                   | 0x182 | (not available)                                                |
+| 387 | __mac_set_proc                   | 0x183 | (not available)                                                |
+| 388 | __mac_get_fd                     | 0x184 | (not available)                                                |
+| 389 | __mac_set_fd                     | 0x185 | (not available)                                                |
+| 390 | __mac_get_pid                    | 0x186 | (not available)                                                |
+| 394 | pselect                          | 0x18a | synchronous I/O multiplexing a la POSIX.1g                     |
+| 395 | pselect_nocancel                 | 0x18b | (not available)                                                |
+| 396 | read_nocancel                    | 0x18c | (not available)                                                |
+| 397 | write_nocancel                   | 0x18d | (not available)                                                |
+| 398 | open_nocancel                    | 0x18e | (not available)                                                |
+| 399 | close_nocancel                   | 0x18f | (not available)                                                |
+| 400 | wait4_nocancel                   | 0x190 | (not available)                                                |
+| 401 | recvmsg_nocancel                 | 0x191 | (not available)                                                |
+| 402 | sendmsg_nocancel                 | 0x192 | (not available)                                                |
+| 403 | recvfrom_nocancel                | 0x193 | (not available)                                                |
+| 404 | accept_nocancel                  | 0x194 | (not available)                                                |
+| 405 | msync_nocancel                   | 0x195 | (not available)                                                |
+| 406 | fcntl_nocancel                   | 0x196 | (not available)                                                |
+| 407 | select_nocancel                  | 0x197 | (not available)                                                |
+| 408 | fsync_nocancel                   | 0x198 | (not available)                                                |
+| 409 | connect_nocancel                 | 0x199 | (not available)                                                |
+| 410 | sigsuspend_nocancel              | 0x19a | (not available)                                                |
+| 411 | readv_nocancel                   | 0x19b | (not available)                                                |
+| 412 | writev_nocancel                  | 0x19c | (not available)                                                |
+| 413 | sendto_nocancel                  | 0x19d | (not available)                                                |
+| 414 | pread_nocancel                   | 0x19e | (not available)                                                |
+| 415 | pwrite_nocancel                  | 0x19f | (not available)                                                |
+| 416 | waitid_nocancel                  | 0x1a0 | (not available)                                                |
+| 417 | poll_nocancel                    | 0x1a1 | (not available)                                                |
+| 418 | msgsnd_nocancel                  | 0x1a2 | (not available)                                                |
+| 419 | msgrcv_nocancel                  | 0x1a3 | (not available)                                                |
+| 420 | sem_wait_nocancel                | 0x1a4 | (not available)                                                |
+| 421 | aio_suspend_nocancel             | 0x1a5 | (not available)                                                |
+| 422 | __sigwait_nocancel               | 0x1a6 | (not available)                                                |
+| 423 | __semwait_signal_nocancel        | 0x1a7 | (not available)                                                |
+| 424 | __mac_mount                      | 0x1a8 | (not available)                                                |
+| 425 | __mac_get_mount                  | 0x1a9 | (not available)                                                |
+| 426 | __mac_getfsstat                  | 0x1aa | (not available)                                                |
+| 427 | fsgetpath                        | 0x1ab | get the path associated with filesystem node identifier (inode |
+| 428 | audit_session_self               | 0x1ac | (not available)                                                |
+| 429 | audit_session_join               | 0x1ad | (not available)                                                |
+| 430 | fileport_makeport                | 0x1ae | (not available)                                                |
+| 431 | fileport_makefd                  | 0x1af | (not available)                                                |
+| 432 | audit_session_port               | 0x1b0 | (not available)                                                |
+| 433 | pid_suspend                      | 0x1b1 | (not available)                                                |
+| 434 | pid_resume                       | 0x1b2 | (not available)                                                |
+| 435 | pid_hibernate                    | 0x1b3 | (not available)                                                |
+| 436 | pid_shutdown_sockets             | 0x1b4 | (not available)                                                |
+| 438 | shared_region_map_and_slide_np   | 0x1b6 | (not available)                                                |
+| 439 | kas_info                         | 0x1b7 | (not available)                                                |
+| 440 | memorystatus_control             | 0x1b8 | (not available)                                                |
+| 441 | guarded_open_np                  | 0x1b9 | (not available)                                                |
+| 442 | guarded_close_np                 | 0x1ba | (not available)                                                |
+| 443 | guarded_kqueue_np                | 0x1bb | (not available)                                                |
+| 444 | change_fdguard_np                | 0x1bc | (not available)                                                |
+| 445 | usrctl                           | 0x1bd | (not available)                                                |
+| 446 | proc_rlimit_control              | 0x1be | (not available)                                                |
+| 447 | connectx                         | 0x1bf | initiate a connection on a socket                              |
+| 448 | disconnectx                      | 0x1c0 | disconnects a connection on a socket                           |
+| 449 | peeloff                          | 0x1c1 | (not available)                                                |
+| 450 | socket_delegate                  | 0x1c2 | (not available)                                                |
+| 451 | telemetry                        | 0x1c3 | (not available)                                                |
+| 452 | proc_uuid_policy                 | 0x1c4 | (not available)                                                |
+| 453 | memorystatus_get_level           | 0x1c5 | (not available)                                                |
+| 454 | system_override                  | 0x1c6 | (not available)                                                |
+| 455 | vfs_purge                        | 0x1c7 | (not available)                                                |
+| 456 | sfi_ctl                          | 0x1c8 | (not available)                                                |
+| 457 | sfi_pidctl                       | 0x1c9 | (not available)                                                |
+| 458 | coalition                        | 0x1ca | (not available)                                                |
+| 459 | coalition_info                   | 0x1cb | (not available)                                                |
+| 460 | necp_match_policy                | 0x1cc | (not available)                                                |
+| 461 | getattrlistbulk                  | 0x1cd | get file system attributes for multiple directory entries      |
+| 462 | clonefileat                      | 0x1ce | create copy on write clones of files                           |
+| 463 | openat                           | 0x1cf | open or create a file for reading or writing                   |
+| 464 | openat_nocancel                  | 0x1d0 | (not available)                                                |
+| 465 | renameat                         | 0x1d1 | change the name of a file                                      |
+| 466 | faccessat                        | 0x1d2 | check accessibility of a file                                  |
+| 467 | fchmodat                         | 0x1d3 | change mode of file                                            |
+| 468 | fchownat                         | 0x1d4 | change owner and group of a file                               |
+| 469 | fstatat                          | 0x1d5 | get file status                                                |
+| 470 | fstatat64                        | 0x1d6 | (not available)                                                |
+| 471 | linkat                           | 0x1d7 | make a hard file link                                          |
+| 472 | unlinkat                         | 0x1d8 | remove directory entry                                         |
+| 473 | readlinkat                       | 0x1d9 | read value of a symbolic link                                  |
+| 474 | symlinkat                        | 0x1da | make symbolic link to a file                                   |
+| 475 | mkdirat                          | 0x1db | make a directory file                                          |
+| 476 | getattrlistat                    | 0x1dc | get file system attributes                                     |
+| 477 | proc_trace_log                   | 0x1dd | (not available)                                                |
+| 478 | bsdthread_ctl                    | 0x1de | (not available)                                                |
+| 479 | openbyid_np                      | 0x1df | (not available)                                                |
+| 480 | recvmsg_x                        | 0x1e0 | (not available)                                                |
+| 481 | sendmsg_x                        | 0x1e1 | (not available)                                                |
+| 482 | thread_selfusage                 | 0x1e2 | (not available)                                                |
+| 483 | csrctl                           | 0x1e3 | (not available)                                                |
+| 484 | guarded_open_dprotected_np       | 0x1e4 | (not available)                                                |
+| 485 | guarded_write_np                 | 0x1e5 | (not available)                                                |
+| 486 | guarded_pwrite_np                | 0x1e6 | (not available)                                                |
+| 487 | guarded_writev_np                | 0x1e7 | (not available)                                                |
+| 488 | renameatx_np                     | 0x1e8 | change the name of a file                                      |
+| 489 | mremap_encrypted                 | 0x1e9 | (not available)                                                |
+| 490 | netagent_trigger                 | 0x1ea | (not available)                                                |
+| 491 | stack_snapshot_with_config       | 0x1eb | (not available)                                                |
+| 492 | microstackshot                   | 0x1ec | (not available)                                                |
+| 493 | grab_pgo_data                    | 0x1ed | (not available)                                                |
+| 494 | persona                          | 0x1ee | (not available)                                                |
+| 496 | mach_eventlink_signal            | 0x1f0 | (not available)                                                |
+| 497 | mach_eventlink_wait_until        | 0x1f1 | (not available)                                                |
+| 498 | mach_eventlink_signal_wait_until | 0x1f2 | (not available)                                                |
+| 499 | work_interval_ctl                | 0x1f3 | (not available)                                                |
+| 500 | getentropy                       | 0x1f4 | get entropy                                                    |
+| 501 | necp_open                        | 0x1f5 | (not available)                                                |
+| 502 | necp_client_action               | 0x1f6 | (not available)                                                |
+| 503 | __nexus_open                     | 0x1f7 | (not available)                                                |
+| 504 | __nexus_register                 | 0x1f8 | (not available)                                                |
+| 505 | __nexus_deregister               | 0x1f9 | (not available)                                                |
+| 506 | __nexus_create                   | 0x1fa | (not available)                                                |
+| 507 | __nexus_destroy                  | 0x1fb | (not available)                                                |
+| 508 | __nexus_get_opt                  | 0x1fc | (not available)                                                |
+| 509 | __nexus_set_opt                  | 0x1fd | (not available)                                                |
+| 510 | __channel_open                   | 0x1fe | (not available)                                                |
+| 511 | __channel_get_info               | 0x1ff | (not available)                                                |
+| 512 | __channel_sync                   | 0x200 | (not available)                                                |
+| 513 | __channel_get_opt                | 0x201 | (not available)                                                |
+| 514 | __channel_set_opt                | 0x202 | (not available)                                                |
+| 515 | ulock_wait                       | 0x203 | (not available)                                                |
+| 516 | ulock_wake                       | 0x204 | (not available)                                                |
+| 517 | fclonefileat                     | 0x205 | create copy on write clones of files                           |
+| 518 | fs_snapshot                      | 0x206 | (not available)                                                |
+| 519 | register_uexc_handler            | 0x207 | (not available)                                                |
+| 520 | terminate_with_payload           | 0x208 | (not available)                                                |
+| 521 | abort_with_payload               | 0x209 | (not available)                                                |
+| 522 | necp_session_open                | 0x20a | (not available)                                                |
+| 523 | necp_session_action              | 0x20b | (not available)                                                |
+| 524 | setattrlistat                    | 0x20c | set file system attributes                                     |
+| 525 | net_qos_guideline                | 0x20d | (not available)                                                |
+| 526 | fmount                           | 0x20e | (not available)                                                |
+| 527 | ntp_adjtime                      | 0x20f | (not available)                                                |
+| 528 | ntp_gettime                      | 0x210 | (not available)                                                |
+| 529 | os_fault_with_payload            | 0x211 | (not available)                                                |
+| 530 | kqueue_workloop_ctl              | 0x212 | (not available)                                                |
+| 531 | __mach_bridge_remote_time        | 0x213 | (not available)                                                |
+| 532 | coalition_ledger                 | 0x214 | (not available)                                                |
+| 533 | log_data                         | 0x215 | (not available)                                                |
+| 534 | memorystatus_available_memory    | 0x216 | (not available)                                                |
+| 535 | objc_bp_assist_cfg_np            | 0x217 | (not available)                                                |
+| 536 | shared_region_map_and_slide_2_np | 0x218 | (not available)                                                |
+| 537 | pivot_root                       | 0x219 | (not available)                                                |
+| 538 | task_inspect_for_pid             | 0x21a | (not available)                                                |
+| 539 | task_read_for_pid                | 0x21b | (not available)                                                |
+| 540 | preadv                           | 0x21c | read input                                                     |
+| 541 | pwritev                          | 0x21d | write output                                                   |
+| 542 | preadv_nocancel                  | 0x21e | (not available)                                                |
+| 543 | pwritev_nocancel                 | 0x21f | (not available)                                                |
+| 544 | ulock_wait2                      | 0x220 | (not available)                                                |
+| 545 | proc_info_extended_id            | 0x221 | (not available)                                                |
+| 546 | tracker_action                   | 0x222 | (not available)                                                |
+| 547 | debug_syscall_reject             | 0x223 | (not available)                                                |
+| 548 | MAXSYSCALL                       | 0x224 | (not available)                                                |
+| 63  | invalid                          | 0x3f  | (not available)                                                |
