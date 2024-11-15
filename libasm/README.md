@@ -3842,7 +3842,13 @@ Yine GUI'lı bir şekilde debugging için [Qt Creator](https://www.qt.io/product
 
 ## :seven: Onaylama ve Akran Değerlendirmesi
 
-Hazırlanıyor..
+**Linux:**
+
+Assembly kodunuz Linux sistemi üzerinde çalışıyorsa, 42 PC'de sanal makineye Linux kurup değerlendirmenizi bu ortamda gerçekleştirebilirsiniz.
+
+**MacOS:**
+
+Assembly kodunuz MacOS sistemi üzerinde çalışıyorsa, 42 PC'de sanal makineye MacOS kurup değerlendirmenizi bu ortamda gerçekleştirebilirsiniz.
 
 ---
 
