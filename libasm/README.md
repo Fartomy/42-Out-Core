@@ -132,7 +132,7 @@ Neredeyse her konu birbiriyle ilişkili olduğundan sadece yukarıdan aşağıya
    - [Calling Conventions & ABI](https://github.com/Fartomy/42-Out-Core/blob/main/libasm/README.md#calling-conventions--abi)
    - [Mix](https://github.com/Fartomy/42-Out-Core/blob/main/libasm/README.md#mix)
    - [Konuyla Alakasız](https://github.com/Fartomy/42-Out-Core/blob/main/libasm/README.md#konuyla-alakas%C4%B1z)
-   - [https://github.com/Fartomy/42-Out-Core/blob/main/libasm/README.md#asm-debug](https://github.com/Fartomy/42-Out-Core/blob/main/libasm/README.md#asm-debug)
+   - [ASM Debug](https://github.com/Fartomy/42-Out-Core/blob/main/libasm/README.md#asm-debug)
 7. [Onaylama ve Akran Değerlendirmesi](https://github.com/Fartomy/42-Out-Core/blob/main/libasm/README.md#seven-onaylama-ve-akran-de%C4%9Ferlendirmesi)
 8. [Ekler](https://github.com/Fartomy/42-Out-Core/blob/main/libasm/README.md#eight-ekler)
    - [Linux System Call Table For x86-64](https://github.com/Fartomy/42-Out-Core/blob/main/libasm/README.md#linux-system-call-table-for-x86-64)
