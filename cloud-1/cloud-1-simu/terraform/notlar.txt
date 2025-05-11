@@ -1,0 +1,4 @@
+1. Vagrant SSH auth sirasinda sıkışma yaşandığından ilerleme olmuyordu ancak https://github.com/hashicorp/vagrant/issues/11777 burada ki konuşmalarda "soapy1" adlı kullanıcı Vagrantfile'a iki satırlıkşu kodu "  config.vm.provider :virtualbox do |v|
+    v.customize ["modifyvm", :id, "--uart1", "0x3F8", "4"]
+    v.customize ["modifyvm", :id, "--uartmode1", "file", File::NULL]
+  end" ekleyince düzeleceğini söyledi. Evet ekleyince vagrant'ın çalışma oranı arttı. 

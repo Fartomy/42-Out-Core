@@ -1,0 +1,70 @@
+- name: Deploy WordPress with Docker
+  hosts: vagranthosts
+  tasks:
+    - name: Get user home directory
+      set_fact:
+        user_home: "{{ ansible_env.HOME }}"
+
+    - name: Print home directory (Debug)
+      debug:
+        msg: "User home directory is {{ user_home }}"
+
+    - name: Create WordPress directory
+      file:
+        path: "{{ user_home }}/wordpress"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+
+    - name: Copy .env file to remote machine
+      copy:
+        src: "../.env"
+        dest: "{{ user_home }}/wordpress/.env"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0644'
+
+    - name: Copy docker-compose file to remote machine
+      copy:
+        src: ../docker-compose.yml
+        dest: "{{ user_home }}/wordpress/docker-compose.yml"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0644'
+
+    - name: Up docker-compose file
+      become: true
+      command:
+        cmd: docker-compose up -d
+        chdir: "{{ user_home }}/wordpress"
+
+    - name: Install WordPress via WP-CLI
+      become: true
+      shell: |
+        set -o allexport
+        source {{ user_home }}/wordpress/.env
+        set +o allexport
+
+        docker run --rm \
+          --name wp-cli-install \
+          --network wordpress_wp_network \
+          -v wordpress_wp_data:/var/www/html \
+          -e WORDPRESS_DB_HOST=mysql \
+          -e WORDPRESS_DB_USER="$MYSQL_USER" \
+          -e WORDPRESS_DB_PASSWORD="$MYSQL_PASSWORD" \
+          -e WORDPRESS_DB_NAME="$MYSQL_DATABASE" \
+          wordpress:cli \
+          wp core install \
+            --url="http://localhost:8080" \
+            --title="cloud-1" \
+            --admin_user="$WP_ADMIN" \
+            --admin_password="$WP_ADMIN_PASS" \
+            --admin_email="$WP_ADMIN_MAIL"
+      args:
+        chdir: "{{ user_home }}/wordpress"
+        executable: /bin/bash
+      register: wpcli
+      retries: 5
+      delay: 10
+      until: wpcli.rc == 0
