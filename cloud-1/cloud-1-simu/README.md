@@ -15,4 +15,4 @@ uygulanabilir.
 3. **Virtualbox (7.0 sürümü. Üstü sürümler Vagrant ile uyumlu değil)**
 
 ## Diagram
-![Diagram](https://github.com/makbulut1/cloud1/blob/test/cloud-1-test.png)
+![Diagram](https://github.com/Fartomy/42-Out-Core/blob/main/cloud-1/cloud-1-simu/cloud-1-test.png)
